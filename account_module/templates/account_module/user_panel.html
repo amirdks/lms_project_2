@@ -1,0 +1,115 @@
+{% extends 'management_panel_module/management_page.html' %}
+{% load thumbnail %}
+{% load render_partial %}
+{% block title %}
+    پنل کاربری
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="main-body">
+            <div class="row gutters-sm">
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex flex-column align-items-center text-center">
+                                {% thumbnail user.avatar "315x315" crop="center" quality=95 as im %}
+                                    <img src="{{ im.url }}" alt="Admin"
+                                         class="rounded-circle" width="150">
+                                {% endthumbnail %}
+                                <div class="mt-3">
+                                    <h4>{{ user.get_full_name }}</h4>
+                                    {% if not user.is_teacher %}
+                                        <p class="text-secondary mb-1">پایه : {{ user.base.title_farsi }}</p>
+                                        <p class="text-muted font-size-sm">رشته
+                                            : {{ user.field_of_study.title_farsi }}</p>
+                                    {% else %}
+                                        <p class="text-secondary mb-1"> شما معلم هستید</p>
+                                    {% endif %}
+                                    <button class="btn btn-primary">Message</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% render_partial 'account_module.views.user_panel_dashboard_component' %}
+                </div>
+                <div class="col-md-8">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">نام کاربری</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user.username }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">نام</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user.first_name }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">نام خانوادگی</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user.last_name }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">ایمیل</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user.email }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">رمز عبور</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    ********
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    {% if not user.is_teacher %}
+                        <div class="row gutters-sm">
+                            <div class="col-sm-12 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h6 class="d-flex align-items-center mb-3">درصد تحویل تکالیف</h6>
+                                        <div class="card-footer dashboard-card-footer border-0 bg-white">
+                                            <div class="progress bg-white border">
+                                                <div class="progress-bar bar" role="progressbar"
+                                                     aria-valuenow="{{ percent_of_sent_homework }}"
+                                                     style="width: {{ percent_of_sent_homework }}%"
+                                                     aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <div class="small">
+                                                <span class="sr-only">پیشرفت درس:</span>
+                                                <strong>{{ percent_of_sent_homework }}</strong>% کامل شده
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

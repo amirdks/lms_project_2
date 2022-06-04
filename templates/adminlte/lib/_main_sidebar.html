@@ -1,0 +1,130 @@
+{% load adminlte_helpers %}
+{% load static %}
+{% load thumbnail %}
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    {% block logo %}
+        <a href="/" class="brand-link">
+            <img src="{% static 'images/images.png' %}" alt="AdminLTE Logo"
+                 class="brand-image img-circle elevation-3" style="opacity: .8">
+            {% block logo_text %}<span class="brand-text font-weight-light">مدرسه شهید سلطانی </span>{% endblock %}
+        </a>
+    {% endblock %}
+    <!-- sidebar: style can be found in sidebar.less -->
+    <div class="sidebar">
+        <!-- Sidebar user panel -->
+        {% block user_panel %}
+            <!-- Sidebar user panel (optional) -->
+            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                <div class="image">
+                    {% thumbnail request.user.avatar "215x215" crop="center" quality=90 as im %}
+                        <img src="{{ im.url }}" class="img-circle elevation-2" alt="User Image">
+                    {% empty %}
+                        <img src="{% avatar_url size=90 %}" class="img-circle elevation-2" alt="User Image">
+                    {% endthumbnail %}
+                </div>
+                <div class="info">
+                    <a href="{% url 'user_panel_page' %}" class="d-block">{% firstof request.user.get_full_name request.user.username %}</a>
+                </div>
+            </div>
+        {% endblock %}
+
+        {% block form %}{% endblock %}
+
+        <!-- sidebar menu: : style can be found in sidebar.less -->
+        {% block nav_links_ul %}
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                    data-accordion="false">
+                    {% block nav_links_outer %}
+                        <li class="nav-header">{% block nav_heading %}بخش اصلی{% endblock %}</li>
+
+                        {% block nav_linkss %}
+                            <li class="nav-item">
+                                <a href="{% url 'admin:account_module_user_changelist' %}"
+                                   class="nav-link {% if 'account_module_user' in request.resolver_match.url_name %}active{% endif %}">
+                                    <i class="nav-icon fas fa-user"></i>
+                                    <p>مدیریت کاربران</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'admin:site_module_sitesetting_changelist' %}"
+                                   class="nav-link {% if 'site_module_sitesetting' in request.resolver_match.url_name %}active{% endif %}">
+                                    <i class="nav-icon fas fa-cog"></i>
+                                    <p>تنظیمات سایت</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'admin:online_users_onlineuseractivity_changelist' %}"
+                                   class="nav-link {% if 'online_users_onlineuseractivity' in request.resolver_match.url_name %}active{% endif %}">
+                                    <i class="nav-icon fas fa-signal"></i>
+                                    <p>کاربران آنلاین</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'admin:notification_module_notification_changelist' %}"
+                                   class="nav-link {% if 'notification_module_notification' in request.resolver_match.url_name %}active{% endif %}">
+                                    <i class="nav-icon fas fa-bell"></i>
+                                    <p>اعلان ها</p>
+                                </a>
+                            </li>
+                            <li class="nav-item has-tree-view menu-open">
+                                <a href=""
+                                   class="nav-link {% if 'lesson_module_lesson' in request.resolver_match.url_name or 'lessons_base' in request.resolver_match.url_name or 'lessons_fieldofstudy' in request.resolver_match.url_name %}active{% endif %} ">
+                                    <i class="nav-icon fas fa-list"></i>
+                                    <p>مدیریت پایه و رشته و درس ها</p>
+                                    <p><i class="right fas fa-angle-left"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview menu-open">
+                                    <li class="nav-item">
+                                        <a href="{% url 'admin:lesson_module_lesson_changelist' %}"
+                                           class="nav-link {% if 'lesson_module_lesson' in request.resolver_match.url_name %}active{% endif %}">
+                                            <i class="fas fa-book-open"></i>  درس ها
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{% url 'admin:lessons_base_changelist' %}"
+                                           class="nav-link {% if 'lessons_base' in request.resolver_match.url_name %}active{% endif %}">
+                                            <i class="nav-icon fas fa-user"></i> پایه ها
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{% url 'admin:lessons_fieldofstudy_changelist' %}"
+                                           class="nav-link {% if 'lessons_fieldofstudy' in request.resolver_match.url_name %}active{% endif %}">
+                                            <i class="nav-icon fas fa-user"></i> رشته ها
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item has-tree-view menu-open">
+                                <a href=""
+                                   class="nav-link {% if 'lesson_module_sethomework' in request.resolver_match.url_name or 'lesson_module_homeworks' in request.resolver_match.url_name %}active{% endif %} ">
+                                    <i class="nav-icon fas fa-list"></i>
+                                    <p>مدیریت تکالیف</p>
+                                    <p><i class="right fas fa-angle-left"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview menu-open">
+                                    <li class="nav-item">
+                                        <a href="{% url 'admin:lesson_module_sethomework_changelist' %}"
+                                           class="nav-link {% if 'lesson_module_sethomework' in request.resolver_match.url_name %}active{% endif %}">
+                                            <i class="fas fa-calendar-check"></i>     تکالیف قرار داده شده
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{% url 'admin:lesson_module_homeworks_changelist' %}"
+                                           class="nav-link {% if 'lesson_module_homeworks' in request.resolver_match.url_name %}active{% endif %}">
+                                            <i class="nav-icon fas fa-check"></i>تکالیف ارسال شده
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% endblock nav_linkss %}
+                    {% endblock nav_links_outer %}
+                </ul>
+            </nav>
+        {% endblock nav_links_ul %}
+    </div>
+    <!-- /.sidebar -->
+</aside>

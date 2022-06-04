@@ -1,0 +1,23 @@
+<header>
+    <div>
+        <ul>
+            <li><i class="fa fa-home" aria-hidden="true"></i>
+                <a href="{% url 'home_page' %}">خانه</a></li>
+
+        {% if request.user.is_authenticated and request.user.is_teacher %}
+        <li><i class="fa-solid fa-chalkboard-user"></i><a href="{% url 'admin:index' %}">   پنل مدیریت</a></li>
+        {% endif %}
+
+            <li><i class="fa fa-th-list" aria-hidden="true"></i> <a href="{% url 'lessons_list_page' %}">لیست درس ها</a>
+            </li>
+            {% if not request.user.is_authenticated %}
+                <li> <i class="fa-solid fa-right-to-bracket"></i>  <a href="{% url 'login_page' %}">ورود</a></li>
+            {% endif %}
+            {% if request.user.is_authenticated %}
+                <li> <i class="fa-solid fa-right-from-bracket"></i>  <a href="{% url 'logout_page' %}">خروج</a></li>
+            {% endif %}
+        </ul>
+        <br>
+    </div>
+
+</header>

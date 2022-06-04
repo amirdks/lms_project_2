@@ -1,0 +1,620 @@
+@import url(../css/reset.css);
+
+body {
+    direction: rtl;
+    font-family: 'Athiti', sans-serif;
+    background-color: #e2e2e2;
+}
+
+#consection {
+    background-image: url(../images/ny.jpeg);
+    width: 100%;
+    height: 550px;
+    margin-top: -3px;
+    background-size: cover;
+    position: relative;
+    background-attachment: fixed;
+}
+
+#consection h1 {
+    font-weight: bold;
+    /* margin: auto; */
+    color: white;
+    padding-top: 10%;
+    font-size: 100px;
+    /* width: 50%; */
+    position: absolute;
+    left: 502px;
+}
+
+#consection h2 {
+    font-size: 50px;
+    color: white;
+    font-weight: normal;
+    /* width: 100px; */
+    /* margin: auto; */
+    /* width: 50%; */
+    position: absolute;
+    left: 502px;
+    padding: 18% 0;
+    text-shadow: 5px 1px 9px rgba(46, 39, 38, 0.8);
+}
+
+li {
+    font-size: 20px;
+    color: white;
+    /* float: right; */
+    display: inline-block;
+    /* padding: 40px 30px 0 0; */
+    margin-right: 60px;
+    margin-top: 10px;
+    padding: 5px;
+    /* border: solid #274a84; */
+    /* margin: auto; */
+    margin-bottom: 5px;
+}
+
+ul li:hover {
+    border: solid #13460c;
+    cursor: pointer;
+    border-bottom: solid #13460c;
+}
+
+header h1 {
+    float: left;
+}
+
+ul {
+    background-color: #a1b89e;
+    width: 660px;
+    /* margin-top: 10px; */
+    margin: auto;
+
+}
+
+header {
+    background-color: #a1b89e;
+    background-attachment: fixed;
+
+
+}
+
+img {
+    width: 200px;
+    height: 110px;
+    margin-right: 661px;
+
+}
+
+.amir {
+    height: 150px;
+    /* border: solid green; */
+    background-color: #323336;
+
+}
+
+h3 {
+    font-size: 30px;
+    width: 30px;
+    margin: auto;
+    display: inline-block;
+    padding: 66px 182px;
+    color: white;
+
+}
+
+.amir svg {
+    padding-bottom: 50px;
+    /* color: #4b6897; */
+    position: relative;
+
+    bottom: 65px;
+    right: 4px;
+
+}
+
+.foot {
+    background-color: #242424;
+    height: 100px;
+    color: white;
+
+}
+
+.foot h2 {
+    font-weight: bold;
+    font-size: 20px;
+    width: 80px;
+    margin: auto;
+    padding-top: 15px;
+}
+
+.foot h4 {
+    width: 23%;
+    margin: auto;
+    font-weight: normal;
+    padding-top: 20px;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+
+}
+
+.foot a:hover {
+    border-bottom: solid rgb(155, 144, 144);
+}
+
+.l2 form {
+    width: 600px;
+    height: 500px;
+    /* border: solid #2e5885; */
+    /* background-color: aqua; */
+    /* display: block; */
+    margin: auto;
+    padding-top: 100px;
+}
+
+.welcome2 {
+    font-weight: bold;
+    font-size: 40px;
+    width: 200px;
+    margin: auto;
+    margin-top: 10px;
+}
+
+.welcome3 {
+    font-weight: bold;
+    font-size: 40px;
+    width: 373px;
+    margin: auto;
+    margin-top: 10px;
+}
+
+.l2 .name {
+    width: 70%;
+    /*padding: 10px 0;*/
+    margin: auto;
+    margin-right: 71px;
+    margin-top: 20px;
+    box-shadow: 2px 2px 15px 6px rgba(0, 0, 0, 0.78);
+    padding: 10px 5px;
+    border-radius: 10px;
+}
+
+.l2 .password {
+    width: 70%;
+    padding: 10px 0;
+    margin: auto;
+    margin-right: 71px;
+    margin-top: 22px;
+    box-shadow: 2px 2px 15px 6px rgba(0, 0, 0, 0.78);
+    padding: 10px 5px;
+    border-radius: 10px;
+}
+
+.login form a {
+    margin-right: 233px;
+    /* margin-top: 10px; */
+    position: relative;
+    top: 16px;
+    color: #000000;
+    border-bottom: solid black;
+    padding: 3px 5px;
+    text-shadow: 4px 1px 3px rgba(18, 8, 5, 0.78);
+}
+
+.login form .submit {
+    padding: 10px 20px;
+    color: white;
+    background-color: #242424;
+    margin-right: 254px;
+    position: relative;
+    top: 28px;
+    box-shadow: 2px 2px 15px 6px rgba(0, 0, 0, 0.78);
+    border-radius: 5px;
+}
+
+.login {
+    background-image: url(../images/photo-1555475660-3df469f5d6d7.jpg);
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    border-radius: 1%;
+}
+
+.login form a:hover {
+    color: #353232;
+    /* border-bottom:#1a1919 ; */
+}
+
+.login form .submit:hover {
+    cursor: pointer;
+    background-color: white;
+    color: black;
+    border-radius: 10px;
+}
+
+div .alert {
+    /*margin-right: 50px;*/
+
+    height: 40px;
+    margin: auto;
+    background-color: #fd6d59;
+    width: 70%;
+    text-align: center;
+    position: relative;
+    left: 13px;
+    top: 10px;
+    z-index: 0.6;
+    border-radius: 7px;
+}
+
+.alert p {
+    color: #000000;
+    font-weight: bold;
+    position: relative;
+    top: 14px;
+
+}
+
+.welcome {
+    font-weight: bold;
+    font-size: 40px;
+
+    margin: auto;
+    margin-top: 10px;
+    width: 328px;
+}
+
+.submit2 {
+    padding: 10px 20px;
+    color: white;
+    background-color: #242424;
+    margin-right: 226px;
+    position: relative;
+    top: 28px;
+    box-shadow: 2px 2px 15px 6px rgba(0, 0, 0, 0.78);
+    border-radius: 5px;
+}
+
+.submit2:hover {
+    cursor: pointer;
+    background-color: white;
+    color: black;
+    border-radius: 10px;
+}
+
+.taklif {
+    /* background-color: white; */
+    /* background-size: cover; */
+    background-image: url(../images/seamless-background-with-elements-school-vector-33924581.jpg);
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    /* z-index: 0.6; */
+}
+
+.asli {
+    width: 80%;
+    height: 600px;
+    margin: auto;
+}
+
+.asli .m1 {
+    /* background-color: white; */
+    height: 150px;
+    width: 900px;
+    margin-right: 109px;
+}
+
+/* .asli h1{
+    font-weight: bold;
+    font-size: 40px;
+    margin-right: 226px;
+    position: relative;
+    top: 39px;
+    text-shadow: 4px 4px 2px rgb(255, 255, 255);
+} */
+.asli h1 {
+    color: rgb(0, 0, 0);
+    background: #e28750;
+    text-shadow: 3px 2px 3px rgba(255, 255, 255, .2);
+    font-weight: bold;
+    font-size: 40px;
+    margin-right: 226px;
+    position: relative;
+    top: 39px;
+    width: 359px;
+}
+
+.asli .h3 {
+    font-size: 18px;
+    font-weight: normal;
+    position: relative;
+    /* bottom: 50px; */
+    right: 226px;
+    top: 55px;
+    /* background-color: rgba(0, 0, 255, 0.623); */
+    width: 200px;
+}
+
+.asli .fasele {
+    color: white;
+    height: 10px;
+}
+
+.toozihat1 {
+    width: 80%;
+    margin: auto;
+    /* border: solid black; */
+    margin: 5px;
+    margin-right: 58px;
+    padding: 8px 2px;
+    width: 896px;
+    margin-right: 86px;
+    background-color: white;
+    border: solid black;
+    font-size: 20px;
+    border-radius: 10px;
+    position: relative;
+    top: 142px;
+    box-shadow: -3px -3px 50px 0px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: -3px -3px 50px 0px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: -3px -3px 50px 0px rgba(0, 0, 0, 0.75);
+}
+
+.asli hr {
+    background-color: #4b6897;
+    width: 100%;
+    height: 5px;
+}
+
+.toozihat1:hover {
+    background-color: rgba(255, 255, 255, 0.87);
+    border: solid rgb(43, 40, 40);
+}
+
+.taklif input {
+    padding: 10px 15px;
+    color: white;
+    background-color: #242424;
+    border-radius: 5px;
+    position: relative;
+    right: 488px;
+    top: 150px;
+    box-shadow: -3px -3px 50px 0px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: -3px -3px 50px 0px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: -3px -3px 50px 0px rgba(0, 0, 0, 0.75);
+}
+
+.taklif input:hover {
+    color: #242424;
+    background-color: white;
+    border: solid black;
+}
+
+.asli p {
+    margin: 5px 0;
+    padding: 5px 0;
+    font-size: 20px;
+    position: relative;
+    top: 76px;
+    /* color: rgb(0, 0, 0); */
+    /* background-image: url(../XzItM.png); */
+    color: rgba(20, 0, 255, 0.6);
+    background: #bbc9ff;
+    text-shadow: 2px 8px 6px rgba(0, 0, 0, 0.2), 0px -5px 35px rgba(255, 255, 255, 0.3);
+}
+
+#tozihat {
+    width: 80%;
+    margin: auto;
+    /* border: solid black; */
+    margin: 5px;
+    margin-right: 58px;
+    padding: 8px 2px;
+    width: 896px;
+    margin-right: 86px;
+    background-color: rgba(255, 255, 255, 0.342);
+    border: solid black;
+    font-size: 20px;
+    border-radius: 10px;
+    position: relative;
+    top: 142px;
+    box-shadow: -3px -3px 50px 0px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: -3px -3px 50px 0px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: -3px -3px 50px 0px rgba(0, 0, 0, 0.75);
+
+}
+
+#tozihat:hover {
+    background-color: rgba(255, 255, 255, 0.267);
+
+}
+
+.asli {
+    background-color: rgb(255, 255, 255, 0.8);
+}
+
+/* next page is lessons list */
+.lessons {
+    width: 70%;
+    height: 800px;
+    border: #242424 solid;
+    margin: auto;
+
+}
+
+.lessons1 {
+    background-color: black
+}
+
+.ezaf {
+    width: 50%;
+    margin: auto;
+    /* border: solid black; */
+    margin: 5px;
+    margin-right: 58px;
+    padding: 8px 2px;
+    /* width: 896px; */
+    margin-right: 215px;
+    background-color: rgba(236, 24, 24, 0.342);
+    border: solid rgba(180, 41, 41, 0.678);
+    font-size: 20px;
+    border-radius: 10px;
+    position: relative;
+    top: 154px;
+    box-shadow: -3px -3px 50px 0px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: -3px -3px 50px 0px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: -3px -3px 50px 0px rgba(0, 0, 0, 0.75);
+
+}
+
+
+.base {
+    height: 900px;
+    background-image: url(../images/ezgif-3-895d58e1c9.jpg);
+    background-size: cover;
+}
+
+.imagebase {
+    height: 1000px;
+    width: 80%;
+    border-radius: 10px;
+    margin: auto;
+    border: solid black 1px;
+}
+
+.h1base {
+    font-size: 40px;
+    font-weight: bold;
+    -webkit-box-shadow: 5px 5px 5px 0px #000000, inset 4px 4px 15px 0px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+    box-shadow: 5px 5px 5px 0px #000000, inset 4px 4px 15px 0px #4a54d7, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+    width: 800px;
+    margin: auto;
+    text-align: center;
+    position: relative;
+    left: -223px;
+    display: inline-block;
+    top: 10px;
+}
+
+.imgclass {
+    width: 39%;
+    height: 250px;
+    position: relative;
+    top: 110px;
+    display: inline-block;
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+    box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+}
+
+.imgclass:hover {
+
+    -webkit-box-shadow: -10px 0px 13px -7px #000000, 10px 0px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+    box-shadow: -10px 0px 13px -7px #000000, 10px 0px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+}
+
+#imgid {
+
+    position: relative;
+    left: 441px;
+    bottom: 270px;
+
+}
+
+.emtehan1 {
+    display: inline-block;
+    width: 200px;
+    height: 250px;
+    background-color: white;
+}
+
+.clearfix {
+    clear: both;
+}
+
+.imgclass1 {
+    position: relative;
+    left: 440px;
+    bottom: -72px;
+    width: 58%;
+    height: 294px;
+    position: relative;
+    text-align: center;
+    display: inline-block;
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+    box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+}
+
+.imgclass1:hover {
+
+    -webkit-box-shadow: -10px 0px 13px -7px #000000, 10px 0px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+    box-shadow: -10px 0px 13px -7px #000000, 10px 0px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+}
+
+.pinimg {
+    font-weight: bold;
+    font-size: 25px;
+    position: relative;
+    right: 312px;
+    top: 115px;
+    color: #000000;
+    text-align: center;
+    width: 100px;
+
+}
+
+.pinimg1 {
+    height: 40px;
+    width: 270px;
+    padding-top: 6px;
+    font-weight: bold;
+    font-size: 30px;
+    position: relative;
+    right: -0px;
+    /* top: 20px; */
+    bottom: -67px;
+
+    color: #000000;
+    margin: 15px auto;
+    box-shadow: red;
+    -webkit-box-shadow: -3px -3px 50px 0px rgb(0 0 0 / 75%);
+    background-color: #be8f3d;
+    border-radius: 8px;
+
+
+}
+
+.pinimg1:hover {
+    text-shadow: 2px 2px 2px #1b19199f;
+}
+
+.pinimg:hover {
+    text-shadow: 2px 2px 2px #1b19199f;
+}
+
+div.alert2 {
+
+    position: absolute;
+    left: 500px;
+    top: 468px;
+    color: red;
+    z-index: 0.6;
+    border-radius: 7px;
+}
+
+.alert2 h1 {
+    display: inline;
+    height: 40px;
+    margin: auto;
+    background-color: #fd6d59;
+    width: 70%;
+    text-align: center;
+    border: 5px solid red;
+    border-radius: 10px;
+}
+

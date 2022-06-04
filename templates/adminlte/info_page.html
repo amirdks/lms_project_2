@@ -1,0 +1,113 @@
+{% extends 'adminlte/index.html' %}
+{% load thumbnail %}
+{% load static %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3>{{ student_count }}</h3>
+
+                    <p>تعداد دانش آموزان</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <a href="account_module/user/?is_teacher__exact=0" class="small-box-footer">دیدن لیست دانش آموزان <i
+                        class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>{{ teacher_count }}</h3>
+
+                    <p>تعداد معلم ها</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <a href="account_module/user/?is_teacher__exact=1" class="small-box-footer"> دیدن لیست معلم ها <i
+                        class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>{{ set_home_work_count }}</h3>
+
+                    <p>تعداد تکالیف قرار داده شده</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <a href="{% url 'admin:lesson_module_sethomework_changelist' %}" class="small-box-footer"> دیدن لیست
+                    تکالیف <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+                <div class="inner">
+                    <h3>{{ lesson_count }}</h3>
+
+                    <p>تعداد درس ها</p>
+                </div>
+                <div class="icon">
+                    <i class="nav-icon fas fa-book"></i>
+                </div>
+                <a href="{% url 'admin:lesson_module_lesson_changelist' %}" class="small-box-footer">دیدن لیست درس ها <i
+                        class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <!-- ./col -->
+    </div>
+
+
+    <div class="col-md-12">
+        <!-- USERS LIST -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">کاربران آنلاین</h3>
+
+                <div class="card-tools">
+                    <span class="badge badge-danger">{{ number_of_active_users }} کاربر آنلاین</span>
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+                <ul class="users-list clearfix">
+                    {% for user in online_users %}
+                        <li>
+                            {% thumbnail user.user.avatar "128x128" crop="center" quality=95 as im %}
+                            <img src="{{ im.url }}" alt="User Image">
+                            {% empty %}
+                            <img src="{% static 'images/IAFOR-Blank-Avatar-Image.jpg' %}" alt="User Image">
+                            {% endthumbnail %}
+                            <p class="users-list-name">{{ user.user.get_full_name }}</p>
+                            <span class="users-list-date">آخرین بازدید : {{ user.last_activity | time }}</span>
+                        </li>
+                    {% endfor %}
+
+                </ul>
+                <!-- /.users-list -->
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer text-center">
+                <a href="{% url 'admin:online_users_onlineuseractivity_changelist' %}">دیدن همه ی کاربران آنلاین</a>
+            </div>
+            <!-- /.card-footer -->
+        </div>
+        <!--/.card -->
+    </div>
+{% endblock %}

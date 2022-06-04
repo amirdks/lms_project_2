@@ -1,0 +1,8 @@
+@font-face {
+    font-family: 'IranSanse';
+    src: local('IranSanse'),
+    url("dist/fonts/Sans a4fran3.svg") format('svg'),
+    url("dist/fonts/Sans a4fran3.eot") format('eot'),
+    url("dist/fonts/Sans a4fran3.ttf") format('ttf'),
+    url("dist/fonts/Sans a4fran3.woff") format('woff');
+}

@@ -1,0 +1,36 @@
+{% extends 'management_panel_module/management_page.html' %}
+
+{% block title %}
+صفحه مورد نضر یافت نشد 404
+{% endblock %}
+
+{% block content %}
+<section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>صفحه ارور 404</h1>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+
+<section class="content">
+      <div class="error-page">
+        <h2 class="headline text-warning"> 404</h2>
+
+        <div class="error-content">
+          <h3><i class="fas fa-exclamation-triangle text-warning"></i> صفحه مورد نطر یافت نشد...!</h3>
+
+          <p>
+            موفق به پیدا کردن صفحه ای که دنبالش بودید نشدیم برای ادامه به صفحه اصلی سایت برگردید
+          </p>
+
+            <p align="center"><a class="btn btn-primary btn-sm" href="{% url 'lessons_list_page' %}">بازگشت به صفحه اصلی</a></p>
+        </div>
+        <!-- /.error-content -->
+      </div>
+      <!-- /.error-page -->
+    </section>
+{% endblock %}

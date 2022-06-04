@@ -1,0 +1,74 @@
+{% extends 'management_panel_module/management_page.html' %}
+{% load jalali_tags %}
+{% load static %}
+{% load poll_extras %}
+{% load thumbnail %}
+{% block title %}
+    پنل مدیریت
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <h4 align="center">لیست تکالیف درس : {{ lesson.title }}</h4>
+            <a class="btn btn-info btn-sm" href="{% url 'set_new_home_work_lesson' lesson=lesson.id %}">
+                <i class="fas fa-plus-circle">
+                </i>
+                اضافه کردن تکلیف به این درس
+            </a>
+            <br>
+            <hr>
+            {% if home_works %}
+                {% for home_work in home_works %}
+                    <div class="post">
+                        <div class="user-block">
+                            {% thumbnail home_work.teacher.avatar "128x128" crop="center" quality=95 as im %}
+                                <img class="img-circle img-bordered-sm"
+                                     src="{{ im.url }}" alt="user image">
+                            {% empty %}
+                                <img class="img-circle img-bordered-sm"
+                                     src="{% static 'management_panel_module/dist/img/user1-128x128.jpg' %}"
+                                     alt="user image">
+                            {% endthumbnail %}
+                            <span class="username">
+                          <a href="{% url 'home_work_page' id=lesson.id pk=home_work.pk %}">{{ home_work.title }}</a>
+                               {% if not request.user.is_teacher %}
+                                {% if send_home_works|in_homework:home_work.id %}
+                                    ✅
+                                {% else %}
+                                    ❌
+                                {% endif %}
+                               {% endif %}
+                        </span>
+                            <span class="description">زمان قرار گرفتن تکلیف  : {{ home_work.start_at.date | to_jalali }}</span>
+                        </div>
+
+                        <!-- /.user-block -->
+                        <p>{{ home_work.description }}</p>
+                        {% if request.user.is_teacher %}
+                            <a class="btn btn-danger btn-sm"
+                               href="{% url 'delete_home_work' id=lesson.id pk=home_work.id %}">
+                                <i class="fas fa-trash">
+                                </i>
+                                حذف
+                            </a>
+                            <a class="btn btn-primary btn-sm"
+                               href="{% url 'edit_home_work' id=lesson.id pk=home_work.id %}">
+                                <i class="fas fa-edit">
+                                </i>
+                                ویرایش
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div style="border-radius: 15px" class="alert-error">
+                    <h1 align="center"> تکلیفی برای این درس قرار داده نشده است </h1>
+                </div>
+            {% endif %}
+
+
+        </div>
+    </div>
+{% endblock %}
+

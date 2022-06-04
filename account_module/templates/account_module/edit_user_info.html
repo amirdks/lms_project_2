@@ -1,0 +1,93 @@
+{% extends 'management_panel_module/management_page.html' %}
+{% load thumbnail %}
+{% load render_partial %}
+{% block title %}
+    ویرایش اطلاعات
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container">
+        <div class="main-body">
+            <div class="row gutters-sm">
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex flex-column align-items-center text-center">
+                                {% thumbnail user.avatar "315x315" crop="center" quality=95 as im %}
+                                    <img src="{{ im.url }}" alt="Admin"
+                                         class="rounded-circle" width="150">
+                                {% endthumbnail %}
+                                <div class="mt-3">
+                                    <h4>{{ user.get_full_name }}</h4>
+                                    <p class="text-secondary mb-1">پایه : {{ user.base.title_farsi }}</p>
+                                    <p class="text-muted font-size-sm">رشته : {{ user.field_of_study.title_farsi }}</p>
+                                    <button class="btn btn-primary">Message</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 {% render_partial 'account_module.views.user_panel_dashboard_component' %}
+                </div>
+
+
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <form enctype="multipart/form-data" method="post" action="{% url 'edit_user_info_page' %}">
+                                {% csrf_token %}
+                                <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">نام کاربری</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    <input name="username" type="text" class="form-control" value="{{ current_user.username }}">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">نام</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    <input name="first_name" type="text" class="form-control" value="{{ current_user.first_name }}">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">نام خانوادگی</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    <input name="last_name" type="text" class="form-control" value="{{ current_user.last_name }}">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">ایمیل</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    <input name="email" type="text" class="form-control" value="{{ current_user.email }}">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">عکس پروفایل</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    <input name="avatar" type="file" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3"></div>
+                                <div class="col-sm-9 text-secondary">
+                                    <button type="submit" class="btn btn-primary px-4"> save </button>
+                                </div>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

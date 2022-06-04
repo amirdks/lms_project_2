@@ -1,0 +1,57 @@
+{% load static %}
+{% load render_partial %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block title %}{% endblock %}</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Font Awesome -->
+    {% render_partial 'management_panel_module.views.management_header_references' %}
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="se-pre-con"></div>
+<div class="wrapper">
+    <!-- Navbar -->
+    {% render_partial 'management_panel_module.views.management_navbar' %}
+    <!-- /.navbar -->
+    <!-- Main Sidebar Container -->
+
+
+    {% render_partial 'management_panel_module.views.management_sidebar' %}
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                {% include 'management_panel_module/includes/header_content.html' %}
+                <!-- /.content-header -->
+                {% block content %}{% endblock %}
+            </div>
+            <!-- /.container-fluid -->
+        </div>
+    </div>
+    <!-- /.content-wrapper -->
+    <!-- Main content -->
+    <!-- /.content -->
+
+    <footer class="main-footer">
+        <strong>سایت مدرسه شهید سلطانی</strong>
+        <link rel="stylesheet" href="{% static 'admin/jquery.ui.datepicker.jalali/themes/base/jquery-ui.min.css' %}">
+        <script src="{% static 'admin/js/django_jalali.min.js' %}"></script>
+    </footer>
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+        <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+
+{% render_partial 'management_panel_module.views.management_footer_references' %}
+</body>
+</html>

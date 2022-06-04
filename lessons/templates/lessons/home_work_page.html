@@ -1,0 +1,134 @@
+{% extends 'management_panel_module/management_page.html' %}
+{% load static %}
+{% load thumbnail %}
+{% load jalali_tags %}
+{% block title %}
+    پنل مدیریت
+{% endblock %}
+
+{% block content %}
+    <div class="invoice p-3 mb-3">
+        <!-- title row -->
+        <div class="row">
+            <div class="col-12">
+                <h5>
+                    <i class="fas fa-book-open"></i> تکلیف درس {{ lesson.title }}
+                    <small class="float-right">تاریخ شروع : {{ home_work.start_at | to_jalali }}</small>
+                    <br>
+                    <small class="float-right">تاریخ پایان : {{ home_work.end_at | to_jalali }}</small>
+                </h5>
+            </div>
+            <!-- /.col -->
+        </div>
+        <hr>
+        <br>
+        <!-- Table row -->
+        <div class="row">
+            <div class="col-12 table-responsive">
+                <table class="table table-striped">
+                    <tbody>
+                    <tr>
+                        <td><b>عنوان تکلیف</b></td>
+                        <td><h4>{{ home_work.title }}</h4></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                    <tbody>
+                    <tr>
+                        <td><b>زمان باقی مانده</b></td>
+                        <td> {% if home_work.is_finished %}
+                            <b><p class="text-danger">مهلت ارسال به پایان رسید</p></b>  {% else %}
+                            {{ home_work.get_reaming }} ساعت
+                        {% endif %}   </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><b>توضیحات تکلیف</b></td>
+                        <td>{{ home_work.description }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><b>وضعیت تحویل</b></td>
+                        <td>{% if home_works.is_delivered %}
+                            <p class="text-success">تحویل داده شده</p> {% else %}
+                            <p> تحویل داده نشده
+                                است</p>{% endif %} </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+
+        <!-- this row will not appear when printing -->
+        <div class="row">
+            <div class="col-12">
+                {% if not request.user.is_teacher and not home_works.is_delivered and not home_work.is_finished %}
+                    <form method="post" action="{% url 'home_work_page' id=lesson.id pk=home_work.pk %} "
+                          enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input name="file" class="btn btn-primary float-right" type="file" value="ارسال">
+                        <br>
+                        <hr>
+                        <button class="btn btn-success float-right" type="submit"> ارسال</button>
+                    </form>
+                {% elif request.user.is_teacher %}
+                    <div class="alert alert-warning"><p>شما معلم هستید و نمیتوانید تکلیفی ارسال کنید </p></div>
+                    <a class="btn btn-danger btn-sm"
+                       href="{% url 'delete_home_work' id=lesson.id pk=home_work.id %}">
+                        <i class="fas fa-trash">
+                        </i>
+                        حذف
+                    </a>
+                    <a class="btn btn-primary btn-sm"
+                       href="{% url 'edit_home_work' id=lesson.id pk=home_work.id %}">
+                        <i class="fas fa-edit">
+                        </i>
+                        ویرایش
+                    </a>
+                    <hr>
+                {% elif home_works.is_delivered %}
+                    <div class="alert alert-warning"><p>شما از قبل تکلیف خود را ارسال کرده اید</p></div>
+                {% elif home_work.is_finished %}
+                    <div class="alert alert-danger"><p>مهلت ارسال تکلیف به پایان رسیده</p></div>
+                {% endif %}
+                {% if home_works and not request.user.is_teacher %}
+                    <p>
+                        <a href="{{ home_works.file.url }}" download="{{ home_works.file.url }}"
+                           class="btn btn-primary btn-sm"><i
+                                class="fas fa-download"></i>
+                            دانلود تکلیف تحویل داده شده</a>
+                        <a href="{% url 'delete_sent_home_work' id=lesson.id pk=home_work.id %}"
+                           class="btn btn-danger btn-sm"><i
+                                class="fas fa-trash"></i>
+                            حذف تکلیف تحویل داده شده</a>
+                    </p>
+                {% elif request.user.is_teacher %}
+                    <p><a href="{% url 'list-sent-home-works' id=lesson.id  pk=home_work.id %}" class="btn btn-default"><i
+                            class="fas fa-list-check"></i>
+                        دیدن لیست تکالیف ارسال شده دانش آموزان</a></p>
+                {% endif %}
+            </div>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        <h5><i class="icon fas fa-check"></i> موفق</h5>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+

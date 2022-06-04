@@ -1,0 +1,19 @@
+{% load render_partial %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}mosavi project{% endblock %}</title>
+{% include 'shared/header_references.html' %}
+</head>
+
+<body>
+{% render_partial 'home_module.views.site_header_component' %}
+{% block content %}{% endblock %}
+{% render_partial 'home_module.views.site_footer_component' %}
+
+</body>
+
+</html>

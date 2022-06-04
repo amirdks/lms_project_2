@@ -1,0 +1,80 @@
+{% extends 'management_panel_module/management_page.html' %}
+{% load static %}
+
+{% block title %}
+    پنل مدیریت
+{% endblock %}
+
+{% block content %}
+    <div class="login-box">
+        <div class="login-logo">
+            <b>ورود</b>
+        </div>
+        <!-- /.login-logo -->
+        <div class="card">
+            <div class="card-body login-card-body">
+                <p class="login-box-msg">فرم ورود به اکانت</p>
+
+                <form action="{% url 'login_page' %}" method="post">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <input name="name" type="text" class="form-control" placeholder="نام کاربری">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input name="password" type="password" class="form-control" placeholder="رمز عبور">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        {#          <div class="col-8">#}
+                        {#            <div class="icheck-primary">#}
+                        {#              <input type="checkbox" id="remember">#}
+                        {#              <label for="remember">#}
+                        {#                Remember Me#}
+                        {#              </label>#}
+                        {#            </div>#}
+                        {#          </div>#}
+                        <!-- /.col -->
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-primary btn-block">ورود</button>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                </form>
+
+                <div class="social-auth-links text-center mb-3">
+                    <br>
+                    <hr>
+                    {#        <a href="#" class="btn btn-block btn-danger">#}
+                    {#          <i class="fab fa-google-plus mr-2"></i> Sign in using Google+#}
+                    {#        </a>#}
+                </div>
+                <!-- /.social-auth-links -->
+
+                <p class="mb-1">
+                    <a href="{% url 'forget-pass-page' %}">فراموشی رمز عبور</a>
+                </p>
+            </div>
+            <!-- /.login-card-body -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        <h5><i class="icon fas fa-ban"></i> اخطار</h5>
+                       {{ message }}
+                    </div>
+                {% endfor %}
+
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
