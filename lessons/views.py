@@ -247,6 +247,7 @@ class DeleteHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
         lesson = Lesson.objects.filter(id=id).first()
         home_work = SetHomeWork.objects.filter(id=pk).first()
         home_work.delete()
+        messages.add_message(request, messages.SUCCESS, 'تکلیف مورد نطر با موفقیت حذف شد')
         return redirect(reverse('list_home_works', kwargs={'id': lesson.id}))
 
     def post(self, request, id, pk):
@@ -302,7 +303,7 @@ class SetHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
                                                                home_work_id=new_home_work.id, text=notification_text)
                 new_notification.user.set(notification_users)
                 new_notification.save()
-
+                messages.add_message(request, messages.SUCCESS, 'تکلیف جدید با موفقیت قرار گرفت')
                 if lesson:
                     return redirect(reverse('list_home_works', kwargs={'id': lesson.id}))
                 else:
@@ -333,6 +334,7 @@ class EditHomeWorkView(View):
         form = EditHomeWorkForm(request.POST, instance=home_work)
         if form.is_valid():
             form.save(commit=True)
+            messages.add_message(request, messages.SUCCESS, 'تکلیف با موفقیت ویرایش شد')
             return redirect(reverse('list_home_works', kwargs={'id': id}))
         form = EditHomeWorkForm()
         context = {

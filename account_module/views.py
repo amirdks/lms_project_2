@@ -36,6 +36,27 @@ class UserPanelView(LoginRequiredMixin, View):
         return render(request, 'account_module/user_panel.html', context)
 
 
+class AnotherUserPanelView(LoginRequiredMixin, View):
+    login_url = reverse_lazy('login_page')
+
+    def get(self, request: HttpRequest, id):
+        user: User = User.objects.filter(id=id).first()
+        percent = 0
+        if not user.is_teacher:
+            field_of_study = FieldOfStudy.objects.filter(id=user.field_of_study.id).first()
+            base = Base.objects.filter(base_number=user.base.base_number).first()
+            lessons = Lesson.objects.filter(is_active=True, base_id=base.id, field_of_study_id=field_of_study.id)
+            set_home_works = SetHomeWork.objects.filter(lesson__field_of_study_id=user.field_of_study.id,
+                                                        lesson__base_id=user.base.id, lesson__is_active=True).all()
+            home_works = HomeWorks.objects.filter(user_id=user.id).all()
+            percent = home_works.count() * 100 / set_home_works.count()
+        context = {
+            'percent_of_sent_homework': int(percent),
+            'user': user
+        }
+        return render(request, 'account_module/another_user_panel.html', context)
+
+
 class EditUserInfo(LoginRequiredMixin, View):
     login_url = reverse_lazy('login_page')
 
@@ -204,3 +225,7 @@ class ResetPasswordView(View):
 
 def user_panel_dashboard_component(request):
     return render(request, 'account_module/components/user_panel_dashboard_component.html')
+
+
+def user_profile_component(request):
+    return render(request, 'account_module/components/user_profile_component.html')

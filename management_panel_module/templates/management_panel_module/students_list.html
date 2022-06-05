@@ -53,7 +53,7 @@
                                          class="img-circle elevation-2" width="60" height="60" alt="User Image">
                                 {% endthumbnail %}
                                 </td>
-                                <td>{{ student.get_full_name }}</td>
+                                <td><a href="{% url 'view_another_user_page' id=student.id %}">{{ student.get_full_name }}</a></td>
                                 <td>{{ student.base.title_farsi }}</td>
                                 <td>{{ student.field_of_study.title_farsi }}</td>
                             </tr>
