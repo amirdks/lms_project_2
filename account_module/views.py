@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.http import HttpRequest
 from django.shortcuts import render, redirect
 # Create your views here.
@@ -130,9 +131,9 @@ class LoginView(View):
             return redirect(reverse('home_page'))
         login_form = LoginForm(request.POST)
         if login_form.is_valid():
-            user_name = login_form.cleaned_data.get('name')
+            user_name_or_email = login_form.cleaned_data.get('name')
             user_password = login_form.cleaned_data.get('password')
-            user = User.objects.filter(username__exact=user_name).first()
+            user = User.objects.filter(Q(username__exact=user_name_or_email)|Q(email__exact=user_name_or_email)).first()
             if user:
                 is_password_correct = user.check_password(user_password)
                 if is_password_correct:
