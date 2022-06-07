@@ -21,7 +21,7 @@ make_is_teacher.short_description = 'تبدیل به معلم'
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = ['username','photo_tag',  'last_name', 'first_name', 'base', 'field_of_study', 'is_teacher']
-    list_editable = ['base', 'field_of_study', 'is_teacher']
+    list_editable = ['base', 'field_of_study']
     list_filter = ['is_teacher', 'base', 'field_of_study']
     ordering = ['is_teacher', 'base', 'field_of_study']
     actions = [make_is_teacher]
