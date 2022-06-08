@@ -15,7 +15,6 @@ from utils.time import end_time_reaming
 class Lesson(models.Model):
     title = models.CharField(max_length=50, verbose_name='عنوان درس')
     image = models.ImageField(upload_to='images/lessons', verbose_name='عکس درس')
-    slug = models.SlugField(verbose_name='آدرس در url')
     base = models.ForeignKey(to=Base, null=True, blank=True, on_delete=models.CASCADE, verbose_name='پایه')
     field_of_study = models.ForeignKey(to=FieldOfStudy, null=True, blank=True, on_delete=models.CASCADE,
                                        verbose_name='رشته')

@@ -6,7 +6,7 @@ from lessons.models import Base, FieldOfStudy
 
 
 class User(AbstractUser):
-    avatar = models.ImageField(null=True, upload_to='images/profile', verbose_name='تصویر آواتار')
+    avatar = models.ImageField(null=True, blank=True, upload_to='images/profile', verbose_name='تصویر آواتار')
     email_active_code = models.CharField(blank=True, null=True, editable=False, max_length=100,
                                          verbose_name='فعالسازی ایمیل')
     base = models.ForeignKey(Base, blank=True, null=True, on_delete=models.CASCADE, verbose_name='پایه دانش آموز')

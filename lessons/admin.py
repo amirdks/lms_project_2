@@ -22,5 +22,5 @@ class BaseAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.FieldOfStudy)
-class BaseAdmin(admin.ModelAdmin):
+class FieldOfStudyAdmin(admin.ModelAdmin):
     list_display = ['title', ]

@@ -15,7 +15,7 @@ class Base(models.Model):
     base_number = models.IntegerField(default=10, editable=False, verbose_name='عدد پایه')
 
     def __str__(self):
-        return self.title
+        return self.title_farsi()
 
     class Meta:
         verbose_name = 'پایه'
