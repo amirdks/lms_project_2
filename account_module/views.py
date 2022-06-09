@@ -50,7 +50,10 @@ class AnotherUserPanelView(LoginRequiredMixin, View):
             set_home_works = SetHomeWork.objects.filter(lesson__field_of_study_id=user.field_of_study.id,
                                                         lesson__base_id=user.base.id, lesson__is_active=True).all()
             home_works = HomeWorks.objects.filter(user_id=user.id).all()
-            percent = home_works.count() * 100 / set_home_works.count()
+            if home_works:
+                percent = home_works.count() * 100 / set_home_works.count()
+            else:
+                percent = 100
         context = {
             'percent_of_sent_homework': int(percent),
             'user': user
