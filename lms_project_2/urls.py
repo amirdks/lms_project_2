@@ -25,7 +25,6 @@ urlpatterns = [
                   path('', include('account_module.urls')),
                   path('lessons/', include('lessons.urls')),
                   path('management-panel/', include('management_panel_module.urls')),
-                  path('admin/info', InfoAdminView.as_view()),
                   path('admin/', admin.site.urls, name='admin_info_page'),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
