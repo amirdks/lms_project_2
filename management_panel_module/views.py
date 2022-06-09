@@ -1,4 +1,7 @@
+from datetime import timedelta
+
 from django.contrib import messages
+from django.contrib.admin import AdminSite
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import HttpRequest
@@ -6,9 +9,10 @@ from django.shortcuts import render, redirect
 # Create your views here.
 from django.urls import reverse_lazy, reverse
 from django.views import View
+from django.views.decorators.cache import never_cache
 from django.views.generic import TemplateView
 from online_users.models import OnlineUserActivity
-from datetime import timedelta
+
 from account_module.models import User
 from lesson_module.models import Lesson, SetHomeWork
 from management_panel_module.forms import SetHomeWorkForm
@@ -106,6 +110,26 @@ def management_navbar(request):
 
 class InfoAdminView(View):
     def get(self, request: HttpRequest):
+        student_count = User.objects.filter(is_teacher=False, is_superuser=False, is_staff=False).count()
+        teacher_count = User.objects.filter(is_teacher=True).count()
+        lesson_count = Lesson.objects.all().count()
+        set_home_work_count = SetHomeWork.objects.all().count()
+        user_activity_objects = OnlineUserActivity.get_user_activities(timedelta(minutes=2))
+        users = [user for user in user_activity_objects]
+        context = {
+            'student_count': student_count,
+            'teacher_count': teacher_count,
+            'lesson_count': lesson_count,
+            'set_home_work_count': set_home_work_count,
+            'number_of_active_users': len(users),
+            'online_users': users[:8],
+        }
+        return render(request, 'adminlte/info_page.html', context)
+
+
+class MyAdminSite(AdminSite):
+    @never_cache
+    def index(self, request, extra_context=None):
         student_count = User.objects.filter(is_teacher=False, is_superuser=False, is_staff=False).count()
         teacher_count = User.objects.filter(is_teacher=True).count()
         lesson_count = Lesson.objects.all().count()
