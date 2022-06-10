@@ -9,7 +9,6 @@ from account_module.models import User
 @admin.register(models.Lesson)
 class LessonsAdmin(admin.ModelAdmin):
     list_display = ['photo_tag', 'title', 'base', 'field_of_study', 'is_active']
-    list_editable = ['base', 'field_of_study', 'is_active']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'teacher':
