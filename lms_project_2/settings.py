@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'home_work_module',
     'notification_module',
     'online_users',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

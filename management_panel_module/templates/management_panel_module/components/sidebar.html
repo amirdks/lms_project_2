@@ -34,7 +34,7 @@
                      with font-awesome or any other icon font library -->
                 <li class="nav-item has-treeview menu-open">
                     <a href="#" class="nav-link active">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <i class="fas fa-tachometer-alt"></i>
                         <p>
                             داشبورد
                             <i class="right fas fa-angle-left"></i>
@@ -44,7 +44,7 @@
                         <li class="nav-item">
                             <a href="{% url 'lessons_list_page' %}"
                                class="nav-link {% if request.resolver_match.url_name == 'lessons_list_page' %}active{% endif %}">
-                                <i class="fa-solid fa-list"></i>
+                                <i class="nav-icon fa-solid fa-list"></i>
                                 <p>لیست درس ها </p>
                             </a>
                         </li>
@@ -52,14 +52,14 @@
                         <li class="nav-item">
                             <a href="{% url 'set_homework_page' %}"
                                class="nav-link {% if request.resolver_match.url_name == 'set_homework_page' %}active{% endif %} ">
-                                <i class="fa-solid fa-calendar-check"></i>
+                                <i class="nav-icon fa-solid fa-calendar-check"></i>
                                 <p>قرار دادن تکلیف جدید</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{% url 'students_list_page' %}"
                                class="nav-link {% if request.resolver_match.url_name == 'students_list_page' %}active{% endif %} ">
-                                <i class="fa-solid fa-users"></i>
+                                <i class="nav-icon fa-solid fa-users"></i>
                                 <p>لیست دانش آموزان</p>
                             </a>
                         </li>

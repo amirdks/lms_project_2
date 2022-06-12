@@ -71,7 +71,7 @@
                             <li class="nav-item has-tree-view menu-open">
                                 <a href=""
                                    class="nav-link {% if 'lesson_module_lesson' in request.resolver_match.url_name or 'lessons_base' in request.resolver_match.url_name or 'lessons_fieldofstudy' in request.resolver_match.url_name %}active{% endif %} ">
-                                    <i class="nav-icon fas fa-list"></i>
+                                    <i class="fas fa-list"></i>
                                     <p>پایه و رشته و درس ها</p>
                                     <p><i class="right fas fa-angle-left"></i>
                                     </p>
@@ -80,7 +80,7 @@
                                     <li class="nav-item">
                                         <a href="{% url 'admin:lesson_module_lesson_changelist' %}"
                                            class="nav-link {% if 'lesson_module_lesson' in request.resolver_match.url_name %}active{% endif %}">
-                                            <i class="fas fa-book-open"></i>  درس ها
+                                            <i class="nav-icon fas fa-book-open"></i>  درس ها
                                         </a>
                                     </li>
                                     <li class="nav-item">
@@ -100,16 +100,16 @@
                             <li class="nav-item has-tree-view menu-open">
                                 <a href=""
                                    class="nav-link {% if 'lesson_module_sethomework' in request.resolver_match.url_name or 'lesson_module_homeworks' in request.resolver_match.url_name %}active{% endif %} ">
-                                    <i class="nav-icon fas fa-list"></i>
+                                    <i class="fas fa-list"></i>
                                     <p>مدیریت تکالیف</p>
-                                    <p><i class="right fas fa-angle-left"></i>
+                                    <p><i class="nav-icon right fas fa-angle-left"></i>
                                     </p>
                                 </a>
                                 <ul class="nav nav-treeview menu-open">
                                     <li class="nav-item">
                                         <a href="{% url 'admin:lesson_module_sethomework_changelist' %}"
                                            class="nav-link {% if 'lesson_module_sethomework' in request.resolver_match.url_name %}active{% endif %}">
-                                            <i class="fas fa-calendar-check"></i>     تکالیف قرار داده شده
+                                            <i class="nav-icon fas fa-calendar-check"></i>     تکالیف قرار داده شده
                                         </a>
                                     </li>
                                     <li class="nav-item">
