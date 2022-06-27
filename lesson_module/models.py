@@ -1,24 +1,26 @@
 from django.db import models
-
-from datetime import datetime
-
 from django.utils.html import format_html
 from jalali_date import datetime2jalali
-
-from lessons.models import Base, FieldOfStudy
-
+from pathlib import Path
 # Create your models here.
 from account_module.models import User
+from lessons.models import Base, FieldOfStudy, AllowedFormats
 from utils.time import end_time_reaming
 
 
 class Lesson(models.Model):
+    POODEMAN_OR_NOBAT = [
+        ("poodeman", "پودمانی"),
+        ("nobat", "نوبتی"),
+    ]
     title = models.CharField(max_length=50, verbose_name='عنوان درس')
     image = models.ImageField(upload_to='images/lessons', verbose_name='عکس درس')
     base = models.ForeignKey(to=Base, null=True, blank=True, on_delete=models.CASCADE, verbose_name='پایه')
     field_of_study = models.ForeignKey(to=FieldOfStudy, null=True, blank=True, on_delete=models.CASCADE,
                                        verbose_name='رشته')
     teacher = models.ForeignKey(to=User, null=True, blank=True, on_delete=models.CASCADE, verbose_name='معلم')
+    poodeman_or_nobat = models.CharField(choices=POODEMAN_OR_NOBAT, default='poodeman', max_length=20,
+                                         verbose_name='نوع درس')
     is_active = models.BooleanField(verbose_name='فعال / غیرفعال')
 
     def __str__(self):
@@ -40,6 +42,11 @@ class SetHomeWork(models.Model):
     end_at = models.DateTimeField(verbose_name='تاریخ پایان مهلت تکلیف')
     lesson = models.ForeignKey(to=Lesson, on_delete=models.CASCADE, verbose_name='مربوط به درس')
     teacher = models.ForeignKey(to=User, on_delete=models.CASCADE, editable=True, verbose_name='معلم')
+    max_size = models.FloatField(blank=True, null=True, verbose_name='حداکثر اندازه فایل(mb)')
+    allowed_formats = models.ManyToManyField(to=AllowedFormats, related_name='allowed_formats', blank=True,
+                                             verbose_name='فرمت های مجاز')
+    poodeman_or_nobat = models.ForeignKey(to='PoodemanAndNobat',null=True, blank=True, on_delete=models.CASCADE,
+                                          verbose_name='پودمان یا نوبت')
     description = models.TextField(verbose_name='توضیحات تکلیف')
     is_finished = models.BooleanField(default=False, verbose_name='به اتمام رسیده')
 
@@ -61,7 +68,7 @@ class HomeWorks(models.Model):
     send_at = models.DateTimeField(auto_now_add=True, verbose_name='زمان ارسال')
     home_work = models.ForeignKey(to=SetHomeWork, on_delete=models.CASCADE, related_name='taklif',
                                   verbose_name='مربوط به تکلیف')
-    file = models.FileField(upload_to='files/home_works', verbose_name='تکلیف ارسال شده')
+    message = models.TextField(blank=True, null=True, verbose_name='پیام به معلم')
     is_delivered = models.BooleanField(default=False, verbose_name='وضعیت تحویل')
 
     def __str__(self):
@@ -78,3 +85,28 @@ class HomeWorks(models.Model):
         return datetime2jalali(self.send_at).strftime("%m/%d/%Y %H:%M:%S")
 
     jalali_sent_at.short_description = 'زمان ارسال'
+
+
+class HomeWorkFiles(models.Model):
+    home_work = models.ForeignKey(to='HomeWorks', on_delete=models.CASCADE, verbose_name='مربوط به تکلیف')
+    file = models.FileField(upload_to='files/home_works', verbose_name='فایل تکلیف')
+
+    def __str__(self):
+        return Path(self.file.name).stem
+
+    class Meta:
+        verbose_name = 'فایل ارسال شده'
+        verbose_name_plural = 'فایل های ارسال شده'
+
+
+class PoodemanAndNobat(models.Model):
+    name = models.CharField(max_length=30, verbose_name='نام')
+    type = models.CharField(max_length=15, choices=[("poodeman", "پودمانی"),
+                                                    ("nobat", "نوبتی"), ], verbose_name='نوع')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'پودمان و نوبت'
+        verbose_name_plural = 'پودمان ها و نوبت ها'

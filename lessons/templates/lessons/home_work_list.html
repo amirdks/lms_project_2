@@ -4,18 +4,20 @@
 {% load poll_extras %}
 {% load thumbnail %}
 {% block title %}
-    پنل مدیریت
+    لیست تکالیف
 {% endblock %}
 
 {% block content %}
     <div class="row">
         <div class="col-12">
             <h4 align="center">لیست تکالیف درس : {{ lesson.title }}</h4>
+            {% if request.user.is_teacher %}
             <a class="btn btn-info btn-sm" href="{% url 'set_new_home_work_lesson' lesson=lesson.id %}">
                 <i class="fas fa-plus-circle">
                 </i>
                 اضافه کردن تکلیف به این درس
             </a>
+            {% endif %}
             <br>
             <hr>
             {% if home_works %}

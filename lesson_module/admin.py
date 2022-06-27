@@ -24,3 +24,7 @@ class LessonsAdmin(admin.ModelAdmin):
 @admin.register(models.HomeWorks)
 class LessonsAdmin(admin.ModelAdmin):
     list_display = ['user', 'jalali_sent_at', 'home_work']
+
+
+admin.site.register(models.HomeWorkFiles)
+admin.site.register(models.PoodemanAndNobat)

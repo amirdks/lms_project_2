@@ -3,7 +3,7 @@
 {% load thumbnail %}
 {% load poll_extras %}
 {% block title %}
-    پنل مدیریت
+    لیست درس ها
 {% endblock %}
 
 {% block content %}
@@ -45,7 +45,6 @@
                     شده</a>
                 {% if not request.user.is_teacher %}
                     <hr>
-                    {% if percent_of_sent_homework|get_item:lesson.title %}
                         <div class="card-footer dashboard-card-footer border-0 bg-white">
                         <div class="progress bg-white border">
                             <div class="progress-bar bar" role="progressbar"
@@ -57,19 +56,6 @@
                             <span class="sr-only">پیشرفت درس:</span>
                             <strong>{{ percent_of_sent_homework | get_item:lesson.title }}</strong>% کامل شده
                         </div>
-                    {% else %}
-                        <div class="card-footer dashboard-card-footer border-0 bg-white">
-                        <div class="progress bg-white border">
-                            <div class="progress-bar bar" role="progressbar"
-                                 aria-valuenow="100"
-                                 style="width: 100%"
-                                 aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <div class="small">
-                            <span class="sr-only">پیشرفت درس:</span>
-                            <strong>100</strong>% کامل شده
-                        </div>
-                    {% endif %}
                     </div>
                 {% endif %}
 

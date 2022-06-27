@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.contrib.admin import AdminSite
 
 from . import models
+from .models import AllowedFormats
 
 
 @admin.register(models.Base)
@@ -24,3 +25,6 @@ class BaseAdmin(admin.ModelAdmin):
 @admin.register(models.FieldOfStudy)
 class FieldOfStudyAdmin(admin.ModelAdmin):
     list_display = ['title', ]
+
+
+admin.site.register(AllowedFormats)

@@ -30,7 +30,6 @@ class Base(models.Model):
             return 'پایه دوازدهم'
 
 
-
 class FieldOfStudy(models.Model):
     FIELD_Of_STUDY_TYPES = {
         ('Mathematical_Physics', 'ریاضی فیزیک'),
@@ -56,3 +55,14 @@ class FieldOfStudy(models.Model):
     class Meta:
         verbose_name = 'رشته'
         verbose_name_plural = "رشته ها"
+
+
+class AllowedFormats(models.Model):
+    format = models.CharField(max_length=100, verbose_name='فرمت')
+
+    def __str__(self):
+        return self.format
+
+    class Meta:
+        verbose_name = 'فرمت'
+        verbose_name_plural = 'فرمت ها'

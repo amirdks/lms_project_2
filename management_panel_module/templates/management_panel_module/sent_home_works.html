@@ -47,6 +47,7 @@
                                 <th>پروفایل</th>
                                 <th>نام و نام خانوادگی</th>
                                 <th>تکلیف ارسال شده</th>
+                                <th>پیام</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -61,9 +62,14 @@
                                     {% endthumbnail %}
                                     </td>
                                     <td>{{ home_work.user.get_full_name }}</td>
-                                    <td><a href="{{ home_work.file.url }}"
-                                           download="{{ home_work.file.url }}">دانلود فایل ارسال شده</a></td>
-
+                                    <td>{% for file in home_work.homeworkfiles_set.all %}
+                                    <p><a href="{{ file.file.url }}"
+                                           download="{{ file.file.url }}">{{ file }}</a></p>
+                                    {% endfor %}
+                                    </td>
+                                <td>
+                                    {{ home_work.message }}
+                                </td>
                                 </tr>
                             {% endfor %}
                             </tbody>

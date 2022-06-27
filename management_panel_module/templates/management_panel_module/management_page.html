@@ -5,6 +5,19 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment-with-locales.min.js"
+            integrity="sha512-LGXaggshOkD/at6PFNcp2V2unf9LzFq6LE+sChH7ceMTDP0g2kn6Vxwgg7wkPP7AAtX+lmPqPdxB47A0Nz0cMQ=="
+            crossorigin="anonymous"></script>
+   <style>
+        body{ background-color: beige; direction: ltr;}
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#picker').dateTimePicker();
+            $('#picker-no-time').dateTimePicker({showTime: false, dateFormat: 'DD/MM/YYYY', title: 'Select Date'});
+        })
+    </script>
     <title>{% block title %}{% endblock %}</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">

@@ -1,7 +1,7 @@
 {% extends 'management_panel_module/base.html' %}
 
 {% block title %}
-    قرار دادن تکلیف جدید
+    ویرایش تکلیف
 {% endblock %}
 
 
@@ -16,7 +16,14 @@
         </div>
         <div class="mb-3">
             <label class="form-label">مهلت ارسال تکلیف</label>
-            {{ form.end_at }}
+            <div id="picker"></div>
+            <input name="end_at" type="hidden" id="result" value=""/>
+            <label class="form-label">فرمت های مجاز</label>
+            {{ form.allowed_formats }}
+            <label class="form-label">حداکثر حجم فایل</label>
+            <br>
+            <input type="number" name="max_size" class="form-control" value="{{ home_work.max_size }}"
+                   placeholder="حجم ...">
             {% if messages %}
                 <ul class="messages">
                     {% for message in messages %}

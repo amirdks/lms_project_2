@@ -32,6 +32,7 @@ class EditProfileModelForm(forms.ModelForm):
         fields = ['username', 'first_name', 'last_name', 'email', 'avatar']
 
 
+
 class EditUserPassForm(forms.Form):
     current_password = forms.CharField(widget=forms.PasswordInput, label="رمز عبور فعلی")
     new_password = forms.CharField(widget=forms.PasswordInput, label="رمز عبور جدید")

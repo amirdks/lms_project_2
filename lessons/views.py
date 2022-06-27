@@ -1,3 +1,5 @@
+import os
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
@@ -7,9 +9,10 @@ from django.urls import reverse_lazy, reverse
 # Create your views here.
 from django.views import View
 from django.views.generic import ListView, DeleteView
+from magic import magic
 
 from account_module.models import User
-from lesson_module.models import Lesson, SetHomeWork, HomeWorks
+from lesson_module.models import Lesson, SetHomeWork, HomeWorks, HomeWorkFiles, PoodemanAndNobat
 from management_panel_module.forms import SetHomeWorkForm, EditHomeWorkForm
 from management_panel_module.mixins import JustTeacherMixin
 from notification_module.models import Notification
@@ -17,84 +20,7 @@ from utils.time import end_time_calculator
 from . import models
 from .forms import SendHomeWorkForm
 from .mixins import JustStudentOfLesson
-from .models import FieldOfStudy, Base
-
-
-# class HomeWorkView(LoginRequiredMixin, View):
-#     login_url = reverse_lazy('login_page')
-#
-#     def get(self, request: HttpRequest, slug):
-#         user: User = User.objects.filter(id=request.user.id).first()
-#         if user.is_teacher is False:
-#             field_of_study = FieldOfStudy.objects.filter(id=user.field_of_study.id).first()
-#             base = models.Base.objects.filter(base_number=user.base.base_number).first()
-#             lesson = Lesson.objects.filter(is_active=True, base_id=base.id,
-#                                            field_of_study_id=field_of_study.id, slug__iexact=slug).first()
-#             if lesson is None:
-#                 raise Http404("درس مورد نطر یافت نشد")
-#         elif user.is_teacher is True:
-#             lesson = Lesson.objects.filter(is_active=True, slug__iexact=slug, teacher=user).first()
-#             if lesson is None:
-#                 raise Http404("درس مورد نطر یافت نشد")
-#
-#         home_work = SetHomeWork.objects.filter(lesson_id=lesson.id).first()
-#         if home_work:
-#             is_finished = end_time_calculator(home_work.end_at)
-#             if is_finished is True and home_work.is_finished is False:
-#                 home_work.is_finished = True
-#                 home_work.save()
-#             if home_work.is_finished and not user.is_teacher:
-#                 home_work = None
-#
-#         if home_work:
-#             if not user.is_teacher:
-#                 home_works = HomeWorks.objects.filter(home_work_id=home_work.id, user_id=user.id).first()
-#             elif user.is_teacher:
-#                 home_works = HomeWorks.objects.filter(home_work_id=home_work.id).all()
-#         else:
-#             home_works = None
-#
-#         form = SendHomeWorkForm()
-#         context = {
-#             'lesson': lesson,
-#             'home_work': home_work,
-#             'form': form,
-#             'home_works': home_works,
-#         }
-#         return render(request, 'lessons/home_work.html', context)
-#
-#     def post(self, request: HttpRequest, slug):
-#         user: User = User.objects.filter(id=request.user.id).first()
-#         field_of_study = FieldOfStudy.objects.filter(id=user.field_of_study.id).first()
-#         base = models.Base.objects.filter(base_number=user.base.base_number).first()
-#         lesson = Lesson.objects.filter(is_active=True, base_id=base.id,
-#                                        field_of_study_id=field_of_study.id, slug__iexact=slug).first()
-#         home_work = SetHomeWork.objects.filter(lesson_id=lesson.id).first()
-#         form = SendHomeWorkForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             new_home_work = HomeWorks(is_delivered=True, file=request.FILES['file'], home_work_id=home_work.id,
-#                                       user_id=user.id)
-#             new_home_work.save()
-#             return HttpResponseRedirect(reverse('lessons_list_page'))
-#
-#         else:
-#             form = SendHomeWorkForm()
-#
-#         return render(request, 'lessons/home_work.html', {'form': form, 'lesson': lesson})
-
-
-# class LessonsList(LoginRequiredMixin, View):
-#     login_url = reverse_lazy('login_page')
-#
-#     def get(self, request:HttpRequest):
-#         user: User = User.objects.filter(id=request.user.id).first()
-#         field_of_study = FieldOfStudy.objects.filter(id=user.field_of_study.id).first()
-#         base = models.Base.objects.filter(base_number=user.base.base_number).first()
-#         lessons = models.Lessons.objects.filter(is_active=True, base_id=base.id, field_of_study_id=field_of_study.id)
-#         context = {
-#             'lessons': lessons
-#         }
-#         return render(request, 'lessons/lessons_list.html', context)
+from .models import FieldOfStudy, Base, AllowedFormats
 
 
 class LessonsList(LoginRequiredMixin, ListView):
@@ -135,6 +61,7 @@ class LessonsList(LoginRequiredMixin, ListView):
                 home_works = HomeWorks.objects.filter(user_id=user.id, home_work__lesson_id=lesson.id).all()
                 if set_home_work.count() == 0 or home_works.count() == 0:
                     darsad = 0
+                    percent[lesson.title] = int(darsad)
                 else:
                     darsad = home_works.count() * 100 / set_home_work.count()
                     if home_works:
@@ -147,7 +74,6 @@ class ListSentHomeWorks(LoginRequiredMixin, JustTeacherMixin, View):
     login_url = reverse_lazy('login_page')
 
     def get(self, request: HttpRequest, id, pk):
-        user: User = User.objects.filter(id=request.user.id).first()
         home_work = SetHomeWork.objects.filter(id=pk).first()
         lesson = Lesson.objects.filter(id=id).first()
         if home_work is None:
@@ -210,6 +136,7 @@ class HomeWorkView(LoginRequiredMixin, JustStudentOfLesson, View):
         form = SendHomeWorkForm()
         lesson = Lesson.objects.filter(id=id, is_active=True).first()
         home_work = SetHomeWork.objects.filter(id=pk).first()
+        allowed_formats = ','.join([format.get('format') for format in list(home_work.allowed_formats.values())])
         if lesson is None or home_work is None:
             raise Http404('درس و یا تکلیف مورد نظر یافت نشد')
         home_works = HomeWorks.objects.filter(home_work_id=home_work.id, user_id=request.user.id).first()
@@ -217,7 +144,8 @@ class HomeWorkView(LoginRequiredMixin, JustStudentOfLesson, View):
             'home_work': home_work,
             'lesson': lesson,
             'form': form,
-            'home_works': home_works
+            'home_works': home_works,
+            'allowed_formats': allowed_formats,
         }
         return render(request, 'lessons/home_work_page.html', context)
 
@@ -227,17 +155,28 @@ class HomeWorkView(LoginRequiredMixin, JustStudentOfLesson, View):
         lesson = Lesson.objects.filter(is_active=True, id=id).first()
         home_work = SetHomeWork.objects.filter(id=pk).first()
         home_works = HomeWorks.objects.filter(home_work_id=home_work.id, user_id=user.id).first()
+        allowed_formats = ','.join([format.get('format') for format in list(home_work.allowed_formats.values())])
         if form.is_valid():
-            file = form.files
-            new_home_work = HomeWorks(user_id=user.id, file=request.FILES['file'], home_work_id=home_work.id,
-                                      is_delivered=True)
+            message = form.cleaned_data.get('message')
+            new_home_work = HomeWorks(user_id=user.id, home_work_id=home_work.id,
+                                      is_delivered=True, message=message)
             new_home_work.save()
+            for f in request.FILES.getlist('file'):
+                value = round(f.size / 1000000, 2)
+                if not os.path.splitext(f.__str__())[-1].lower() in allowed_formats:
+                    form.add_error('file', 'فرمت فایل ارسال شده اشتباه می باشد')
+                elif value > home_work.max_size:
+                    form.add_error('file', 'حجم فایل ارسال شده بالاتر از حد مجاز است')
+                else:
+                    new_file = HomeWorkFiles.objects.create(home_work_id=new_home_work.id, file=f)
+                    new_file.save()
             messages.success(request, 'تکلیف شما با موفقیت ارسال شد')
             return redirect(reverse('home_work_page', kwargs={'id': lesson.id, 'pk': home_work.id}))
         else:
             form = SendHomeWorkForm()
         return render(request, 'lessons/home_work_page.html',
-                      {'home_works': home_works, 'form': form, 'home_work': home_work, 'lesson': lesson})
+                      {'home_works': home_works, 'form': form, 'home_work': home_work, 'lesson': lesson,
+                       'allowed_formats': allowed_formats})
 
 
 class DeleteHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
@@ -270,8 +209,12 @@ class SetHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
     login_url = reverse_lazy('login_page')
 
     def get(self, request: HttpRequest, lesson):
-        lesson = lesson
-        form = SetHomeWorkForm(initial={'lesson': lesson})
+        lesson = Lesson.objects.filter(id=lesson).first()
+        form = SetHomeWorkForm()
+        if lesson.poodeman_or_nobat == 'poodeman':
+            form.fields['poodeman_or_nobat'].queryset = PoodemanAndNobat.objects.filter(type__iexact='poodeman')
+        else:
+            form.fields['poodeman_or_nobat'].queryset = PoodemanAndNobat.objects.filter(type__iexact='nobat')
         context = {
             'form': form,
             'lessons': Lesson.objects.filter(teacher_id=request.user.id),
@@ -280,20 +223,27 @@ class SetHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
         return render(request, 'management_panel_module/set_homework_page.html', context)
 
     def post(self, request: HttpRequest, lesson):
-        form = SetHomeWorkForm(request.POST, initial={'lesson': lesson})
-        lesson: Lesson = lesson
+        form = SetHomeWorkForm(request.POST)
+        lesson = Lesson.objects.filter(id=lesson).first()
+        form.fields['lesson'].queryset = lesson
         if form.is_valid():
             teacher_id = request.user.id
             title = form.cleaned_data.get('title')
             ends_at = form.cleaned_data.get('end_at')
+            allowed_formats = form.cleaned_data.get('format')
+            max_size = form.cleaned_data.get('max_size')
+            poodeman_or_nobat = form.cleaned_data.get('poodeman_or_nobat')
             is_finished = end_time_calculator(ends_at)
             if is_finished:
                 messages.error(request, 'لطفا به زمان پایان دقت کنید')
             else:
                 lesson = form.cleaned_data.get('lesson')
                 description = form.cleaned_data.get('description')
-                new_home_work = SetHomeWork(title=title, end_at=ends_at, lesson_id=lesson.id, description=description,
-                                            teacher_id=teacher_id)
+                new_home_work = SetHomeWork.objects.create(title=title, end_at=ends_at, lesson_id=lesson.id,
+                                                           description=description,
+                                                           teacher_id=teacher_id, max_size=max_size,
+                                                           poodeman_or_nobat_id=poodeman_or_nobat.id)
+                new_home_work.allowed_formats.set(allowed_formats)
                 new_home_work.save()
                 notification_users = User.objects.filter(field_of_study_id=lesson.field_of_study.id,
                                                          base_id=lesson.base.id,
@@ -308,7 +258,11 @@ class SetHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
                     return redirect(reverse('list_home_works', kwargs={'id': lesson.id}))
                 else:
                     return redirect(reverse('management_panel_page'))
-        form = SetHomeWorkForm(initial={'lesson': lesson})
+        form = SetHomeWorkForm()
+        if lesson.poodeman_or_nobat == 'poodeman':
+            form.fields['poodeman_or_nobat'].queryset = PoodemanAndNobat.objects.filter(type__iexact='poodeman')
+        else:
+            form.fields['poodeman_or_nobat'].queryset = PoodemanAndNobat.objects.filter(type__iexact='nobat')
         contex = {
             'form': form,
             'lesson': lesson,

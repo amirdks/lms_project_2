@@ -60,14 +60,17 @@ class SetHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
             teacher_id = request.user.id
             title = form.cleaned_data.get('title')
             ends_at = form.cleaned_data.get('end_at')
+            allowed_formats = form.cleaned_data.get('format')
+            max_size = form.cleaned_data.get('max_size')
             is_finished = end_time_calculator(ends_at)
             if is_finished:
                 messages.error(request, 'لطفا به زمان پایان دقت کنید')
             else:
                 lesson = form.cleaned_data.get('lesson')
                 description = form.cleaned_data.get('description')
-                new_home_work = SetHomeWork(title=title, end_at=ends_at, lesson_id=lesson.id, description=description,
-                                            teacher_id=teacher_id)
+                new_home_work = SetHomeWork.objects.create(title=title, end_at=ends_at, lesson_id=lesson.id, description=description,
+                                            teacher_id=teacher_id, max_size=max_size)
+                new_home_work.allowed_formats.set(allowed_formats)
                 new_home_work.save()
                 notification_users = User.objects.filter(field_of_study_id=lesson.field_of_study.id,
                                                          base_id=lesson.base.id,

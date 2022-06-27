@@ -89,6 +89,7 @@ class EditUserInfo(LoginRequiredMixin, View):
 
 class EditUserPass(LoginRequiredMixin, View):
     login_url = reverse_lazy('login_page')
+
     def get(self, request: HttpRequest):
         user: User = User.objects.filter(id=request.user.id).first()
         form = EditUserPassForm()
@@ -137,7 +138,8 @@ class LoginView(View):
         if login_form.is_valid():
             user_name_or_email = login_form.cleaned_data.get('name')
             user_password = login_form.cleaned_data.get('password')
-            user = User.objects.filter(Q(username__exact=user_name_or_email)|Q(email__exact=user_name_or_email)).first()
+            user = User.objects.filter(
+                Q(username__exact=user_name_or_email) | Q(email__exact=user_name_or_email)).first()
             if user:
                 is_password_correct = user.check_password(user_password)
                 if is_password_correct:

@@ -5,8 +5,10 @@
 {% endblock %}
 
 {% block content %}
+    <h1 class="text-center">تنظیم تکلیف جدید برای درس <u>{{ lesson.title }}</u>  {{ lesson.base }} رشته {{ lesson.field_of_study }}</h1>
+    <hr>
     <form method="post"
-          action="{% if request.resolver_match.url_name == 'set_new_home_work_lesson' %} {% url 'set_new_home_work_lesson' lesson=lesson %} {% else %} {% url 'set_homework_page' %} {% endif %}">
+          action="{% if request.resolver_match.url_name == 'set_new_home_work_lesson' %} {% url 'set_new_home_work_lesson' lesson=lesson.id %} {% else %} {% url 'set_homework_page' %} {% endif %}">
         {% csrf_token %}
         <div class="mb-3">
             <label class="form-label">عنوان تکلیف</label>
@@ -14,7 +16,8 @@
         </div>
         <div class="mb-3">
             <label class="form-label">مهلت ارسال تکلیف</label>
-            {{ form.end_at }}
+            <div id="picker"></div>
+            <input name="end_at" type="hidden" id="result" value=""/>
             {% if messages %}
                 <ul class="messages">
                     {% for message in messages %}
@@ -23,11 +26,12 @@
                 </ul>
             {% endif %}
         </div>
-        <label class="form-label">مربوط به درس</label>
-        {{ form.lesson }}
-        <div class="input-group">
-            {{ form.year }}
-        </div>
+        <label class="form-label">فرمت های مجاز</label>
+        {{ form.format }}
+        <label class="form-label">حداکثر حجم فایل</label>
+        <input type="number" name="max_size" class="form-control" placeholder="سایز ...">
+        <label class="form-label">مربوط به کدام پودمان یا نوبت</label>
+        {{ form.poodeman_or_nobat }}
         <div class="mb-3">
             <label for="exampleFormControlTextarea1" class="form-label">توضیحات تکلیف</label>
             <textarea name="description" class="form-control" placeholder="توضیحات ..." rows="3"></textarea>
