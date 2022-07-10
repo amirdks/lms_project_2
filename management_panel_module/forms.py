@@ -32,6 +32,8 @@ class SetHomeWorkForm(forms.Form):
     max_size = forms.FloatField(label='حداکثر حجم فایل')
     poodeman_or_nobat = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'custom-select'}),
                                                queryset=PoodemanAndNobat.objects.all(), label='پودمان یا نوبت')
+    score_weight = forms.IntegerField(
+        widget=forms.NumberInput(attrs={'class': 'form-control'}), label='وزن نمره')
     description = forms.CharField(widget=forms.Textarea, label='توضیحات تکلیف')
 
     # year = forms.ChoiceField(choices=YEAR_CHOICES, widget=forms.Select(attrs={'class': 'custom-select form-control'}),

@@ -1,22 +1,24 @@
 {% extends 'management_panel_module/management_page.html' %}
 {% load static %}
 {% load thumbnail %}
+{% load poll_extras %}
 {% block title %}
     لیست دانش آموزان
 {% endblock %}
 
 {% block content %}
-    {% if home_work %}
+    {% if set_home_work %}
         <div class="row">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">لیست تکالیف ارسال شده <br> <br> مربوط به درس :
-                            <b>{{ home_work.lesson.title }}</b> <br> پایه
-                            : <b>{{ home_work.lesson.base.title_farsi }}</b></h3>
+                            <b>{{ set_home_work.lesson.title }}</b> <br> پایه
+                            : <b>{{ set_home_work.lesson.base.title_farsi }}</b></h3>
 
                         <div class="card-tools">
-                            <form action="{% url 'list-sent-home-works' id=lesson.id pk=home_work.id %}" method="get">
+                            <form action="{% url 'list-sent-home-works' id=lesson.id pk=set_home_work.id %}"
+                                  method="get">
 
                                 <div class="input-group input-group-sm" style="width: 150px;">
                                     <input type="text" name="table_search" class="form-control float-right"
@@ -39,41 +41,76 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body table-responsive p-0">
-                        <table class="table table-hover text-nowrap">
+                        <form method="post" action="{% url 'list-sent-home-works' id=lesson.id pk=set_home_work.id %}">
+                            {% csrf_token %}
+                            <table class="table table-hover text-nowrap">
 
-                            <thead>
-                            <tr>
-                                <th>آی دی</th>
-                                <th>پروفایل</th>
-                                <th>نام و نام خانوادگی</th>
-                                <th>تکلیف ارسال شده</th>
-                                <th>پیام</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for home_work in home_works %}
+                                <thead>
                                 <tr>
-                                    <td>{{ home_work.user.id }}</td>
-                                    <td>{% thumbnail home_work.user.avatar "60x60" crop="center" quality=95 as im %}
-                                        <img class="img-circle elevation-2" src="{{ im.url }}" alt="">
-                                    {% empty %}
-                                        <img src="../../static/management_panel_module/dist/img/IAFOR-Blank-Avatar-Image.jpg"
-                                             class="img-circle elevation-2" width="60" height="60" alt="User Image">
-                                    {% endthumbnail %}
-                                    </td>
-                                    <td>{{ home_work.user.get_full_name }}</td>
-                                    <td>{% for file in home_work.homeworkfiles_set.all %}
-                                    <p><a href="{{ file.file.url }}"
-                                           download="{{ file.file.url }}">{{ file }}</a></p>
-                                    {% endfor %}
-                                    </td>
-                                <td>
-                                    {{ home_work.message }}
-                                </td>
+                                    <th>آی دی</th>
+                                    <th>پروفایل</th>
+                                    <th>نام و نام خانوادگی</th>
+                                    <th>تکلیف ارسال شده</th>
+                                    <th>پیام</th>
+                                    <th>نمره دانش آموز</th>
                                 </tr>
+                                </thead>
+                                <tbody>
+                                {% for home_work in home_works %}
+                                    <tr>
+                                        <td>{{ home_work.user.id }}</td>
+                                        <td>{% thumbnail home_work.user.avatar "60x60" crop="center" quality=95 as im %}
+                                            <img class="img-circle elevation-2" src="{{ im.url }}" alt="">
+                                        {% empty %}
+                                            <img src="../../static/management_panel_module/dist/img/IAFOR-Blank-Avatar-Image.jpg"
+                                                 class="img-circle elevation-2" width="60" height="60" alt="User Image">
+                                        {% endthumbnail %}
+                                        </td>
+                                        <td>{{ home_work.user.get_full_name }}</td>
+                                        <td>{% for file in home_work.homeworkfiles_set.all %}
+                                            <p><a href="{{ file.file.url }}"
+                                                  download="{{ file.file.url }}">{{ file.file | file_name }}</a></p>
+                                        {% endfor %}
+                                        </td>
+                                        <td>
+                                            {{ home_work.message|dont_show_none }}
+                                        </td>
+                                        <td>
+                                            {% if home_work.score is None %}
+                                                <input class="form-control" name="{{ home_work.user.id }}"
+                                                       max="{{ set_home_work.score_weight }}" step="0.01" type="number">
+                                            {% else %}
+                                                <input class="form-control" id="edit-score-{{ home_work.user.id }}"
+                                                       name="{{ home_work.user.id }}"
+                                                       max="{{ set_home_work.score_weight }}" step="0.01" type="number"
+                                                       value="{{ home_work.score }}" disabled>
+                                                <br>
+                                                <button class="btn btn-primary btn-sm"
+                                                        onclick="toggleEnable('edit-score-{{ home_work.user.id }}')"
+                                                        type="button">ویرایش نمره
+                                                </button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            {% if home_works %}
+                                <button class="btn btn-success" type="submit">ارسال نمرات</button>
+                            {% endif %}
+                        </form>
+                        {% if messages %}
+                            {% for message in messages %}
+                                {% if forloop.first %}
+                                    <div class="alert alert-danger alert-dismissible">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×
+                                        </button>
+                                        <h5><i class="icon fas fa-multiply"></i> ارور</h5>
+                                        {{ message }}
+                                    </div>
+                                {% endif %}
                             {% endfor %}
-                            </tbody>
-                        </table>
+                        {% endif %}
                         {% if not home_works %}
                             <div class="alert alert-warning alert-dismissible">
                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>

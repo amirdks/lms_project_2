@@ -2,6 +2,7 @@
 {% load static %}
 {% load thumbnail %}
 {% load jalali_tags %}
+{% load poll_extras %}
 {% block title %}
     جزئیات تکلیف
 {% endblock %}
@@ -84,6 +85,17 @@
                         <td></td>
                         <td></td>
                     </tr>
+                    <tr>
+                        <td><b>نمره معلم</b></td>
+                        <td>{% if home_works.score %}
+                        {{ home_works.score }} از {{ home_work.score_weight }}
+                            {% else %}
+                            هنوز نمره داده نشده است
+                        {% endif %} </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -94,7 +106,7 @@
         <!-- this row will not appear when printing -->
         <div class="row">
             <div class="col-12">
-                {% if not request.user.is_teacher and not home_works.is_delivered and not home_work.is_finished %}
+                {% if not request.user.is_teacher and not home_work.is_finished %}
                     <form method="post" action="{% url 'home_work_page' id=lesson.id pk=home_work.pk %} "
                           enctype="multipart/form-data">
                         {% csrf_token %}
@@ -103,7 +115,11 @@
                         <br>
                         <hr>
                         <label class="form-label">درج پیام برای تکلیف</label>
-                        {{ form.message }}
+                        {% if home_works %}
+                        <input value="{{ home_works.message }}" name="message" class="form-control" type="text" disabled>
+                            {% else %}
+                            <input name="message" class="form-control" type="text">
+                        {% endif %}
                         <hr>
                         <button class="btn btn-success float-right" type="submit"> ارسال</button>
                     </form>
@@ -126,21 +142,20 @@
                         ویرایش
                     </a>
                     <hr>
-                {% elif home_works.is_delivered %}
-                    <div class="alert alert-warning"><p>شما از قبل تکلیف خود را ارسال کرده اید</p></div>
                 {% elif home_work.is_finished %}
                     <div class="alert alert-danger"><p>مهلت ارسال تکلیف به پایان رسیده</p></div>
                 {% endif %}
                 {% if home_works and not request.user.is_teacher %}
                     <p>
-                        {#                        <a href="{{ home_works.file.url }}" download="{{ home_works.file.url }}"#}
-                        {#                           class="btn btn-primary btn-sm"><i#}
-                        {#                                class="fas fa-download"></i>#}
-                        {#                            دانلود تکلیف تحویل داده شده</a>#}
-                        <a href="{% url 'delete_sent_home_work' id=lesson.id pk=home_work.id %}"
-                           class="btn btn-danger btn-sm"><i
-                                class="fas fa-trash"></i>
-                            حذف تکلیف تحویل داده شده</a>
+                    <p>تکالیف تحویل داده شده :</p>
+                    <ul>
+                        {% for file in home_works.homeworkfiles_set.all %}
+                        <li><a download="{{ file.file.url }}" href="{{ file.file.url }}">{{ file.file.name | file_name }}</a>
+                        <a style="font-size: 12px;" href="{% url 'delete_sent_home_work' id=lesson.id pk=file.id %}"
+                           class="text-danger">
+                            حذف تکلیف </a></li>
+                        {% endfor %}
+                    </ul>
                     </p>
                 {% elif request.user.is_teacher %}
                     <p><a href="{% url 'list-sent-home-works' id=lesson.id  pk=home_work.id %}" class="btn btn-default"><i

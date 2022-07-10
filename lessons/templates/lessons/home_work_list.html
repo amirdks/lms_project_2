@@ -12,11 +12,18 @@
         <div class="col-12">
             <h4 align="center">لیست تکالیف درس : {{ lesson.title }}</h4>
             {% if request.user.is_teacher %}
-            <a class="btn btn-info btn-sm" href="{% url 'set_new_home_work_lesson' lesson=lesson.id %}">
-                <i class="fas fa-plus-circle">
-                </i>
-                اضافه کردن تکلیف به این درس
-            </a>
+                <a class="btn btn-info btn-sm" href="{% url 'set_new_home_work_lesson' lesson=lesson.id %}">
+                    <i class="fas fa-plus-circle">
+                    </i>
+                    اضافه کردن تکلیف به این درس
+                </a>
+               <div style="float: left">
+                <a class="btn btn-success btn-sm" href="{% url 'set_new_home_work_lesson' lesson=lesson.id %}">
+                    <i class="fas fa-list-ul">
+                    </i>
+                    دیدن لیست نمرات دانش آموزان
+                </a>
+               </div>
             {% endif %}
             <br>
             <hr>
@@ -75,8 +82,8 @@
         <div class="alert alert-success alert-dismissible">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
             {% for message in messages %}
-                 <h5><i class="icon fas fa-check"></i> موفق</h5>
-                                {{ message }}
+                <h5><i class="icon fas fa-check"></i> موفق</h5>
+                {{ message }}
             {% endfor %}
         </div>
     {% endif %}

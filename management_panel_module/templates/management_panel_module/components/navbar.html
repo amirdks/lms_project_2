@@ -11,10 +11,14 @@
         <li class="nav-item d-none d-sm-inline-block">
             <a href="{% url 'home_page' %}" class="nav-link">نمایش سایت</a>
         </li>
-        {% if request.user.is_superuser %}
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="{% url 'admin:index' %}" class="nav-link"> <i class="fa-solid fa-chalkboard-user"></i>  پنل مدیریت</a>
+            <a href="{% url 'user_panel_page' %}" class="nav-link"> <i class="fa-solid fa-user"></i> پنل کاربری</a>
         </li>
+        {% if request.user.is_superuser %}
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="{% url 'admin:index' %}" class="nav-link"> <i class="fa-solid fa-chalkboard-user"></i> پنل
+                    مدیریت</a>
+            </li>
         {% endif %}
     </ul>
     <ul class="navbar-nav ml-auto">
@@ -23,7 +27,7 @@
                 <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
                     <i class="far fa-bell"></i>
                     {% if notifications.count != 0 %}
-                    <span class="badge badge-danger navbar-badge">{{ notifications.count }}</span>
+                        <span class="badge badge-danger navbar-badge">{{ notifications.count }}</span>
                     {% endif %}
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg-right dropdown-menu-right"

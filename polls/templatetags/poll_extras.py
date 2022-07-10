@@ -28,6 +28,19 @@ def index(indexable, i):
 def get_item(dictionary, key):
     return dictionary.get(key)
 
+
 @register.filter
 def in_homework(send_homework, set_homework_id):
     return send_homework.filter(home_work_id=set_homework_id)
+
+
+@register.filter(name='dont_show_none')
+def dont_show_none(value):
+    if value is None:
+        return '____'
+    return value
+
+
+@register.filter(name='file_name')
+def file_name(value):
+    return str(value).split('/')[-1]

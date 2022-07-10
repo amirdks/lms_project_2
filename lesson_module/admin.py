@@ -18,7 +18,7 @@ class LessonsAdmin(admin.ModelAdmin):
 
 @admin.register(models.SetHomeWork)
 class LessonsAdmin(admin.ModelAdmin):
-    list_display = ['title', 'lesson', 'teacher', 'get_reaming', 'is_finished']
+    list_display = ['title', 'lesson', 'teacher', 'get_reaming','poodeman_or_nobat','is_finished']
 
 
 @admin.register(models.HomeWorks)

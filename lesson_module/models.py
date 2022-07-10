@@ -45,8 +45,9 @@ class SetHomeWork(models.Model):
     max_size = models.FloatField(blank=True, null=True, verbose_name='حداکثر اندازه فایل(mb)')
     allowed_formats = models.ManyToManyField(to=AllowedFormats, related_name='allowed_formats', blank=True,
                                              verbose_name='فرمت های مجاز')
-    poodeman_or_nobat = models.ForeignKey(to='PoodemanAndNobat',null=True, blank=True, on_delete=models.CASCADE,
+    poodeman_or_nobat = models.ForeignKey(to='PoodemanAndNobat', null=True, blank=True, on_delete=models.CASCADE,
                                           verbose_name='پودمان یا نوبت')
+    score_weight = models.PositiveIntegerField(null=True, blank=True, verbose_name='وزن نمره')
     description = models.TextField(verbose_name='توضیحات تکلیف')
     is_finished = models.BooleanField(default=False, verbose_name='به اتمام رسیده')
 
@@ -69,6 +70,8 @@ class HomeWorks(models.Model):
     home_work = models.ForeignKey(to=SetHomeWork, on_delete=models.CASCADE, related_name='taklif',
                                   verbose_name='مربوط به تکلیف')
     message = models.TextField(blank=True, null=True, verbose_name='پیام به معلم')
+    score = models.FloatField(null=True, blank=True, verbose_name='نمره تکلیف')
+    score_percent = models.FloatField(max_length=100, null=True, blank=True,verbose_name='درصد نمره')
     is_delivered = models.BooleanField(default=False, verbose_name='وضعیت تحویل')
 
     def __str__(self):
@@ -83,6 +86,14 @@ class HomeWorks(models.Model):
 
     def jalali_sent_at(self):
         return datetime2jalali(self.send_at).strftime("%m/%d/%Y %H:%M:%S")
+
+    def is_score_ok(self):
+        if self.score > self.home_work.score_weight:
+            return False
+        return True
+
+    def score_percent_func(self):
+        return self.score * 100 / self.home_work.score_weight
 
     jalali_sent_at.short_description = 'زمان ارسال'
 
@@ -103,6 +114,7 @@ class PoodemanAndNobat(models.Model):
     name = models.CharField(max_length=30, verbose_name='نام')
     type = models.CharField(max_length=15, choices=[("poodeman", "پودمانی"),
                                                     ("nobat", "نوبتی"), ], verbose_name='نوع')
+    slug = models.SlugField(unique=True, max_length=30, blank=True, null=True, verbose_name='عنوان در url')
 
     def __str__(self):
         return self.name
