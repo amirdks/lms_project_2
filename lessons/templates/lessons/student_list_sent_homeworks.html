@@ -1,0 +1,138 @@
+{% extends 'management_panel_module/management_page.html' %}
+{% load static %}
+{% load thumbnail %}
+{% load poll_extras %}
+{% block title %}
+    لیست دانش آموزان
+{% endblock %}
+
+{% block content %}
+    {% if set_home_works %}
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">لیست تکالیف ارسال شده <br> <br> مربوط به درس :
+                            <b>{{ set_home_work.lesson.title }}</b> <br> پایه
+                            : <b>{{ set_home_work.lesson.base.title_farsi }}</b>
+                            <br>
+                            مربوط به {{ set_home_work.poodeman_or_nobat.type_farsi }} : <b>{{ set_home_work.poodeman_or_nobat }}</b>
+                        </h3>
+
+                        <div class="card-tools">
+                            <form action="{% url 'student-list-sent-home-works' id=leeson_id slug=set_home_work.poodeman_or_nobat.slug user_id=user_id  %}"
+                                  method="get">
+
+                                <div class="input-group input-group-sm" style="width: 150px;">
+                                    <input type="text" name="table_search" class="form-control float-right"
+                                           placeholder="جست و جو">
+
+                                    <div class="input-group-append">
+                                        <button type="submit" class="btn btn-default"><i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </form>
+                            <br>
+                            {% if request.GET.table_search %}
+                                <p class="link-light"><a
+                                        href="{% url 'student-list-sent-home-works' id=leeson_id slug=set_home_work.poodeman_or_nobat.slug user_id=user_id  %}">نمایش
+                                    همه</a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body table-responsive p-0">
+                        <form method="post" action="{% url 'student-list-sent-home-works' id=leeson_id slug=set_home_work.poodeman_or_nobat.slug user_id=user_id  %}">
+                            {% csrf_token %}
+                            <table class="table table-hover text-nowrap">
+
+                                <thead>
+                                <tr>
+                                    <th>عنوان تکلیف</th>
+                                    <th>پروفایل</th>
+                                    <th>نام و نام خانوادگی</th>
+                                    <th>تکلیف ارسال شده</th>
+                                    <th>پیام</th>
+                                    <th>نمره دانش آموز</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for home_work in sent_home_works %}
+                                    <tr>
+                                        <td>{{ home_work.home_work.title }}</td>
+                                        <td>{% thumbnail home_work.user.avatar "60x60" crop="center" quality=95 as im %}
+                                            <img class="img-circle elevation-2" src="{{ im.url }}" alt="">
+                                        {% empty %}
+                                            <img src="../../static/management_panel_module/dist/img/IAFOR-Blank-Avatar-Image.jpg"
+                                                 class="img-circle elevation-2" width="60" height="60" alt="User Image">
+                                        {% endthumbnail %}
+                                        </td>
+                                        <td>{{ home_work.user.get_full_name }}</td>
+                                        <td>{% for file in home_work.homeworkfiles_set.all %}
+                                            <p><a href="{{ file.file.url }}"
+                                                  download="{{ file.file.url }}">{{ file.file | file_name }}</a></p>
+                                        {% endfor %}
+                                        </td>
+                                        <td>
+                                            {{ home_work.message|dont_show_none }}
+                                        </td>
+                                        <td>
+                                            {% if home_work.score is None %}
+                                                <input class="form-control" name="{{ home_work.user.id }}"
+                                                       max="{{ set_home_work.score_weight }}" step="0.01" type="number">
+                                            {% else %}
+                                                <input class="form-control" id="edit-score-{{ home_work.id }}"
+                                                       name="{{ home_work.id }}"
+                                                       max="{{ set_home_work.score_weight }}" step="0.01" type="number"
+                                                       value="{{ home_work.score }}" disabled>
+                                                <br>
+                                                <button class="btn btn-primary btn-sm"
+                                                        onclick="toggleEnable('edit-score-{{ home_work.id }}')"
+                                                        type="button">ویرایش نمره
+                                                </button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                                <button class="btn btn-success" type="submit">ارسال نمرات</button>
+                        </form>
+                        {% if messages %}
+                            {% for message in messages %}
+                                {% if forloop.first %}
+                                    <div class="alert alert-danger alert-dismissible">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×
+                                        </button>
+                                        <h5><i class="icon fas fa-multiply"></i> ارور</h5>
+                                        {{ message }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        {% if not sent_home_works %}
+                            <div class="alert alert-warning alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <h5><i class="icon fas fa-exclamation-triangle"></i> هشدار</h5>
+                                هنوز دانش آموز تکلیفی ارسال نکرده است
+                            </div>
+                        {% endif %}
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    {% else %}
+        <div style="background-color: #e38e8e">
+            <br>
+            <h1 align="center" class="alert-danger">تکلیفی برای این درس قرار داده نشده است</h1>
+            <br>
+            <h5 align="center"><a style="color:#3767ca; border: black" href="{% url 'set_homework_page' %}"> قرار دادن
+                تکلیف برای این درس </a></h5>
+            <br>
+        </div>
+    {% endif %}
+{% endblock %}

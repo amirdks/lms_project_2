@@ -53,7 +53,7 @@
                                 {% endthumbnail %}
                                 </td>
                                 <td>
-                                    <a href="{% url 'view_another_user_page' id=student.user.id %}">{{ student.user.get_full_name }}</a>
+                                    <a href="{% url 'student-list-sent-home-works' id=lesson.id slug=set_home_work.poodeman_or_nobat.slug user_id=student.user.id %}">{{ student.user.get_full_name }}</a>
                                 </td>
                                 <td>{{ student.score_percent }}</td>
                                 <td>{{ student.score_percent_not_sent }}</td>

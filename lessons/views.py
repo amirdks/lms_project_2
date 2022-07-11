@@ -26,6 +26,7 @@ class LessonsList(LoginRequiredMixin, ListView):
     context_object_name = 'lessons'
     login_url = reverse_lazy('login_page')
     paginate_by = 6
+    ordering = ''
 
     def get_queryset(self):
         query: Lesson.objects = super(LessonsList, self).get_queryset()
@@ -351,3 +352,49 @@ class StudentListHomeWorks(JustTeacherMixin, LoginRequiredMixin, View):
             'set_home_work': set_home_works.first()
         }
         return render(request, 'lessons/students-list-homeworks.html', context)
+
+
+class StudentLIstSentHomeWorks(JustTeacherMixin, LoginRequiredMixin, View):
+    login_url = reverse_lazy('login_page')
+
+    def get(self, request, id, slug, user_id):
+        set_home_works = SetHomeWork.objects.filter(lesson_id=id, poodeman_or_nobat__slug__exact=slug,
+                                                    teacher_id=request.user.id)
+        sent_home_works = HomeWorks.objects.filter(home_work__lesson_id=id, home_work__teacher_id=request.user.id,
+                                                   home_work__poodeman_or_nobat__slug=slug,
+                                                   user_id=user_id)
+        if request.GET.get('table_search'):
+            search = request.GET.get('table_search')
+            sent_home_works = sent_home_works.filter(Q(home_work__title__contains=search))
+        context = {
+            'sent_home_works': sent_home_works,
+            'set_home_works': set_home_works,
+            'leeson_id': id,
+            'set_home_work': set_home_works.first(),
+            'user_id': user_id
+        }
+        return render(request, 'lessons/student_list_sent_homeworks.html', context)
+
+    def post(self, request, id, slug, user_id):
+        set_home_works = SetHomeWork.objects.filter(lesson_id=id, poodeman_or_nobat__slug__exact=slug,
+                                                    teacher_id=request.user.id)
+        sent_home_works = HomeWorks.objects.filter(home_work__lesson_id=id, home_work__teacher_id=request.user.id,
+                                                   home_work__poodeman_or_nobat__slug=slug,
+                                                   user_id=user_id)
+        for sent_home_work in sent_home_works:
+            score_user = request.POST.get(str(sent_home_work.id))
+            if score_user:
+                if float(score_user) <= sent_home_work.home_work.score_weight:
+                    sent_home_work.score = float(score_user)
+                    sent_home_work.score_percent = sent_home_work.score_percent_func()
+                    sent_home_work.save()
+                else:
+                    messages.error(request, 'لطفا به وزن نمرات دقت کنید')
+        context = {
+            'sent_home_works': sent_home_works,
+            'set_home_works': set_home_works,
+            'leeson_id': id,
+            'set_home_work': set_home_works.first(),
+            'user_id': user_id
+        }
+        return render(request, 'lessons/student_list_sent_homeworks.html', context)

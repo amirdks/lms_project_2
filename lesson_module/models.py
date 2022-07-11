@@ -119,6 +119,11 @@ class PoodemanAndNobat(models.Model):
     def __str__(self):
         return self.name
 
+    def type_farsi(self):
+        if self.type == 'poodeman':
+            return "پودمان"
+        return "نوبت"
+
     class Meta:
         verbose_name = 'پودمان و نوبت'
         verbose_name_plural = 'پودمان ها و نوبت ها'
