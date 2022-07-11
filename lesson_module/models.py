@@ -29,6 +29,11 @@ class Lesson(models.Model):
     def photo_tag(self):
         return format_html("<img width=100 height=75 style='border-radius: 5px;' src='{}'>".format(self.image.url))
 
+    def type_farsi(self):
+        if self.poodeman_or_nobat == 'poodeman':
+            return "پودمان"
+        return "نوبت"
+
     class Meta:
         verbose_name = "درس"
         verbose_name_plural = "درس ها"

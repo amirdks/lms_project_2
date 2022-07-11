@@ -26,7 +26,7 @@ class LessonsList(LoginRequiredMixin, ListView):
     context_object_name = 'lessons'
     login_url = reverse_lazy('login_page')
     paginate_by = 6
-    ordering = ''
+    ordering = 'title'
 
     def get_queryset(self):
         query: Lesson.objects = super(LessonsList, self).get_queryset()
@@ -131,10 +131,14 @@ class ListHomeWorks(LoginRequiredMixin, JustStudentOfLesson, View):
                     home_work.is_finished = True
                     home_work.save()
         send_home_works = HomeWorks.objects.filter(home_work__lesson_id=lesson.id, user_id=user.id)
+        poodemans = PoodemanAndNobat.objects.filter(type__iexact='poodeman')
+        nobats = PoodemanAndNobat.objects.filter(type__iexact='nobat')
         context = {
             'home_works': home_works,
             'lesson': lesson,
             'send_home_works': send_home_works,
+            'poodemans':poodemans,
+            'nobats': nobats,
         }
         return render(request, 'lessons/home_work_list.html', context=context)
 

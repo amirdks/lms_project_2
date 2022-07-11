@@ -17,13 +17,56 @@
                     </i>
                     اضافه کردن تکلیف به این درس
                 </a>
-               <div style="float: left">
-                <a class="btn btn-success btn-sm" href="{% url 'set_new_home_work_lesson' lesson=lesson.id %}">
-                    <i class="fas fa-list-ul">
-                    </i>
-                    دیدن لیست نمرات دانش آموزان
-                </a>
-               </div>
+                <div style="float: left">
+                    <a class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"
+                       href="{% url 'set_new_home_work_lesson' lesson=lesson.id %}">
+                        <i class="fas fa-list-ul">
+                        </i>
+                        دیدن لیست نمرات دانش آموزان
+                    </a>
+                </div>
+                <div class="container">
+
+                    <!-- The Modal -->
+                    <div class="modal fade" id="myModal">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title">لطفا یکی از {{ lesson.type_farsi }} های زیر را انتخاب
+                                        کنید</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <!-- Modal body -->
+                                <div class="modal-body">
+                                    <div class="div-button d-flex flex-column justify-content-around">
+                                        {% if lesson.poodeman_or_nobat == 'poodeman' %}
+                                            {% for poodeman in poodemans %}
+                                                <a href="{% url 'students-list-home-works' id=lesson.id slug=poodeman.slug %}"
+                                                   class="button-click btn btn-primary text-white">{{ poodeman.name }}</a>
+                                            {% endfor %}
+                                        {% else %}
+                                            {% for nobat in nobats %}
+                                                <a href="{% url 'students-list-home-works' id=lesson.id slug=nobat.slug %}"
+                                                   class="button-click btn btn-primary text-white">{{ nobat.name }}</a>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Modal footer -->
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">خروج</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
             {% endif %}
             <br>
             <hr>
