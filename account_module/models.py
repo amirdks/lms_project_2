@@ -34,3 +34,4 @@ class User(AbstractUser):
             return self.username
 
     photo_tag.short_description = 'پروفایل کاربر'
+

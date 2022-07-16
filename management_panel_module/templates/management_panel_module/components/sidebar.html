@@ -17,7 +17,7 @@
                 {% thumbnail request.user.avatar "160x160" crop="center" quality=95 as im %}
                     <img src="{{ im.url }}" class="img-circle elevation-2" alt="User Image">
                 {% empty %}
-                    <img src="../../../static/management_panel_module/dist/img/user2-160x160.jpg"
+                    <img src="{% static 'management_panel_module/dist/img/user2-160x160.jpg'%}"
                          class="img-circle elevation-2" alt="User Image">
                 {% endthumbnail %}
 

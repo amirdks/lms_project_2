@@ -53,7 +53,7 @@
                                     <td>{% thumbnail student.user.avatar "60x60" crop="center" quality=95 as im %}
                                         <img class="img-circle elevation-2" src="{{ im.url }}" alt="">
                                     {% empty %}
-                                        <img src="../../static/management_panel_module/dist/img/IAFOR-Blank-Avatar-Image.jpg"
+                                        <img src="{% static 'management_panel_module/dist/img/IAFOR-Blank-Avatar-Image.jpg'%}"
                                              class="img-circle elevation-2" width="60" height="60" alt="User Image">
                                     {% endthumbnail %}
                                     </td>
