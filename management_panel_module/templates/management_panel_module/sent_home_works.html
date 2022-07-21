@@ -62,7 +62,7 @@
                                         <td>{% thumbnail home_work.user.avatar "60x60" crop="center" quality=95 as im %}
                                             <img class="img-circle elevation-2" src="{{ im.url }}" alt="">
                                         {% empty %}
-                                            <img src="../../static/management_panel_module/dist/img/IAFOR-Blank-Avatar-Image.jpg"
+                                            <img src="{% static 'management_panel_module/dist/img/IAFOR-Blank-Avatar-Image.jpg'%}"
                                                  class="img-circle elevation-2" width="60" height="60" alt="User Image">
                                         {% endthumbnail %}
                                         </td>
@@ -80,13 +80,13 @@
                                                 <input class="form-control" name="{{ home_work.user.id }}"
                                                        max="{{ set_home_work.score_weight }}" step="0.01" type="number">
                                             {% else %}
-                                                <input class="form-control" id="edit-score-{{ home_work.user.id }}"
+                                                <input class="form-control" id="edit-score-{{ home_work.id }}"
                                                        name="{{ home_work.user.id }}"
                                                        max="{{ set_home_work.score_weight }}" step="0.01" type="number"
                                                        value="{{ home_work.score }}" disabled>
                                                 <br>
                                                 <button class="btn btn-primary btn-sm"
-                                                        onclick="toggleEnable('edit-score-{{ home_work.user.id }}')"
+                                                        onclick="toggleEnable('edit-score-{{ home_work.id }}')"
                                                         type="button">ویرایش نمره
                                                 </button>
                                             {% endif %}

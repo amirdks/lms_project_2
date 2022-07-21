@@ -1,10 +1,7 @@
 {% extends 'management_panel_module/management_page.html' %}
-{% load static %}
-
 {% block title %}
     پنل مدیریت
 {% endblock %}
-
 {% block content %}
     <div class="login-box">
         <div class="login-logo">
@@ -26,10 +23,10 @@
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <input name="password" type="password" class="form-control" placeholder="رمز عبور">
+                        <input id="my-pass-input" name="password" type="password" class="form-control" placeholder="رمز عبور">
                         <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
+                            <div id="my-lock-div" class="input-group-text aha">
+                                <span id="my-lock-icon" class="fas fa-lock"></span>
                             </div>
                         </div>
                     </div>
