@@ -49,9 +49,9 @@ INSTALLED_APPS = [
     'polls',
     'sorl.thumbnail',
     'management_panel_module',
-    'home_work_module',
     'notification_module',
     'online_users',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

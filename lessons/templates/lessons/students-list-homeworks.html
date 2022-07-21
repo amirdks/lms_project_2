@@ -1,0 +1,85 @@
+{% extends 'management_panel_module/management_page.html' %}
+{% load static %}
+{% load thumbnail %}
+{% block title %}
+    لیست نمرات دانش آموزان
+{% endblock %}
+
+{% block content %}
+    {% if set_home_work %}
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">لیست نمرات دانش آموزان</h3>
+
+                        <div class="card-tools">
+                            <form action="{% url 'students-list-home-works' id=lesson.id slug=set_home_work.poodeman_or_nobat.slug %}"
+                                  method="get">
+
+                                <div class="input-group input-group-sm" style="width: 150px;">
+                                    <input type="text" name="table_search" class="form-control float-right"
+                                           placeholder="جست و جو">
+
+                                    <div class="input-group-append">
+                                        <button type="submit" class="btn btn-default"><i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </form>
+                            {% if request.GET.table_search %}
+                                <p>
+                                    <a href="{% url 'students-list-home-works' id=lesson.id slug=set_home_work.poodeman_or_nobat.slug %}">
+                                        نمایش همه </a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-hover text-nowrap">
+                            <thead>
+                            <tr>
+                                <th>پروفایل</th>
+                                <th>نام و نام خانوادگی</th>
+                                <th>درصد نمره بدون احتساب تکالیف انجام نشده</th>
+                                <th>درصد نمره با احتساب تکالیف انجام نشده</th>
+                                <th>تعداد تکالیف ارسال شده نسبت به کل</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for student in main.values %}
+                                <tr>
+                                    <td>{% thumbnail student.user.avatar "60x60" crop="center" quality=95 as im %}
+                                        <img class="img-circle elevation-2" src="{{ im.url }}" alt="">
+                                    {% empty %}
+                                        <img src="{% static 'management_panel_module/dist/img/IAFOR-Blank-Avatar-Image.jpg'%}"
+                                             class="img-circle elevation-2" width="60" height="60" alt="User Image">
+                                    {% endthumbnail %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'student-list-sent-home-works' id=lesson.id slug=set_home_work.poodeman_or_nobat.slug user_id=student.user.id %}">{{ student.user.get_full_name }}</a>
+                                    </td>
+                                    <td>{{ student.score_percent }}</td>
+                                    <td>{{ student.score_percent_not_sent }}</td>
+                                    <td>تعداد <b>{{ student.count }}</b> تا از {{ set_home_work_count }} تا انجام شده
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+
+    {% else %}
+        <div style="border-radius: 15px" class="alert-error">
+            <h1 align="center"> تکلیفی برای این {{ lesson.type_farsi }} قرار داده نشده است </h1>
+        </div>
+    {% endif %}
+{% endblock %}
