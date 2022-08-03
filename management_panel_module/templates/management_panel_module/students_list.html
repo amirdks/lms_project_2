@@ -16,7 +16,8 @@
                         <form action="{% url 'students_list_page' %}" method="get">
 
                             <div class="input-group input-group-sm" style="width: 150px;">
-                                <input type="text" name="table_search" class="form-control float-right"
+                                <input id="students-search-input" type="text" name="table_search"
+                                       class="form-control float-right"
                                        placeholder="جست و جو">
 
                                 <div class="input-group-append">
@@ -26,45 +27,37 @@
 
                         </form>
                         {% if request.GET.table_search %}
-                        <p><a href="{% url 'students_list_page' %}"> نمایش همه </a></p>
+                            <p><a href="{% url 'students_list_page' %}"> نمایش همه </a></p>
                         {% endif %}
                     </div>
                 </div>
                 <!-- /.card-header -->
-                <div class="card-body table-responsive p-0">
-                    <table class="table table-hover text-nowrap">
-                        <thead>
-                        <tr>
-                            <th>آی دی</th>
-                            <th>پروفایل</th>
-                            <th>نام و نام خانوادگی</th>
-                            <th>پایه تحصیلی</th>
-                            <th>رشته تحصیلی</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for student in students %}
-                            <tr>
-                                <td>{{ student.id }}</td>
-                                <td>{% thumbnail student.avatar "60x60" crop="center" quality=95 as im %}
-                                    <img class="img-circle elevation-2" src="{{ im.url }}" alt="">
-                                {% empty %}
-                                    <img src="{% static 'management_panel_module/dist/img/IAFOR-Blank-Avatar-Image.jpg'%}"
-                                         class="img-circle elevation-2" width="60" height="60" alt="User Image">
-                                {% endthumbnail %}
-                                </td>
-                                <td><a href="{% url 'view_another_user_page' id=student.id %}">{{ student.get_full_name }}</a></td>
-                                <td>{{ student.base.title_farsi }}</td>
-                                <td>{{ student.field_of_study.title_farsi }}</td>
-                            </tr>
-                        {% endfor %}
-
-                        </tbody>
-                    </table>
+                <div id="students-list">
+                    {% include 'management_panel_module/students_list_content.html' %}
                 </div>
                 <!-- /.card-body -->
             </div>
             <!-- /.card -->
         </div>
     </div>
+    <script>
+        $('#students-search-input').keyup(function () {
+            //$.get('/students-list-search?table_search='+this.value).then(res => {
+               //     $('#students-list').html(res.body);
+            //});
+            $.ajax({
+                url: '/students-list-search',
+                method: 'get',
+                data: {table_search: this.value}
+            }).done(function (res){
+                $('#students-list').html(res.body);
+                console.log(res)
+            })
+        })
+        $(document).ready(function (){
+            $(document).ajax(function (){
+                console.log('ajax started')
+            })
+        })
+    </script>
 {% endblock %}

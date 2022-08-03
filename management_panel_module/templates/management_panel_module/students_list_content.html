@@ -1,0 +1,33 @@
+{% load static %}
+{% load thumbnail %}
+<div class="card-body table-responsive p-0">
+    <table class="table table-hover text-nowrap">
+        <thead>
+        <tr>
+            <th>آی دی</th>
+            <th>پروفایل</th>
+            <th>نام و نام خانوادگی</th>
+            <th>پایه تحصیلی</th>
+            <th>رشته تحصیلی</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for student in students %}
+            <tr>
+                <td>{{ student.id }}</td>
+                <td>{% thumbnail student.avatar "60x60" crop="center" quality=95 as im %}
+                    <img class="img-circle elevation-2" src="{{ im.url }}" alt="">
+                {% empty %}
+                    <img src="{% static 'management_panel_module/dist/img/IAFOR-Blank-Avatar-Image.jpg' %}"
+                         class="img-circle elevation-2" width="60" height="60" alt="User Image">
+                {% endthumbnail %}
+                </td>
+                <td><a href="{% url 'view_another_user_page' id=student.id %}">{{ student.get_full_name }}</a></td>
+                <td>{{ student.base.title_farsi }}</td>
+                <td>{{ student.field_of_study.title_farsi }}</td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+</div>

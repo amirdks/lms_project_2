@@ -2,11 +2,13 @@ from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.admin import AdminSite
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
-from django.http import HttpRequest
+from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render, redirect
 # Create your views here.
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.decorators.cache import never_cache
@@ -21,11 +23,6 @@ from notification_module.models import Notification
 from utils.time import end_time_calculator
 
 
-class ManagementPanelView(LoginRequiredMixin, TemplateView):
-    login_url = reverse_lazy('login_page')
-    template_name = 'management_panel_module/base.html'
-
-
 class StudentsListView(LoginRequiredMixin, JustTeacherMixin, View):
     login_url = reverse_lazy('login_page')
 
@@ -33,15 +30,28 @@ class StudentsListView(LoginRequiredMixin, JustTeacherMixin, View):
         teacher = request.user
         students = User.objects.filter(is_teacher=False, base__lesson__teacher_id=teacher.id,
                                        field_of_study__lesson__teacher_id=teacher.id).distinct()
-        if request.GET.get('table_search'):
-            search = request.GET.get('table_search')
-            students = students.filter(
-                Q(first_name__contains=search) | Q(last_name__contains=search) | Q(email__contains=search))
         context = {
             'students': students
         }
 
         return render(request, 'management_panel_module/students_list.html', context)
+
+
+@login_required()
+def search_student_list(request: HttpRequest):
+    teacher = request.user
+    students = User.objects.filter(is_teacher=False, base__lesson__teacher_id=teacher.id,
+                                   field_of_study__lesson__teacher_id=teacher.id).distinct()
+    if request.GET.get('table_search'):
+        search = request.GET.get('table_search')
+        students = students.filter(
+            Q(first_name__contains=search) | Q(last_name__contains=search) | Q(email__contains=search))
+    context = {
+        'students': students
+    }
+    return JsonResponse({
+        'body': render_to_string('management_panel_module/students_list_content.html', context)
+    })
 
 
 class SetHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
@@ -68,8 +78,9 @@ class SetHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
             else:
                 lesson = form.cleaned_data.get('lesson')
                 description = form.cleaned_data.get('description')
-                new_home_work = SetHomeWork.objects.create(title=title, end_at=ends_at, lesson_id=lesson.id, description=description,
-                                            teacher_id=teacher_id, max_size=max_size)
+                new_home_work = SetHomeWork.objects.create(title=title, end_at=ends_at, lesson_id=lesson.id,
+                                                           description=description,
+                                                           teacher_id=teacher_id, max_size=max_size)
                 new_home_work.allowed_formats.set(allowed_formats)
                 new_home_work.save()
                 notification_users = User.objects.filter(field_of_study_id=lesson.field_of_study.id,

@@ -3,7 +3,7 @@ import os
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q, Avg, Count
-from django.http import HttpRequest, Http404
+from django.http import HttpRequest, Http404, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 # Create your views here.
@@ -137,7 +137,7 @@ class ListHomeWorks(LoginRequiredMixin, JustStudentOfLesson, View):
             'home_works': home_works,
             'lesson': lesson,
             'send_home_works': send_home_works,
-            'poodemans':poodemans,
+            'poodemans': poodemans,
             'nobats': nobats,
         }
         return render(request, 'lessons/home_work_list.html', context=context)
@@ -195,7 +195,6 @@ class HomeWorkView(LoginRequiredMixin, JustStudentOfLesson, View):
         context = {'home_works': home_works, 'form': form, 'home_work': home_work, 'lesson': lesson,
                    'allowed_formats': allowed_formats}
         return render(request, 'lessons/home_work_page.html', context)
-
 
 class DeleteHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
     login_url = reverse_lazy('login_page')
@@ -402,5 +401,3 @@ class StudentLIstSentHomeWorks(JustTeacherMixin, LoginRequiredMixin, View):
             'user_id': user_id
         }
         return render(request, 'lessons/student_list_sent_homeworks.html', context)
-
-#test
