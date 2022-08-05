@@ -146,55 +146,48 @@ class ListHomeWorks(LoginRequiredMixin, JustStudentOfLesson, View):
 class HomeWorkView(LoginRequiredMixin, JustStudentOfLesson, View):
     login_url = reverse_lazy('login_page')
 
-    def get(self, request, id, pk):
-        form = SendHomeWorkForm()
-        lesson = Lesson.objects.filter(id=id, is_active=True).first()
-        home_work = SetHomeWork.objects.filter(id=pk).first()
-        allowed_formats = ','.join([format.get('format') for format in list(home_work.allowed_formats.values())])
-        if lesson is None or home_work is None:
-            raise Http404('درس و یا تکلیف مورد نظر یافت نشد')
-        home_works = HomeWorks.objects.filter(home_work_id=home_work.id, user_id=request.user.id).first()
-        context = {
-            'home_work': home_work,
-            'lesson': lesson,
-            'form': form,
-            'home_works': home_works,
-            'allowed_formats': allowed_formats,
-        }
-        return render(request, 'lessons/home_work_page.html', context)
+    def setup(self, request, *args, **kwargs):
+        id = kwargs.get('id')
+        pk = kwargs.get('pk')
+        self.context = {}
+        self.context['home_work'] = SetHomeWork.objects.filter(id=pk).first()
+        self.context['form'] = SendHomeWorkForm()
+        self.context['lesson'] = Lesson.objects.filter(id=id, is_active=True).first()
+        self.context['home_works'] = HomeWorks.objects.filter(home_work_id=self.context.get('home_work').id,
+                                                              user_id=request.user.id).first()
+        self.context['allowed_formats'] = ','.join(
+            [format.get('format') for format in list(self.context.get('home_work').allowed_formats.values())])
+        return super(HomeWorkView, self).setup(request, *args, **kwargs)
 
-    def post(self, request, id, pk):
-        form = SendHomeWorkForm(request.POST, request.FILES)
+    def get(self, request, id, pk):
+        if self.context.get('lesson') is None or self.context.get('home_work') is None:
+            raise Http404('درس و یا تکلیف مورد نظر یافت نشد')
+        return render(request, 'lessons/home_work_page.html', self.context)
+
+    def post(self, request: HttpRequest, id, pk):
         user: User = request.user
-        lesson = Lesson.objects.filter(is_active=True, id=id).first()
-        home_work = SetHomeWork.objects.filter(id=pk).first()
-        home_works = HomeWorks.objects.filter(home_work_id=home_work.id, user_id=user.id).first()
-        allowed_formats = ','.join([format.get('format') for format in list(home_work.allowed_formats.values())])
+        lesson = self.context.get('lesson')
+        home_work = self.context.get('home_work')
+        home_works = self.context.get('home_works')
+        allowed_formats = self.context.get('allowed_formats')
+        form = SendHomeWorkForm(home_work, allowed_formats, request.POST, request.FILES, )
         if form.is_valid():
-            if not home_works:
+            f = request.FILES.get('file')
+            if home_works:
+                new_file = HomeWorkFiles.objects.create(home_work_id=home_works.id, file=f)
+            else:
                 message = form.cleaned_data.get('message')
                 new_home_work = HomeWorks(user_id=user.id, home_work_id=home_work.id,
                                           is_delivered=True, message=message)
                 new_home_work.save()
-            for f in request.FILES.getlist('file'):
-                value = round(f.size / 1000000, 2)
-                if not os.path.splitext(f.__str__())[-1].lower() in allowed_formats:
-                    messages.error(request, 'نمیتونی فایل {} رو بفرسیتی'.format(f.__str__()))
-                elif value > home_work.max_size:
-                    form.add_error('file', 'حجم فایل ارسال شده بالاتر از حد مجاز است')
-                else:
-                    if home_works:
-                        new_file = HomeWorkFiles.objects.create(home_work_id=home_works.id, file=f)
-                    else:
-                        new_file = HomeWorkFiles.objects.create(home_work_id=new_home_work.id, file=f)
-                    new_file.save()
-                    messages.success(request, 'تکلیف شما با موفقیت ارسال شد')
+                new_file = HomeWorkFiles.objects.create(home_work_id=new_home_work.id, file=f)
+            new_file.save()
+            messages.success(request, 'تکلیف شما با موفقیت ارسال شد')
             return redirect(reverse('home_work_page', kwargs={'id': lesson.id, 'pk': home_work.id}))
-        else:
-            form = SendHomeWorkForm()
         context = {'home_works': home_works, 'form': form, 'home_work': home_work, 'lesson': lesson,
                    'allowed_formats': allowed_formats}
         return render(request, 'lessons/home_work_page.html', context)
+
 
 class DeleteHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
     login_url = reverse_lazy('login_page')
@@ -401,3 +394,5 @@ class StudentLIstSentHomeWorks(JustTeacherMixin, LoginRequiredMixin, View):
             'user_id': user_id
         }
         return render(request, 'lessons/student_list_sent_homeworks.html', context)
+
+# test
