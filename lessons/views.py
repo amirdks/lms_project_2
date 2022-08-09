@@ -1,4 +1,5 @@
 import os
+import time
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -170,7 +171,7 @@ class HomeWorkView(LoginRequiredMixin, JustStudentOfLesson, View):
         home_work = self.context.get('home_work')
         home_works = self.context.get('home_works')
         allowed_formats = self.context.get('allowed_formats')
-        form = SendHomeWorkForm(home_work, allowed_formats, request.POST, request.FILES, )
+        form = SendHomeWorkForm(home_work, allowed_formats, request.POST, request.FILES)
         if form.is_valid():
             f = request.FILES.get('file')
             if home_works:
@@ -183,7 +184,7 @@ class HomeWorkView(LoginRequiredMixin, JustStudentOfLesson, View):
                 new_file = HomeWorkFiles.objects.create(home_work_id=new_home_work.id, file=f)
             new_file.save()
             messages.success(request, 'تکلیف شما با موفقیت ارسال شد')
-            return redirect(reverse('home_work_page', kwargs={'id': lesson.id, 'pk': home_work.id}))
+            return JsonResponse({'status': 'success', 'message': 'آپلود فایل موفقیت آمیز بود'})
         context = {'home_works': home_works, 'form': form, 'home_work': home_work, 'lesson': lesson,
                    'allowed_formats': allowed_formats}
         return render(request, 'lessons/home_work_page.html', context)

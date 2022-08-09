@@ -87,8 +87,8 @@
                     <tr>
                         <td><b>نمره معلم</b></td>
                         <td>{% if home_works.score %}
-                        {{ home_works.score }} از {{ home_work.score_weight }}
-                            {% else %}
+                            {{ home_works.score }} از {{ home_work.score_weight }}
+                        {% else %}
                             هنوز نمره داده نشده است
                         {% endif %} </td>
                         <td></td>
@@ -106,7 +106,8 @@
         <div class="row">
             <div class="col-12">
                 {% if not request.user.is_teacher and not home_work.is_finished %}
-                    <form method="post" action="{% url 'home_work_page' id=lesson.id pk=home_work.pk %} "
+                    <form id="homeWorkForm" method="post"
+                          action="{% url 'home_work_page' id=lesson.id pk=home_work.pk %} "
                           enctype="multipart/form-data">
                         {% csrf_token %}
                         <input class="btn btn-primary float-right" name="file" type="file" value="ارسال"
@@ -115,13 +116,26 @@
                         <hr>
                         <label class="form-label">درج پیام برای تکلیف</label>
                         {% if home_works %}
-                        <input value="{{ home_works.message }}" name="message" class="form-control" type="text" disabled>
-                            {% else %}
+                            <input value="{{ home_works.message }}" name="message" class="form-control" type="text"
+                                   disabled>
+                        {% else %}
                             <input name="message" class="form-control" type="text">
                         {% endif %}
                         <hr>
-                        <button class="btn btn-success float-right" type="submit"> ارسال</button>
+                        <button id="submitButton" class="btn btn-success float-right" type="button"> ارسال</button>
                     </form>
+                    <div class="card-footer dashboard-card-footer border-0 bg-white">
+                        <div class="progress bg-white border">
+                            <div id="showPercent" class="progress-bar bar" role="progressbar"
+                                 aria-valuenow="10"
+                                 style="width: 10%"
+                                 aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="small">
+                            <span class="sr-only">پیشرفت درس:</span>
+                            <strong id="showPercentNumber">10</strong>% کامل شده
+                        </div>
+                    </div>
                     {% if form.errors %}{% for field in form %}{% for error in field.errors %}
                         <strong class="text-danger">{{ error|escape }}</strong>
                     {% endfor %}{% endfor %}{% endif %}
@@ -149,10 +163,12 @@
                     <p>تکالیف تحویل داده شده :</p>
                     <ul>
                         {% for file in home_works.homeworkfiles_set.all %}
-                        <li><a download="{{ file.file.url }}" href="{{ file.file.url }}">{{ file.file.name | file_name }}</a>
-                        <a style="font-size: 12px;" href="{% url 'delete_sent_home_work' id=lesson.id pk=file.id %}"
-                           class="text-danger">
-                            حذف تکلیف </a></li>
+                            <li><a download="{{ file.file.url }}"
+                                   href="{{ file.file.url }}">{{ file.file.name | file_name }}</a>
+                                <a style="font-size: 12px;"
+                                   href="{% url 'delete_sent_home_work' id=lesson.id pk=file.id %}"
+                                   class="text-danger">
+                                    حذف تکلیف </a></li>
                         {% endfor %}
                     </ul>
                     </p>
@@ -181,5 +197,38 @@
             {% endif %}
         </div>
     </div>
+    <script>
+        $('#submitButton').click(function (e) {
+            let form = document.getElementById('homeWorkForm')
+            let data = new FormData(form);
+            $.ajax({
+                url: "{% url 'home_work_page' id=lesson.id pk=home_work.pk %}",
+                method: "POSt",
+                data: data,
+                cache: false,
+                processData: false,
+                contentType: false,
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function (evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;
+                            let percent = (Math.round(percentComplete * 100))
+                            $('#showPercentNumber').html(percent);
+                            $('#showPercent').css({
+                                'width': percent + '%'
+                            }).attr('ariaValuenow', percent)
+                        }
+                    }, false);
+                    return xhr;
+                },
+            }).done(function (res) {
+                $('#formFileMultiple').val('')
+                $('#showPercentNumber').html(0);
+                $('#showPercent').css({
+                    'width': 0 + '%'
+                }).attr('ariaValuenow', 0)
+            })
+        })
+    </script>
 {% endblock %}
-
