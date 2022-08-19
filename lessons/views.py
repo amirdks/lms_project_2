@@ -3,6 +3,7 @@ import time
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.postgres.search import SearchVector
 from django.db.models import Q, Avg, Count
 from django.http import HttpRequest, Http404, JsonResponse
 from django.shortcuts import render, redirect
@@ -32,7 +33,9 @@ class LessonsList(LoginRequiredMixin, ListView):
     def get_queryset(self):
         query: Lesson.objects = super(LessonsList, self).get_queryset()
         user: User = User.objects.filter(id=self.request.user.id).first()
-        if user.is_teacher is False:
+        if user.is_superuser:
+            query = query
+        elif user.is_teacher is False:
             query = query.filter(is_active=True, base_id=user.base.id, field_of_study_id=user.field_of_study.id)
         elif user.is_teacher is True:
             query = query.filter(is_active=True, teacher_id=user.id)
@@ -46,7 +49,7 @@ class LessonsList(LoginRequiredMixin, ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(LessonsList, self).get_context_data(**kwargs)
         user: User = self.request.user
-        if not user.is_teacher:
+        if not user.is_teacher or user.is_superuser:
             lessons = Lesson.objects.filter(field_of_study_id=user.field_of_study.id, base_id=user.base.id,
                                             is_active=True).all()
             percent = {}
@@ -173,6 +176,7 @@ class HomeWorkView(LoginRequiredMixin, JustStudentOfLesson, View):
         allowed_formats = self.context.get('allowed_formats')
         form = SendHomeWorkForm(home_work, allowed_formats, request.POST, request.FILES)
         if form.is_valid():
+            print('it was valid')
             f = request.FILES.get('file')
             if home_works:
                 new_file = HomeWorkFiles.objects.create(home_work_id=home_works.id, file=f)
@@ -320,8 +324,8 @@ class StudentListHomeWorks(JustTeacherMixin, LoginRequiredMixin, View):
         students = User.objects.filter(field_of_study_id=lesson.field_of_study.id, base_id=lesson.base.id).all()
         if request.GET.get('table_search'):
             search = request.GET.get('table_search')
-            students = students.filter(
-                Q(first_name__contains=search) | Q(last_name__contains=search) | Q(email__contains=search))
+            students = students.annotate(search=SearchVector('first_name', 'last_name')).filter(search=search)
+            print(students)
         set_home_works = SetHomeWork.objects.filter(lesson_id=lesson.id, poodeman_or_nobat_id=pood_or_nobat.id).all()
         sent_home_works = HomeWorks.objects.filter(home_work_id__in=set_home_works).all()
         main_context = {}
@@ -341,6 +345,7 @@ class StudentListHomeWorks(JustTeacherMixin, LoginRequiredMixin, View):
                 {student.__str__(): {'user': student, 'score_percent': score_percent,
                                      'count': sent_home_works_count,
                                      'score_percent_not_sent': score_percent_not_sent}})
+        set_home_work_count = 0
         context = {
             'students': students,
             'main': main_context,
