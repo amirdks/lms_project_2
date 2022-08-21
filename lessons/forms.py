@@ -7,8 +7,9 @@ from lesson_module.models import SetHomeWork
 
 
 class SendHomeWorkForm(forms.Form):
-    message = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}),required=False ,label='پیام به معلم')
-    file = forms.FileField(widget=forms.FileInput)
+    message = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False,
+                              label='پیام به معلم')
+    file = forms.FileField(widget=forms.FileInput, error_messages={'required': 'حتما باید فایلی را ارسال کنید'})
 
     def __init__(self, home_work=None, allowed_formats=None, *args, **kwargs):
         super(SendHomeWorkForm, self).__init__(*args, **kwargs)
@@ -19,7 +20,8 @@ class SendHomeWorkForm(forms.Form):
         f = self.cleaned_data.get('file')
         value = round(f.size / 1000000, 2)
         if not os.path.splitext(f.__str__())[-1].lower() in self.allowed_formats:
-            raise forms.ValidationError('نمیتونی فایل {} رو بفرسیتی'.format(f.__str__()))
+            raise forms.ValidationError(
+                'نمیتونی فایل {} با فرمت {} رو بفرستی'.format(f.__str__(), os.path.splitext(f.__str__())[-1].lower()))
         elif value > self.home_work.max_size:
             raise forms.ValidationError('حجم فایل ارسال شده بالاتر از حد مجاز است')
         return f

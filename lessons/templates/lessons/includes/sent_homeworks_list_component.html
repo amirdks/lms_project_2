@@ -1,0 +1,12 @@
+{% load poll_extras %}
+
+<p>تکالیف تحویل داده شده :</p>
+<ul>
+    {% for file in home_works.homeworkfiles_set.all %}
+        <li><a download="{{ file.file.url }}"
+               href="{{ file.file.url }}">{{ file.file.name | file_name }}</a>
+            <a onclick="deleteSentHomeWork({{ lesson.id }}, {{ home_works.home_work.id }}, {{ file.id }})"  id="delete_sent_homework" style="font-size: 12px; cursor: pointer"
+               class="text-danger">
+                حذف تکلیف </a ></li>
+    {% endfor %}
+</ul>

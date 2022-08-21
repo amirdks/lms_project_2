@@ -51,12 +51,10 @@
                 data: {table_search: this.value}
             }).done(function (res){
                 $('#students-list').html(res.body);
-                console.log(res)
             })
         })
         $(document).ready(function (){
             $(document).ajax(function (){
-                console.log('ajax started')
             })
         })
     </script>

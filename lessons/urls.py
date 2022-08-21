@@ -10,7 +10,7 @@ urlpatterns = [
     path('<int:id>/<slug:slug>/students-score/<int:user_id>', views.StudentLIstSentHomeWorks.as_view(),
          name='student-list-sent-home-works'),
     path('<int:id>/<int:pk>/delete', views.DeleteHomeWorkView.as_view(), name='delete_home_work'),
-    path('<int:id>/<int:pk>/delete-home-work', views.DeleteSentHomeWorkView.as_view(), name='delete_sent_home_work'),
+    path('<int:id>/<int:pk>/<int:file_id>/delete-home-work', views.DeleteSentHomeWorkView.as_view(), name='delete_sent_home_work'),
     path('<int:id>/<int:pk>/edit', views.EditHomeWorkView.as_view(), name='edit_home_work'),
     path('<int:id>/<int:pk>/home-works-list', views.ListSentHomeWorks.as_view(), name='list-sent-home-works'),
 ]

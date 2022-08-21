@@ -1,0 +1,35 @@
+{% load poll_extras %}
+{% load thumbnail %}
+{% for lesson in lessons %}
+        <div class="col-sm-4">
+
+        <div class="card">
+            {% thumbnail lesson.image "120x30" crop="center" quality=95 as im %}
+                <img class="card-img-top" src="{{ im.url }}" alt="">
+            {% endthumbnail %}
+            <div class="card-body">
+                <b><h4 align="center">{{ lesson.title }}</h4></b>
+                <hr>
+                <p class="card-text"><b>رشته این درس :</b> {{ lesson.field_of_study }} <br> <br> <b>برای پایه
+                    :</b> {{ lesson.base.title_farsi }}</p>
+                <a href="{% url 'list_home_works' id=lesson.id %}" class="btn btn-primary">لیست تکالیف قرار داده
+                    شده</a>
+                {% if not request.user.is_teacher %}
+                    <hr>
+                        <div class="card-footer dashboard-card-footer border-0 bg-white">
+                        <div class="progress bg-white border">
+                            <div class="progress-bar bar" role="progressbar"
+                                 aria-valuenow="{{ percent_of_sent_homework }}"
+                                 style="width: {{ percent_of_sent_homework }}%"
+                                 aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="small">
+                            <span class="sr-only">پیشرفت درس:</span>
+                            <strong>{{ percent_of_sent_homework }}</strong>% کامل شده
+                        </div>
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}

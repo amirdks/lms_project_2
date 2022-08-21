@@ -3,10 +3,10 @@ import time
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.postgres.search import SearchVector
 from django.db.models import Q, Avg, Count
 from django.http import HttpRequest, Http404, JsonResponse
 from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
 # Create your views here.
 from django.views import View
@@ -30,26 +30,37 @@ class LessonsList(LoginRequiredMixin, ListView):
     paginate_by = 6
     ordering = 'title'
 
+    def post(self, request):
+        if self.request.POST.get('table_search'):
+            search = self.request.POST.get('table_search')
+            print(search)
+            # user: User = User.objects.filter(id=request.user.id).first()
+            # lessons = Lesson.objects.all()
+            # if user.is_teacher is False:
+            #     query = lessons.filter(is_active=True, base_id=user.base.id, field_of_study_id=user.field_of_study.id)
+            # elif user.is_teacher is True:
+            #     query = lessons.filter(is_active=True, teacher_id=user.id)
+            query = self.get_queryset()
+            lessons = query.filter(
+                Q(title__contains=search) | Q(field_of_study__title__contains=search) | Q(
+                    base__title__contains=search))
+            return JsonResponse({'body':render_to_string('lessons/includes/lessons_list_content.html',
+                                                 context={'lessons': lessons,
+                                                          'percent_of_sent_homework': 0})})
+
     def get_queryset(self):
         query: Lesson.objects = super(LessonsList, self).get_queryset()
         user: User = User.objects.filter(id=self.request.user.id).first()
-        if user.is_superuser:
-            query = query
-        elif user.is_teacher is False:
+        if user.is_teacher is False:
             query = query.filter(is_active=True, base_id=user.base.id, field_of_study_id=user.field_of_study.id)
         elif user.is_teacher is True:
             query = query.filter(is_active=True, teacher_id=user.id)
-        if self.request.GET.get('table_search'):
-            search = self.request.GET.get('table_search')
-            query = query.filter(
-                Q(title__contains=search) | Q(field_of_study__title__contains=search) | Q(
-                    base__title__contains=search))
         return query
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(LessonsList, self).get_context_data(**kwargs)
         user: User = self.request.user
-        if not user.is_teacher or user.is_superuser:
+        if not user.is_teacher:
             lessons = Lesson.objects.filter(field_of_study_id=user.field_of_study.id, base_id=user.base.id,
                                             is_active=True).all()
             percent = {}
@@ -63,6 +74,7 @@ class LessonsList(LoginRequiredMixin, ListView):
                     darsad = home_works.count() * 100 / set_home_work.count()
                     if home_works:
                         percent[lesson.title] = int(darsad)
+            percent = percent
             context['percent_of_sent_homework'] = percent
         return context
 
@@ -172,26 +184,43 @@ class HomeWorkView(LoginRequiredMixin, JustStudentOfLesson, View):
         user: User = request.user
         lesson = self.context.get('lesson')
         home_work = self.context.get('home_work')
-        home_works = self.context.get('home_works')
+        home_works = HomeWorks.objects.filter(home_work_id=self.context.get('home_work').id,
+                                              user_id=request.user.id).first()
         allowed_formats = self.context.get('allowed_formats')
         form = SendHomeWorkForm(home_work, allowed_formats, request.POST, request.FILES)
+        is_first_time = False
         if form.is_valid():
-            print('it was valid')
             f = request.FILES.get('file')
             if home_works:
                 new_file = HomeWorkFiles.objects.create(home_work_id=home_works.id, file=f)
             else:
                 message = form.cleaned_data.get('message')
-                new_home_work = HomeWorks(user_id=user.id, home_work_id=home_work.id,
-                                          is_delivered=True, message=message)
-                new_home_work.save()
-                new_file = HomeWorkFiles.objects.create(home_work_id=new_home_work.id, file=f)
+                home_works = HomeWorks(user_id=user.id, home_work_id=home_work.id,
+                                       is_delivered=True, message=message)
+                home_works.save()
+                new_file = HomeWorkFiles.objects.create(home_work_id=home_works.id, file=f)
+                is_first_time = True
             new_file.save()
-            messages.success(request, 'تکلیف شما با موفقیت ارسال شد')
-            return JsonResponse({'status': 'success', 'message': 'آپلود فایل موفقیت آمیز بود'})
-        context = {'home_works': home_works, 'form': form, 'home_work': home_work, 'lesson': lesson,
-                   'allowed_formats': allowed_formats}
-        return render(request, 'lessons/home_work_page.html', context)
+            home_works = HomeWorks.objects.filter(home_work_id=self.context.get('home_work').id,
+                                                  user_id=request.user.id).first()
+            # messages.success(request, 'تکلیف شما با موفقیت ارسال شد')
+            # home_works = home_works if home_works else new_home_work
+            sent_homeworks_component = render_to_string('lessons/includes/sent_homeworks_list_component.html',
+                                                        context={'home_works': home_works, 'lesson': lesson})
+            return JsonResponse(
+                {'status': 'success', 'body': sent_homeworks_component, 'is_first_time': is_first_time,
+                 'message': 'آپلود فایل موفقیت آمیز بود'})
+        # context = {'home_works': home_works, 'form': form, 'home_work': home_work, 'lesson': lesson,
+        #            'allowed_formats': allowed_formats}
+        # return render(request, 'lessons/home_work_page.html', context)
+        if form.errors:
+            for field in form:
+                for error in field.errors:
+                    error = error
+        return JsonResponse({
+            'status': 'failed',
+            'error': error
+        })
 
 
 class DeleteHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
@@ -211,14 +240,15 @@ class DeleteHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
 class DeleteSentHomeWorkView(LoginRequiredMixin, View):
     login_url = reverse_lazy('login_page')
 
-    def get(self, request, id, pk):
-        file = HomeWorkFiles.objects.filter(id=pk).first()
-        pk = file.home_work.home_work.id
+    def post(self, request, id, pk, file_id):
+        file = HomeWorkFiles.objects.filter(id=file_id).first()
         file.delete()
-        return redirect(reverse('home_work_page', kwargs={'id': id, 'pk': pk}))
-
-    def post(self, request, id, pk):
-        pass
+        lesson = Lesson.objects.filter(id=id, is_active=True).first()
+        home_works = HomeWorks.objects.filter(home_work_id=pk,
+                                              user_id=request.user.id).first()
+        sent_homeworks_component = render_to_string('lessons/includes/sent_homeworks_list_component.html',
+                                                    context={'home_works': home_works, 'lesson': lesson})
+        return JsonResponse({'status': 'success', 'body': sent_homeworks_component})
 
 
 class SetHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
@@ -266,7 +296,8 @@ class SetHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
                                                          is_teacher=False)
                 notification_text = f'یک تکلیف جدید مربوط به درس {lesson.title} به نام {new_home_work.title} قرار گرفت'
                 new_notification = Notification.objects.create(from_user_id=request.user.id,
-                                                               home_work_id=new_home_work.id, text=notification_text)
+                                                               home_work_id=new_home_work.id,
+                                                               text=notification_text)
                 new_notification.user.set(notification_users)
                 new_notification.save()
                 messages.add_message(request, messages.SUCCESS, 'تکلیف جدید با موفقیت قرار گرفت')
@@ -324,9 +355,10 @@ class StudentListHomeWorks(JustTeacherMixin, LoginRequiredMixin, View):
         students = User.objects.filter(field_of_study_id=lesson.field_of_study.id, base_id=lesson.base.id).all()
         if request.GET.get('table_search'):
             search = request.GET.get('table_search')
-            students = students.annotate(search=SearchVector('first_name', 'last_name')).filter(search=search)
-            print(students)
-        set_home_works = SetHomeWork.objects.filter(lesson_id=lesson.id, poodeman_or_nobat_id=pood_or_nobat.id).all()
+            students = students.filter(
+                Q(first_name__contains=search) | Q(last_name__contains=search) | Q(email__contains=search))
+        set_home_works = SetHomeWork.objects.filter(lesson_id=lesson.id,
+                                                    poodeman_or_nobat_id=pood_or_nobat.id).all()
         sent_home_works = HomeWorks.objects.filter(home_work_id__in=set_home_works).all()
         main_context = {}
         for student in students:
@@ -345,7 +377,6 @@ class StudentListHomeWorks(JustTeacherMixin, LoginRequiredMixin, View):
                 {student.__str__(): {'user': student, 'score_percent': score_percent,
                                      'count': sent_home_works_count,
                                      'score_percent_not_sent': score_percent_not_sent}})
-        set_home_work_count = 0
         context = {
             'students': students,
             'main': main_context,

@@ -57,7 +57,7 @@
                         <td><b>وضعیت تحویل</b></td>
                         <td>{% if home_works.is_delivered %}
                             <p class="text-success">تحویل داده شده</p> {% else %}
-                            <p> تحویل داده نشده
+                            <p id="is_delivered"> تحویل داده نشده
                                 است</p>{% endif %} </td>
                         <td></td>
                         <td></td>
@@ -124,22 +124,9 @@
                         <hr>
                         <button id="submitButton" class="btn btn-success float-right" type="button"> ارسال</button>
                     </form>
-                    <div class="card-footer dashboard-card-footer border-0 bg-white">
-                        <div class="progress bg-white border">
-                            <div id="showPercent" class="progress-bar bar" role="progressbar"
-                                 aria-valuenow="10"
-                                 style="width: 10%"
-                                 aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <div class="small">
-                            <span class="sr-only">پیشرفت درس:</span>
-                            <strong id="showPercentNumber">10</strong>% کامل شده
-                        </div>
+                    <div id="show-sending-progress" class="card-footer dashboard-card-footer border-0 bg-white">
                     </div>
-                    {% if form.errors %}{% for field in form %}{% for error in field.errors %}
-                        <strong class="text-danger">{{ error|escape }}</strong>
-                    {% endfor %}{% endfor %}{% endif %}
-
+                    <strong id="error-field" class="text-danger"></strong>
                 {% elif request.user.is_teacher %}
                     <div class="alert alert-warning"><p>شما معلم هستید و نمیتوانید تکلیفی ارسال کنید </p></div>
                     <a class="btn btn-danger btn-sm"
@@ -158,52 +145,90 @@
                 {% elif home_work.is_finished %}
                     <div class="alert alert-danger"><p>مهلت ارسال تکلیف به پایان رسیده</p></div>
                 {% endif %}
-                {% if home_works and not request.user.is_teacher %}
-                    <p>
-                    <p>تکالیف تحویل داده شده :</p>
-                    <ul>
-                        {% for file in home_works.homeworkfiles_set.all %}
-                            <li><a download="{{ file.file.url }}"
-                                   href="{{ file.file.url }}">{{ file.file.name | file_name }}</a>
-                                <a style="font-size: 12px;"
-                                   href="{% url 'delete_sent_home_work' id=lesson.id pk=file.id %}"
-                                   class="text-danger">
-                                    حذف تکلیف </a></li>
-                        {% endfor %}
-                    </ul>
-                    </p>
-                {% elif request.user.is_teacher %}
+                {% if not request.user.is_teacher %}
+                    <div id="sent_homeworks_component">
+                        {% include 'lessons/includes/sent_homeworks_list_component.html' with lesson=lesson home_works=home_works %}
+                    </div>
+                {% else %}
                     <p><a href="{% url 'list-sent-home-works' id=lesson.id  pk=home_work.id %}" class="btn btn-default"><i
                             class="fas fa-list-check"></i>
                         دیدن لیست تکالیف ارسال شده دانش آموزان</a></p>
                 {% endif %}
             </div>
-            {% if messages %}
-                {% for message in messages %}
-                    {% if message.tags == 'error' %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                            <h5><i class="icon fas fa-multiply"></i> ارور</h5>
-                            {{ message }}
-                        </div>
-                    {% else %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                            <h5><i class="icon fas fa-check"></i> موفق</h5>
-                            {{ message }}
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
+            {#            {% if messages %}#}
+            {#                {% for message in messages %}#}
+            {#                    {% if message.tags == 'error' %}#}
+            {#                        <div class="alert alert-{{ message.tags }} alert-dismissible">#}
+            {#                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>#}
+            {#                            <h5><i class="icon fas fa-multiply"></i> ارور</h5>#}
+            {#                            {{ message }}#}
+            {#                        </div>#}
+            {#                    {% else %}#}
+            {#                        <div class="alert alert-{{ message.tags }} alert-dismissible">#}
+            {#                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>#}
+            {#                            <h5><i class="icon fas fa-check"></i> موفق</h5>#}
+            {#                            {{ message }}#}
+            {#                        </div>#}
+            {#                    {% endif %}#}
+            {#                {% endfor %}#}
+            {#            {% endif %}#}
+            <div id="message-success"></div>
         </div>
     </div>
     <script>
+        {#let delete_sent_homework = $('#delete_sent_homework')#}
+        {#let urlLink = delete_sent_homework.attr("href")#}
+        {#delete_sent_homework.attr("href", "javascript: void(0)")#}
+
+        function showMessageError(messageText, tag, status) {
+            let message = `<div class="alert alert-${tag} alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <h5><i class="icon fas fa-check"></i> ${status}</h5>
+                           ${messageText}
+                        </div>`
+            return message
+        }
+
+        function deleteSentHomeWork(id, pk, file_id) {
+            let cookie = document.cookie
+            let csrfToken = cookie.substring(cookie.indexOf('=') + 1)
+            $.ajax({
+                url: `/lessons/${id}/${pk}/${file_id}/delete-home-work`,
+                method: "POST",
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                success: function (res) {
+                    if (res.status === "success") {
+                        $('#sent_homeworks_component').html(res.body)
+                        $('#message-success').empty().append(showMessageError('تکلیف شما با موفقیت حذف شد', 'warning', 'موفق'));
+                        console.log('delete was success')
+                    } else {
+                        console.log('delete was not success')
+                    }
+                }
+            })
+        }
+
         $('#submitButton').click(function (e) {
             let form = document.getElementById('homeWorkForm')
             let data = new FormData(form);
+            $(document).ajaxStart(function () {
+                let showSendingProgress = `<div class="progress bg-white border">
+                            <div id="showPercent" class="progress-bar bar" role="progressbar"
+                                 aria-valuenow="0"
+                                 style="width: 0%"
+                                 aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="small">
+                            <span class="sr-only">پیشرفت درس:</span>
+                            <strong id="showPercentNumber">0</strong>% کامل شده
+                        </div>`
+                $('#show-sending-progress').html(showSendingProgress)
+            })
             $.ajax({
                 url: "{% url 'home_work_page' id=lesson.id pk=home_work.pk %}",
-                method: "POSt",
+                method: "POST",
                 data: data,
                 cache: false,
                 processData: false,
@@ -222,12 +247,28 @@
                     }, false);
                     return xhr;
                 },
-            }).done(function (res) {
-                $('#formFileMultiple').val('')
-                $('#showPercentNumber').html(0);
-                $('#showPercent').css({
-                    'width': 0 + '%'
-                }).attr('ariaValuenow', 0)
+                success: function (res) {
+                    $('#formFileMultiple').val('')
+                    $('#showPercentNumber').html(0);
+
+                    $('#showPercent').css({
+                        'width': 0 + '%'
+                    }).attr('ariaValuenow', 0)
+
+                    {#$('#sent_homeworks_component').val(res.body)#}
+                    {#$('#sent_homeworks_component').html('')#}
+                    {#$('#sent_homeworks_component').html(res.body)#}
+                    if (res.status === 'success') {
+                        {#$('#sent_homeworks_component').empty().append(res.body);#}
+                        $('#sent_homeworks_component').html(res.body)
+                        $('#message-success').empty().append(showMessageError('تکلیف شما با موفقیت ارسال شد', 'success', 'موفق'));
+                        if (res.is_first_time){
+                            $('#is_delivered').html('تحویل داده شده').addClass('text-success')
+                        }
+                    } else {
+                        $('#error-field').empty().append(showMessageError(res.error, 'danger', 'شکست'));
+                    }
+                }
             })
         })
     </script>
