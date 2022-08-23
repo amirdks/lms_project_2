@@ -10,8 +10,8 @@
         <h3 class="card-title">جدول لیست درس ها</h3>
 
         <div class="card-tools">
-            <form action="{% url 'lessons_list_page' %}" method="post">
-
+            <form onsubmit="return mySubmitFunction()" action="{% url 'lessons_list_page' %}" method="post">
+                {% csrf_token %}
                 <div class="input-group input-group-sm" style="width: 150px;">
                     <input id="lessons-search-input" type="text" name="table_search"
                            class="form-control float-right"
@@ -53,9 +53,9 @@
     <script>
         $('#lessons-search-input').keyup(function () {
             //$.get('/students-list-search?table_search='+this.value).then(res => {
-               //     $('#students-list').html(res.body);
+            //     $('#students-list').html(res.body);
             //});
-        console.log('started')
+            console.log('started')
             let cookie = document.cookie
             let csrfToken = cookie.substring(cookie.indexOf('=') + 1)
             $.ajax({
@@ -65,10 +65,15 @@
                 headers: {
                     'X-CSRFToken': csrfToken
                 },
-            }).done(function (res){
+            }).done(function (res) {
                 $('#lessons-list').html(res.body);
             })
         })
+
+        function mySubmitFunction(e) {
+            {#e.preventDefault();#}
+            return false;
+        }
     </script>
 {% endblock %}
 

@@ -1,3 +1,4 @@
+import json
 import os
 import time
 
@@ -31,22 +32,21 @@ class LessonsList(LoginRequiredMixin, ListView):
     ordering = 'title'
 
     def post(self, request):
+        lessons = self.get_queryset()
         if self.request.POST.get('table_search'):
             search = self.request.POST.get('table_search')
-            print(search)
             # user: User = User.objects.filter(id=request.user.id).first()
             # lessons = Lesson.objects.all()
             # if user.is_teacher is False:
             #     query = lessons.filter(is_active=True, base_id=user.base.id, field_of_study_id=user.field_of_study.id)
             # elif user.is_teacher is True:
             #     query = lessons.filter(is_active=True, teacher_id=user.id)
-            query = self.get_queryset()
-            lessons = query.filter(
+            lessons = lessons.filter(
                 Q(title__contains=search) | Q(field_of_study__title__contains=search) | Q(
                     base__title__contains=search))
-            return JsonResponse({'body':render_to_string('lessons/includes/lessons_list_content.html',
-                                                 context={'lessons': lessons,
-                                                          'percent_of_sent_homework': 0})})
+        return JsonResponse({'body': render_to_string('lessons/includes/lessons_list_content.html',
+                                                      context={'lessons': lessons,
+                                                               'percent_of_sent_homework': 0})})
 
     def get_queryset(self):
         query: Lesson.objects = super(LessonsList, self).get_queryset()
@@ -409,27 +409,17 @@ class StudentLIstSentHomeWorks(JustTeacherMixin, LoginRequiredMixin, View):
         return render(request, 'lessons/student_list_sent_homeworks.html', context)
 
     def post(self, request, id, slug, user_id):
-        set_home_works = SetHomeWork.objects.filter(lesson_id=id, poodeman_or_nobat__slug__exact=slug,
-                                                    teacher_id=request.user.id)
         sent_home_works = HomeWorks.objects.filter(home_work__lesson_id=id, home_work__teacher_id=request.user.id,
                                                    home_work__poodeman_or_nobat__slug=slug,
                                                    user_id=user_id)
+        time.sleep(5)
         for sent_home_work in sent_home_works:
-            score_user = request.POST.get(str(sent_home_work.id))
+            score_user = json.loads(request.POST.get('score_form')).get(str(sent_home_work.id))
             if score_user:
                 if float(score_user) <= sent_home_work.home_work.score_weight:
                     sent_home_work.score = float(score_user)
                     sent_home_work.score_percent = sent_home_work.score_percent_func()
                     sent_home_work.save()
                 else:
-                    messages.error(request, 'لطفا به وزن نمرات دقت کنید')
-        context = {
-            'sent_home_works': sent_home_works,
-            'set_home_works': set_home_works,
-            'leeson_id': id,
-            'set_home_work': set_home_works.first(),
-            'user_id': user_id
-        }
-        return render(request, 'lessons/student_list_sent_homeworks.html', context)
-
-# test
+                    return JsonResponse({'status': 'failed', 'id': sent_home_work.id, 'score': score_user})
+        return JsonResponse({'status': 'success'})

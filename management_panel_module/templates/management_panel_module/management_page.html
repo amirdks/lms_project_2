@@ -9,8 +9,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment-with-locales.min.js"
             integrity="sha512-LGXaggshOkD/at6PFNcp2V2unf9LzFq6LE+sChH7ceMTDP0g2kn6Vxwgg7wkPP7AAtX+lmPqPdxB47A0Nz0cMQ=="
             crossorigin="anonymous"></script>
-   <style>
-        body{ background-color: beige; direction: ltr;}
+    <style>
+        body {
+            background-color: beige;
+            direction: ltr;
+        }
     </style>
     <script type="text/javascript">
         $(document).ready(function () {
@@ -23,6 +26,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Font Awesome -->
     {% render_partial 'management_panel_module.views.management_header_references' %}
+    {% block custom_header %}
+    {% endblock %}
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="se-pre-con"></div>
