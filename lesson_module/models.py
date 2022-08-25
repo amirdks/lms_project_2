@@ -110,6 +110,10 @@ class HomeWorkFiles(models.Model):
     def __str__(self):
         return Path(self.file.name).stem
 
+    def delete(self, using=None, keep_parents=False):
+        self.file.delete()
+        super(HomeWorkFiles, self).delete(using=None, keep_parents=False)
+
     class Meta:
         verbose_name = 'فایل ارسال شده'
         verbose_name_plural = 'فایل های ارسال شده'
