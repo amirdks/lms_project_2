@@ -79,51 +79,6 @@ class LessonsList(LoginRequiredMixin, ListView):
         return context
 
 
-class ListSentHomeWorks(LoginRequiredMixin, JustTeacherMixin, View):
-    login_url = reverse_lazy('login_page')
-
-    def get(self, request: HttpRequest, id, pk):
-        home_work = SetHomeWork.objects.filter(id=pk).first()
-        lesson = Lesson.objects.filter(id=id).first()
-        if home_work is None:
-            raise Http404("تکلیف مورد نطر یافت نشد")
-        if home_work:
-            home_works = HomeWorks.objects.filter(home_work_id=home_work.id).all()
-        else:
-            home_works = None
-
-        if request.GET.get('table_search'):
-            search = request.GET.get('table_search')
-            home_works = home_works.filter(Q(user__username__contains=search) | Q(user__first_name__contains=search)
-                                           | Q(user__last_name__contains=search))
-        context = {
-            'lesson': lesson,
-            'set_home_work': home_work,
-            'home_works': home_works,
-        }
-        return render(request, 'management_panel_module/sent_home_works.html', context)
-
-    def post(self, request: HttpRequest, id, pk):
-        home_work = SetHomeWork.objects.filter(id=pk).first()
-        lesson = Lesson.objects.filter(id=id).first()
-        home_works = HomeWorks.objects.filter(home_work_id=home_work.id).all()
-        for sent_home_work in home_works:
-            score_user = request.POST.get(str(sent_home_work.user.id))
-            if score_user:
-                if float(score_user) <= sent_home_work.home_work.score_weight:
-                    sent_home_work.score = float(score_user)
-                    sent_home_work.score_percent = sent_home_work.score_percent_func()
-                    sent_home_work.save()
-                else:
-                    messages.error(request, 'لطفا به وزن نمرات دقت کنید')
-        context = {
-            'lesson': lesson,
-            'set_home_work': home_work,
-            'home_works': home_works,
-        }
-        return render(request, 'management_panel_module/sent_home_works.html', context)
-
-
 class ListHomeWorks(LoginRequiredMixin, JustStudentOfLesson, View):
     login_url = reverse_lazy('login_page')
 
@@ -241,6 +196,7 @@ class DeleteSentHomeWorkView(LoginRequiredMixin, View):
     login_url = reverse_lazy('login_page')
 
     def post(self, request, id, pk, file_id):
+        time.sleep(3)
         file = HomeWorkFiles.objects.filter(id=file_id).first()
         file.delete()
         lesson = Lesson.objects.filter(id=id, is_active=True).first()
@@ -413,6 +369,46 @@ class StudentLIstSentHomeWorks(JustTeacherMixin, LoginRequiredMixin, View):
                                                    home_work__poodeman_or_nobat__slug=slug,
                                                    user_id=user_id)
         time.sleep(5)
+        for sent_home_work in sent_home_works:
+            score_user = json.loads(request.POST.get('score_form')).get(str(sent_home_work.id))
+            if score_user:
+                if float(score_user) <= sent_home_work.home_work.score_weight:
+                    sent_home_work.score = float(score_user)
+                    sent_home_work.score_percent = sent_home_work.score_percent_func()
+                    sent_home_work.save()
+                else:
+                    return JsonResponse({'status': 'failed', 'id': sent_home_work.id, 'score': score_user})
+        return JsonResponse({'status': 'success'})
+
+
+class ListSentHomeWorks(LoginRequiredMixin, JustTeacherMixin, View):
+    login_url = reverse_lazy('login_page')
+
+    def get(self, request: HttpRequest, id, pk):
+        home_work = SetHomeWork.objects.filter(id=pk).first()
+        lesson = Lesson.objects.filter(id=id).first()
+        if home_work is None:
+            raise Http404("تکلیف مورد نطر یافت نشد")
+        if home_work:
+            home_works = HomeWorks.objects.filter(home_work_id=home_work.id).all()
+        else:
+            home_works = None
+
+        if request.GET.get('table_search'):
+            search = request.GET.get('table_search')
+            home_works = home_works.filter(Q(user__username__contains=search) | Q(user__first_name__contains=search)
+                                           | Q(user__last_name__contains=search))
+        context = {
+            'lesson': lesson,
+            'set_home_work': home_work,
+            'home_works': home_works,
+        }
+        return render(request, 'management_panel_module/sent_home_works.html', context)
+
+    def post(self, request: HttpRequest, id, pk):
+        time.sleep(3)
+        home_work = SetHomeWork.objects.filter(id=pk).first()
+        sent_home_works = HomeWorks.objects.filter(home_work_id=home_work.id).all()
         for sent_home_work in sent_home_works:
             score_user = json.loads(request.POST.get('score_form')).get(str(sent_home_work.id))
             if score_user:

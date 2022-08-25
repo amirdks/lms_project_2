@@ -6,34 +6,7 @@
     لیست دانش آموزان
 {% endblock %}
 {% block custom_header %}
-<style>
-
-.modal {
-    display:    none;
-    position:   fixed;
-    z-index:    1000;
-    top:        0;
-    left:       0;
-    height:     100%;
-    width:      100%;
-    background: rgba( 255, 255, 255, .8 )
-                url('../../../../static/images/Eclipse-1s-200px.gif')
-                50% 50%
-                no-repeat;
-}
-
-/* When the body has the loading class, we turn
-   the scrollbar off with overflow:hidden */
-body.loading .modal {
-    overflow: hidden;
-}
-
-/* Anytime the body has the loading class, our
-   modal element will be visible */
-body.loading .modal {
-    display: block;
-}
-</style>
+<link rel="stylesheet" href="{% static 'css/loading.css' %}">
 {% endblock %}
 {% block content %}
     {% if set_home_works %}

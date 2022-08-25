@@ -2,10 +2,13 @@
 {% load thumbnail %}
 {% load jalali_tags %}
 {% load poll_extras %}
+{% load static %}
 {% block title %}
     جزئیات تکلیف
 {% endblock %}
-
+{% block custom_header %}
+    <link rel="stylesheet" href="{% static 'css/loading.css' %}">
+{% endblock %}
 {% block content %}
     <div class="invoice p-3 mb-3">
         <!-- title row -->
@@ -175,6 +178,7 @@
             <div id="message-success"></div>
         </div>
     </div>
+    <div class="modal">hello mf</div>
     <script>
         {#let delete_sent_homework = $('#delete_sent_homework')#}
         {#let urlLink = delete_sent_homework.attr("href")#}
@@ -192,6 +196,15 @@
         function deleteSentHomeWork(id, pk, file_id) {
             let cookie = document.cookie
             let csrfToken = cookie.substring(cookie.indexOf('=') + 1)
+            $body = $("body");
+            $(document).ajaxStart(function () {
+                console.log('ajax started')
+                $body.addClass("loading");
+            });
+            $(document).ajaxStop(function () {
+                console.log('ajax ended')
+                $body.removeClass("loading");
+            })
             $.ajax({
                 url: `/lessons/${id}/${pk}/${file_id}/delete-home-work`,
                 method: "POST",
@@ -262,7 +275,7 @@
                         {#$('#sent_homeworks_component').empty().append(res.body);#}
                         $('#sent_homeworks_component').html(res.body)
                         $('#message-success').empty().append(showMessageError('تکلیف شما با موفقیت ارسال شد', 'success', 'موفق'));
-                        if (res.is_first_time){
+                        if (res.is_first_time) {
                             $('#is_delivered').html('تحویل داده شده').addClass('text-success')
                         }
                     } else {

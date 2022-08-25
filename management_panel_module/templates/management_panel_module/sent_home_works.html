@@ -5,7 +5,9 @@
 {% block title %}
     لیست دانش آموزان
 {% endblock %}
-
+{% block custom_header %}
+    <link rel="stylesheet" href="{% static 'css/loading.css' %}">
+{% endblock %}
 {% block content %}
     {% if set_home_work %}
         <div class="row">
@@ -41,7 +43,7 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body table-responsive p-0">
-                        <form method="post" action="{% url 'list-sent-home-works' id=lesson.id pk=set_home_work.id %}">
+                        <form id="score-form" method="post" action="{% url 'list-sent-home-works' id=lesson.id pk=set_home_work.id %}">
                             {% csrf_token %}
                             <table class="table table-hover text-nowrap">
 
@@ -62,7 +64,7 @@
                                         <td>{% thumbnail home_work.user.avatar "60x60" crop="center" quality=95 as im %}
                                             <img class="img-circle elevation-2" src="{{ im.url }}" alt="">
                                         {% empty %}
-                                            <img src="{% static 'management_panel_module/dist/img/IAFOR-Blank-Avatar-Image.jpg'%}"
+                                            <img src="{% static 'management_panel_module/dist/img/IAFOR-Blank-Avatar-Image.jpg' %}"
                                                  class="img-circle elevation-2" width="60" height="60" alt="User Image">
                                         {% endthumbnail %}
                                         </td>
@@ -76,20 +78,17 @@
                                             {{ home_work.message|dont_show_none }}
                                         </td>
                                         <td>
-                                            {% if home_work.score is None %}
-                                                <input class="form-control" name="{{ home_work.user.id }}"
-                                                       max="{{ set_home_work.score_weight }}" step="0.01" type="number">
-                                            {% else %}
-                                                <input class="form-control" id="edit-score-{{ home_work.id }}"
-                                                       name="{{ home_work.user.id }}"
-                                                       max="{{ set_home_work.score_weight }}" step="0.01" type="number"
-                                                       value="{{ home_work.score }}" disabled>
-                                                <br>
-                                                <button class="btn btn-primary btn-sm"
-                                                        onclick="toggleEnable('edit-score-{{ home_work.id }}')"
-                                                        type="button">ویرایش نمره
-                                                </button>
-                                            {% endif %}
+                                            <input class="form-control"
+                                                   id="{{ home_work.id }}"
+                                                   name="{{ home_work.user.id }}"
+                                                   max="{{ set_home_work.score_weight }}" step="0.01" type="number"
+                                                    {% if home_work.score %} value="{{ home_work.score }}"
+                                                   disabled {% endif %}>
+                                            <br>
+                                            <button class="btn btn-primary btn-sm"
+                                                    onclick="toggleEnable({{ home_work.id }})"
+                                                    type="button">ویرایش نمره
+                                            </button>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -99,18 +98,7 @@
                                 <button class="btn btn-success" type="submit">ارسال نمرات</button>
                             {% endif %}
                         </form>
-                        {% if messages %}
-                            {% for message in messages %}
-                                {% if forloop.first %}
-                                    <div class="alert alert-danger alert-dismissible">
-                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×
-                                        </button>
-                                        <h5><i class="icon fas fa-multiply"></i> ارور</h5>
-                                        {{ message }}
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
+                        <div id="message-success"></div>
                         {% if not home_works %}
                             <div class="alert alert-warning alert-dismissible">
                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
@@ -134,4 +122,56 @@
             <br>
         </div>
     {% endif %}
+    <div class="modal">hello mf</div>
+
+    <script>
+    function showMessageError(messageText, tag, status) {
+        let message = `<hr> <div class="alert alert-${tag} alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <h5><i class="icon fas fa-check"></i> ${status}</h5>
+                           ${messageText}
+                        </div>`
+        return message
+    }
+       $('#score-form').submit(function (e) {
+            e.preventDefault()
+            let cookie = document.cookie
+            let csrfToken = cookie.substring(cookie.indexOf('=') + 1)
+            let form = $('#score-form')
+            let inputs = document.getElementsByTagName('input');
+            let scoresDict = {}
+            for (let i = 2; i < inputs.length - 1; ++i) {
+                console.log(inputs[i].value)
+                scoresDict[inputs[i].id] = inputs[i].value
+            }
+            let data = JSON.stringify(scoresDict);
+            $body = $("body");
+            $( document ).ajaxStart(function() {
+            $body.addClass("loading");
+            });
+            $(document).ajaxStop(function (){
+            $body.removeClass("loading");
+            })
+
+            $.ajax({
+                type: 'post',
+                url: form.attr('action'),
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                dataType: "json",
+                data: {'score_form': data},
+                success: function (res) {
+                    if (res.status === 'success') {
+                        $('#message-success').empty().append(showMessageError('نمرات با موفقیت در سایت قرار گرفت', 'success', 'موفق'));
+                        $(`input`).css({'border': '1px solid #ced4da'}).attr('disabled', true)
+                    }else if(res.status === 'failed'){
+                        $('#message-success').empty().append(showMessageError('لطفا به وزن نمرات دقت فرمایید', 'warning', 'شکست'));
+                        $(`#${res.id}`).css({'border-color': 'red', 'border-width': '3px'})
+                    }
+                }
+            });
+        })
+</script>
+
 {% endblock %}
