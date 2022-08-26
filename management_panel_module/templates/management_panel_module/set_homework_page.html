@@ -1,23 +1,27 @@
 {% extends 'management_panel_module/management_page.html' %}
-
+{% load static %}
 {% block title %}
     قرار دادن تکلیف جدید
 {% endblock %}
-
+{% block custom_header %}
+    <link rel="stylesheet" type="text/css" href="{% static 'management_panel_module/script/ha-datetimepicker.css' %}"/>
+{% endblock %}
 {% block content %}
-    <h1 class="text-center">تنظیم تکلیف جدید برای درس <u>{{ lesson.title }}</u>  {{ lesson.base }} رشته {{ lesson.field_of_study }}</h1>
+    <h1 class="text-center">تنظیم تکلیف جدید برای درس <u>{{ lesson.title }}</u> {{ lesson.base }}
+        رشته {{ lesson.field_of_study }}</h1>
     <hr>
     <form method="post"
           action="{% if request.resolver_match.url_name == 'set_new_home_work_lesson' %} {% url 'set_new_home_work_lesson' lesson=lesson.id %} {% else %} {% url 'set_homework_page' %} {% endif %}">
         {% csrf_token %}
         <div class="mb-3">
-            <label class="form-label">عنوان تکلیف</label>
-            <input type="text" name="title" class="form-control" placeholder="عنوان ...">
+            {{ form.title.label }}
+            {{ form.title }}
         </div>
         <div class="mb-3">
-            <label class="form-label">مهلت ارسال تکلیف</label>
-            <div id="picker"></div>
-            <input name="end_at" type="hidden" id="result" value=""/>
+            {{ form.end_at.label }}
+            {#            <div id="picker"></div>#}
+            {#            <input name="end_at" type="hidden" id="result" value=""/>#}
+            {{ form.end_at }}
             {% if messages %}
                 <ul class="messages">
                     {% for message in messages %}
@@ -26,22 +30,50 @@
                 </ul>
             {% endif %}
         </div>
-        <label class="form-label">فرمت های مجاز</label>
+        {{ form.format.label }}
         {{ form.format }}
-        <label class="form-label">حداکثر حجم فایل</label>
-        <input type="number" name="max_size" class="form-control" placeholder="سایز ...">
-        <label class="form-label">مربوط به کدام پودمان یا نوبت</label>
+        {{ form.max_size.label }}
+        {{ form.max_size }}
+        {{ form.poodeman_or_nobat.label }}
         {{ form.poodeman_or_nobat }}
-    <label class="form-label">وزن نمره</label>
-    {{ form.score_weight }}
+        {{ form.score_weight.label }}
+        {{ form.score_weight }}
         <div class="mb-3">
-            <label for="exampleFormControlTextarea1" class="form-label">توضیحات تکلیف</label>
-            <textarea name="description" class="form-control" placeholder="توضیحات ..." rows="3"></textarea>
+            {{ form.description.label }}
+            {{ form.description }}
         </div>
         <button type="submit" class="btn btn-primary">تایید</button>
     </form>
+    <hr>
+    {% if form.errors %}
+        {% for field in form %}
+            {% for error in field.errors %}
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <h5><i class="icon fas fa-check"></i> شکست</h5>
+                    {{ error }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+    <input value="{{ date }}" id="now" type="hidden">
+{% endblock %}
 
-
-
-
+{% block custom_footer %}
+    <script type="text/javascript" src="{% static 'management_panel_module/script/ha-solardate.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'management_panel_module/script/ha-lunardate.min.js' %}"></script> //
+    <script type="text/javascript"
+            src="{% static 'management_panel_module/script/ha-datetimepicker.min.js' %}"></script>
+    <script>
+    let now = $('#now').val()
+        var dp = new HaDateTimePicker("#datetime", {
+            isSolar: true,
+            forceSetTime: true,
+            resultFormat: '{year}-{month}-{day} {hour}:{minute}',
+            minAllowedDate: now
+        });
+        $('#datetime').click(function () {
+            dp.show()
+        })
+    </script>
 {% endblock %}

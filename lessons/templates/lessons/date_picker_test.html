@@ -1,0 +1,32 @@
+{% extends 'management_panel_module/management_page.html' %}
+{% load static %}
+
+{% block title %}
+    test
+{% endblock %}
+
+{% block custom_header %}
+    <link rel="stylesheet" type="text/css" href="{% static 'management_panel_module/script/ha-datetimepicker.css' %}"/>
+{% endblock %}
+
+{% block content %}
+    <input type="text" id="datetime" data-ha-datetimepicker="#datetime"/>
+{% endblock %}
+
+{% block custom_footer %}
+    <script type="text/javascript" src="{% static 'management_panel_module/script/ha-solardate.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'management_panel_module/script/ha-lunardate.min.js' %}"></script> //
+    If you dont need the lunar calendar features, just ignore this line
+    <script type="text/javascript"
+            src="{% static 'management_panel_module/script/ha-datetimepicker.min.js' %}"></script>
+    <script>
+        var dp = new HaDateTimePicker("#datetime", {
+            isSolar:true,
+            resultInSolar: true,
+            forceSetTime: true,
+        });
+        $('#datetime').click(function (){
+            dp.show()
+        })
+    </script>
+{% endblock %}

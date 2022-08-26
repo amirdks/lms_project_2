@@ -13,4 +13,5 @@ urlpatterns = [
     path('<int:id>/<int:pk>/<int:file_id>/delete-home-work', views.DeleteSentHomeWorkView.as_view(), name='delete_sent_home_work'),
     path('<int:id>/<int:pk>/edit', views.EditHomeWorkView.as_view(), name='edit_home_work'),
     path('<int:id>/<int:pk>/home-works-list', views.ListSentHomeWorks.as_view(), name='list-sent-home-works'),
+    path('test', views.just_for_test)
 ]

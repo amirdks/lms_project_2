@@ -1,7 +1,9 @@
 import json
 import os
 import time
+from datetime import datetime, timedelta
 
+import jalali_date
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q, Avg, Count
@@ -212,6 +214,7 @@ class SetHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
 
     def get(self, request: HttpRequest, lesson):
         lesson = Lesson.objects.filter(id=lesson).first()
+        jdate = jalali_date.date2jalali(datetime.now()).strftime('%m/%d/%Y')
         form = SetHomeWorkForm()
         if lesson.poodeman_or_nobat == 'poodeman':
             form.fields['poodeman_or_nobat'].queryset = PoodemanAndNobat.objects.filter(type__iexact='poodeman')
@@ -220,7 +223,8 @@ class SetHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
         context = {
             'form': form,
             'lessons': Lesson.objects.filter(teacher_id=request.user.id),
-            'lesson': lesson
+            'lesson': lesson,
+            'date': jdate
         }
         return render(request, 'management_panel_module/set_homework_page.html', context)
 
@@ -261,7 +265,7 @@ class SetHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
                     return redirect(reverse('list_home_works', kwargs={'id': lesson.id}))
                 else:
                     return redirect(reverse('management_panel_page'))
-        form = SetHomeWorkForm()
+
         if lesson.poodeman_or_nobat == 'poodeman':
             form.fields['poodeman_or_nobat'].queryset = PoodemanAndNobat.objects.filter(type__iexact='poodeman')
         else:
@@ -419,3 +423,7 @@ class ListSentHomeWorks(LoginRequiredMixin, JustTeacherMixin, View):
                 else:
                     return JsonResponse({'status': 'failed', 'id': sent_home_work.id, 'score': score_user})
         return JsonResponse({'status': 'success'})
+
+
+def just_for_test(request):
+    return render(request, 'lessons/date_picker_test.html')
