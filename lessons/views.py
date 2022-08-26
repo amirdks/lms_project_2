@@ -260,21 +260,25 @@ class SetHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
                                                                text=notification_text)
                 new_notification.user.set(notification_users)
                 new_notification.save()
-                messages.add_message(request, messages.SUCCESS, 'تکلیف جدید با موفقیت قرار گرفت')
-                if lesson:
-                    return redirect(reverse('list_home_works', kwargs={'id': lesson.id}))
-                else:
-                    return redirect(reverse('management_panel_page'))
+                time.sleep(3)
+                return JsonResponse(
+                    {'redirect': reverse('list_home_works', kwargs={'id': lesson.id}), 'status': 'success',
+                     'message': 'تکلیف جدید با موفقیت قرار گرفت درحال تغییر مسیر ...'})
+        if form.errors:
+            for field in form:
+                for error in field.errors:
+                    error = error
+                    field_name = field.label
 
-        if lesson.poodeman_or_nobat == 'poodeman':
-            form.fields['poodeman_or_nobat'].queryset = PoodemanAndNobat.objects.filter(type__iexact='poodeman')
-        else:
-            form.fields['poodeman_or_nobat'].queryset = PoodemanAndNobat.objects.filter(type__iexact='nobat')
-        contex = {
-            'form': form,
-            'lesson': lesson,
-        }
-        return render(request, 'management_panel_module/set_homework_page.html', contex)
+        # if lesson.poodeman_or_nobat == 'poodeman':
+        #     form.fields['poodeman_or_nobat'].queryset = PoodemanAndNobat.objects.filter(type__iexact='poodeman')
+        # else:
+        #     form.fields['poodeman_or_nobat'].queryset = PoodemanAndNobat.objects.filter(type__iexact='nobat')
+        # contex = {
+        #     'form': form,
+        #     'lesson': lesson,
+        # }
+        return JsonResponse({'status': 'failed', 'field_name': field_name, 'message': error})
 
 
 class EditHomeWorkView(View):
@@ -282,10 +286,16 @@ class EditHomeWorkView(View):
         lesson: Lesson = Lesson.objects.filter(id=id).first()
         home_work = SetHomeWork.objects.filter(id=pk).first()
         form = EditHomeWorkForm(instance=home_work)
+        jdate = jalali_date.date2jalali(datetime.now()).strftime('%m/%d/%Y')
+        if lesson.poodeman_or_nobat == 'poodeman':
+            form.fields['poodeman_or_nobat'].queryset = PoodemanAndNobat.objects.filter(type__iexact='poodeman')
+        else:
+            form.fields['poodeman_or_nobat'].queryset = PoodemanAndNobat.objects.filter(type__iexact='nobat')
         context = {
             'form': form,
             'lesson': lesson,
             'home_work': home_work,
+            'date': jdate,
         }
         return render(request, 'lessons/edit_home_work.html', context)
 
@@ -293,17 +303,21 @@ class EditHomeWorkView(View):
         lesson: Lesson = Lesson.objects.filter(id=id).first()
         home_work = SetHomeWork.objects.filter(id=pk).first()
         form = EditHomeWorkForm(request.POST, instance=home_work)
+        time.sleep(3)
         if form.is_valid():
             form.save(commit=True)
             messages.add_message(request, messages.SUCCESS, 'تکلیف با موفقیت ویرایش شد')
-            return redirect(reverse('list_home_works', kwargs={'id': id}))
-        form = EditHomeWorkForm()
-        context = {
-            'form': form,
-            'lesson': lesson,
-            'home_work': home_work,
-        }
-        return render(request, 'lessons/edit_home_work.html', context)
+            return JsonResponse(
+                {'redirect': reverse('list_home_works', kwargs={'id': lesson.id}), 'status': 'success',
+                 'message': 'تکلیف جدید با موفقیت قرار گرفت درحال تغییر مسیر ...'})
+        error = ''
+        field_name = ''
+        if form.errors:
+            for field in form:
+                for error in field.errors:
+                    error = error
+                    field_name = field.label
+        return JsonResponse({'status': 'failed', 'field_name': field_name, 'message': error})
 
 
 class StudentListHomeWorks(JustTeacherMixin, LoginRequiredMixin, View):
@@ -372,7 +386,7 @@ class StudentLIstSentHomeWorks(JustTeacherMixin, LoginRequiredMixin, View):
         sent_home_works = HomeWorks.objects.filter(home_work__lesson_id=id, home_work__teacher_id=request.user.id,
                                                    home_work__poodeman_or_nobat__slug=slug,
                                                    user_id=user_id)
-        time.sleep(5)
+        time.sleep(2)
         for sent_home_work in sent_home_works:
             score_user = json.loads(request.POST.get('score_form')).get(str(sent_home_work.id))
             if score_user:

@@ -78,7 +78,7 @@
                                             {{ home_work.message|dont_show_none }}
                                         </td>
                                         <td>
-                                            <input class="form-control"
+                                            <input class="form-control score"
                                                    id="{{ home_work.id }}"
                                                    name="{{ home_work.user.id }}"
                                                    max="{{ set_home_work.score_weight }}" step="0.01" type="number"
@@ -164,7 +164,7 @@
                 success: function (res) {
                     if (res.status === 'success') {
                         $('#message-success').empty().append(showMessageError('نمرات با موفقیت در سایت قرار گرفت', 'success', 'موفق'));
-                        $(`input`).css({'border': '1px solid #ced4da'}).attr('disabled', true)
+                        $(`.score`).css({'border': '1px solid #ced4da'}).attr('disabled', true)
                     }else if(res.status === 'failed'){
                         $('#message-success').empty().append(showMessageError('لطفا به وزن نمرات دقت فرمایید', 'warning', 'شکست'));
                         $(`#${res.id}`).css({'border-color': 'red', 'border-width': '3px'})

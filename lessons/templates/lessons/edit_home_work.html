@@ -1,46 +1,52 @@
-{% extends 'management_panel_module/base.html' %}
-
+{% extends 'management_panel_module/management_page.html' %}
+{% load static %}
 {% block title %}
     ویرایش تکلیف
 {% endblock %}
 
+{% block custom_header %}
+    <link rel="stylesheet" type="text/css" href="{% static 'management_panel_module/script/ha-datetimepicker.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/loading.css' %}">
+{% endblock %}
 
 {% block content %}
     <h4 align="center">ویرایش تکلیف <b>{{ home_work.title }}</b></h4>
-    <form method="post"
+    <form id="my_form" method="post"
           action="{% url 'edit_home_work' id=lesson.id pk=home_work.id %}">
         {% csrf_token %}
         <div class="mb-3">
-            <label class="form-label">عنوان تکلیف</label>
-            <input type="text" name="title" class="form-control" value="{{ home_work.title }}" placeholder="عنوان ...">
+            {{ form.title.label }}
+            {{ form.title }}
         </div>
         <div class="mb-3">
-            <label class="form-label">مهلت ارسال تکلیف</label>
-            <div id="picker"></div>
-            <input name="end_at" type="hidden" id="result" value=""/>
-            <label class="form-label">فرمت های مجاز</label>
-            {{ form.allowed_formats }}
-            <label class="form-label">حداکثر حجم فایل</label>
-            <br>
-            <input type="number" name="max_size" class="form-control" value="{{ home_work.max_size }}"
-                   placeholder="حجم ...">
-            {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                        <div class="alert-error"><p>{{ message }}</p></div>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+            {{ form.end_at.label }}
+            {#            <div id="picker"></div>#}
+            {#            <input name="end_at" type="hidden" id="result" value=""/>#}
+            {{ form.end_at }}
         </div>
+        {{ form.allowed_formats.label }}
+        {{ form.allowed_formats }}
+        {{ form.max_size.label }}
+        {{ form.max_size }}
+        {{ form.poodeman_or_nobat.label }}
+        {{ form.poodeman_or_nobat }}
+        {{ form.score_weight.label }}
+        {{ form.score_weight }}
         <div class="mb-3">
-            <label for="exampleFormControlTextarea1" class="form-label">توضیحات تکلیف</label>
-            <input value="{{ home_work.description }}" type="text" name="description" class="form-control"
-                   placeholder="توضیحات ...">
+            {{ form.description.label }}
+            {{ form.description }}
         </div>
         <button type="submit" class="btn btn-primary">تایید</button>
     </form>
+    <div id="message-success"></div>
+    <input value="{{ date }}" id="now" type="hidden">
+    <div class="modal">hello mf</div>
+{% endblock %}
 
-
-
-
+{% block custom_footer %}
+    <script type="text/javascript" src="{% static 'management_panel_module/script/ha-solardate.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'management_panel_module/script/ha-lunardate.min.js' %}"></script> //
+    <script type="text/javascript"
+            src="{% static 'management_panel_module/script/ha-datetimepicker.min.js' %}"></script>
+    <script src="{% static 'management_panel_module/script/set_home_work.js' %}"></script>
 {% endblock %}

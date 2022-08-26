@@ -18,20 +18,26 @@ YEAR_CHOICES = {
 
 
 class SetHomeWorkForm(forms.Form):
-    title = forms.CharField(label='عنوان تکلیف',
-                            widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'عنوان ...'}))
+    title = forms.CharField(
+        label='عنوان تکلیف',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'عنوان ...'}),
+    )
     end_at = forms.DateTimeField(widget=forms.TextInput(
         attrs={'class': 'form-control', 'id': 'datetime', 'data-ha-datetimepicker': '#datetime'}),
-                                 label="زمان پایان مهلت")
+        label="زمان پایان مهلت")
     format = forms.ModelMultipleChoiceField(label='فرمت های مجاز',
                                             widget=forms.SelectMultiple(attrs={'class': 'custom-select'}),
                                             queryset=AllowedFormats.objects.all())
-    max_size = forms.FloatField(widget=forms.NumberInput(attrs={'class': 'custom-select', 'placeholder': 'سایز ...'}), label='حداکثر حجم فایل')
+    max_size = forms.FloatField(widget=forms.NumberInput(attrs={'class': 'custom-select', 'placeholder': 'سایز ...'}),
+                                label='حداکثر حجم فایل')
     poodeman_or_nobat = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'custom-select'}),
-                                               queryset=PoodemanAndNobat.objects.all(), label='مربوط به کدام پودمان یا نوبت')
+                                               queryset=PoodemanAndNobat.objects.all(),
+                                               label='مربوط به کدام پودمان یا نوبت')
     score_weight = forms.IntegerField(
         widget=forms.NumberInput(attrs={'class': 'form-control'}), label='وزن نمره')
-    description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control','rows': '3', 'placeholder': 'توضیحات ...'}), label='توضیحات تکلیف')
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '3', 'placeholder': 'توضیحات ...'}),
+        label='توضیحات تکلیف')
 
     def clean_end_at(self):
         end_time = self.cleaned_data.get('end_at')
@@ -47,10 +53,33 @@ class SetHomeWorkForm(forms.Form):
 class EditHomeWorkForm(forms.ModelForm):
     class Meta:
         model = SetHomeWork
-        fields = ['title', 'end_at', 'allowed_formats', 'max_size', 'description']
-        widgets = {
-            'end_at': forms.DateTimeInput(
-                attrs={'id': 'datepicker', 'class': 'form-control', 'type': 'datetime-local'}),
-            'description': forms.Textarea,
-            'allowed_formats': forms.SelectMultiple(attrs={'class': 'custom-select'})
+        fields = ['title', 'end_at', 'allowed_formats', 'max_size', 'poodeman_or_nobat', 'score_weight', 'description']
+        labels = {
+            'title': 'عنوان تکلیف',
+            'end_at': "زمان پایان مهلت",
+            'allowed_formats': 'فرمت های مجاز',
+            'max_size': 'حداکثر حجم فایل',
+            'poodeman_or_nobat': 'مربوط به کدام پودمان یا نوبت',
+            'score_weight': 'وزن نمره',
+            'description': 'توضیحات تکلیف'
         }
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'عنوان ...'}),
+            'end_at': forms.TextInput(
+                attrs={'class': 'form-control', 'id': 'datetime', 'data-ha-datetimepicker': '#datetime'}),
+            'allowed_formats': forms.SelectMultiple(attrs={'class': 'custom-select'}),
+            'max_size': forms.NumberInput(attrs={'class': 'custom-select', 'placeholder': 'سایز ...'}),
+            'poodeman_or_nobat': forms.Select(attrs={'class': 'custom-select'}),
+            'score_weight': forms.NumberInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': '3', 'placeholder': 'توضیحات ...'}),
+        }
+
+        def clean_end_at(self):
+            end_time = self.cleaned_data.get('end_at')
+            now_time_str = datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
+            now_time = datetime.datetime.strptime(now_time_str, "%m/%d/%Y %H:%M:%S")
+            end_time_str = end_time.strftime("%m/%d/%Y %H:%M:%S")
+            end_time = end_time.strptime(end_time_str, "%m/%d/%Y %H:%M:%S")
+            if now_time >= end_time:
+                raise forms.ValidationError('لطفا به زمان پایان دقت فرمایید')
+            return end_time

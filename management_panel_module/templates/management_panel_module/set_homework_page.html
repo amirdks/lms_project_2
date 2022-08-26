@@ -5,12 +5,13 @@
 {% endblock %}
 {% block custom_header %}
     <link rel="stylesheet" type="text/css" href="{% static 'management_panel_module/script/ha-datetimepicker.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/loading.css' %}">
 {% endblock %}
 {% block content %}
     <h1 class="text-center">تنظیم تکلیف جدید برای درس <u>{{ lesson.title }}</u> {{ lesson.base }}
         رشته {{ lesson.field_of_study }}</h1>
     <hr>
-    <form method="post"
+    <form id="my_form" method="post"
           action="{% if request.resolver_match.url_name == 'set_new_home_work_lesson' %} {% url 'set_new_home_work_lesson' lesson=lesson.id %} {% else %} {% url 'set_homework_page' %} {% endif %}">
         {% csrf_token %}
         <div class="mb-3">
@@ -22,13 +23,6 @@
             {#            <div id="picker"></div>#}
             {#            <input name="end_at" type="hidden" id="result" value=""/>#}
             {{ form.end_at }}
-            {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                        <div class="alert-error"><p>{{ message }}</p></div>
-                    {% endfor %}
-                </ul>
-            {% endif %}
         </div>
         {{ form.format.label }}
         {{ form.format }}
@@ -56,7 +50,9 @@
             {% endfor %}
         {% endfor %}
     {% endif %}
+    <div id="message-success"></div>
     <input value="{{ date }}" id="now" type="hidden">
+    <div class="modal">hello mf</div>
 {% endblock %}
 
 {% block custom_footer %}
@@ -64,16 +60,5 @@
     <script type="text/javascript" src="{% static 'management_panel_module/script/ha-lunardate.min.js' %}"></script> //
     <script type="text/javascript"
             src="{% static 'management_panel_module/script/ha-datetimepicker.min.js' %}"></script>
-    <script>
-    let now = $('#now').val()
-        var dp = new HaDateTimePicker("#datetime", {
-            isSolar: true,
-            forceSetTime: true,
-            resultFormat: '{year}-{month}-{day} {hour}:{minute}',
-            minAllowedDate: now
-        });
-        $('#datetime').click(function () {
-            dp.show()
-        })
-    </script>
+    <script src="{% static 'management_panel_module/script/set_home_work.js' %}"></script>
 {% endblock %}
