@@ -6,7 +6,9 @@
 {% block title %}
     لیست تکالیف
 {% endblock %}
-
+{% block custom_header %}
+    <link rel="stylesheet" href="{% static 'css/loading.css' %}">
+{% endblock %}
 {% block content %}
     <div class="row">
         <div class="col-12">
@@ -70,65 +72,50 @@
             {% endif %}
             <br>
             <hr>
-            {% if home_works %}
-                {% for home_work in home_works %}
-                    <div class="post">
-                        <div class="user-block">
-                            {% thumbnail home_work.teacher.avatar "128x128" crop="center" quality=95 as im %}
-                                <img class="img-circle img-bordered-sm"
-                                     src="{{ im.url }}" alt="user image">
-                            {% empty %}
-                                <img class="img-circle img-bordered-sm"
-                                     src="{% static 'management_panel_module/dist/img/user1-128x128.jpg' %}"
-                                     alt="user image">
-                            {% endthumbnail %}
-                            <span class="username">
-                          <a href="{% url 'home_work_page' id=lesson.id pk=home_work.pk %}">{{ home_work.title }}</a>
-                                {% if not request.user.is_teacher %}
-                                    {% if send_home_works|in_homework:home_work.id %}
-                                        ✅
-                                    {% else %}
-                                        ❌
-                                    {% endif %}
-                                {% endif %}
-                        </span>
-                            <span class="description">زمان قرار گرفتن تکلیف  : {{ home_work.start_at.date | to_jalali }}</span>
-                        </div>
-
-                        <!-- /.user-block -->
-                        <p>{{ home_work.description }}</p>
-                        {% if request.user.is_teacher %}
-                            <a class="btn btn-danger btn-sm"
-                               href="{% url 'delete_home_work' id=lesson.id pk=home_work.id %}">
-                                <i class="fas fa-trash">
-                                </i>
-                                حذف
-                            </a>
-                            <a class="btn btn-primary btn-sm"
-                               href="{% url 'edit_home_work' id=lesson.id pk=home_work.id %}">
-                                <i class="fas fa-edit">
-                                </i>
-                                ویرایش
-                            </a>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            {% else %}
-                <div style="border-radius: 15px" class="alert-error">
-                    <h1 align="center"> تکلیفی برای این درس قرار داده نشده است </h1>
-                </div>
-            {% endif %}
+            <div id="home-works-list">
+                {% include 'lessons/includes/home_works_list_component.html' with home_works=home_works lesson=lesson %}
+            </div>
         </div>
     </div>
     <br>
-    {% if messages %}
-        <div class="alert alert-success alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-            {% for message in messages %}
-                <h5><i class="icon fas fa-check"></i> موفق</h5>
-                {{ message }}
-            {% endfor %}
-        </div>
-    {% endif %}
+    <div id="message-success"></div>
+    <div class="modal">hello mf</div>
 {% endblock %}
 
+{% block custom_footer %}
+    <script>
+        function showMessageError(messageText, tag, status) {
+            let message = `<div class="alert alert-${tag} alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <h5><i class="icon fas fa-check"></i> ${status}</h5>
+                           ${messageText}
+                        </div>`
+            return message
+        }
+
+        function deleteHomeWork(id) {
+            let cookie = document.cookie
+            let csrfToken = cookie.substring(cookie.indexOf('=') + 1)
+            $body = $("body");
+            $(document).ajaxStart(function () {
+                console.log('ajax started')
+                $body.addClass("loading");
+            });
+            $(document).ajaxStop(function () {
+                console.log('ajax ended')
+                $body.removeClass("loading");
+            })
+            $.ajax({
+                url: `/lessons/{{ lesson.id }}/${id}/delete`,
+                method: "POST",
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                success: function (res) {
+                    $('#home-works-list').html(res.body)
+                    $('#message-success').empty().append(showMessageError(res.message, res.status, 'موفق'));
+                }
+            })
+        }
+    </script>
+{% endblock %}

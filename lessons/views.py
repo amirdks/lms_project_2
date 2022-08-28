@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q, Avg, Count
 from django.http import HttpRequest, Http404, JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
 # Create your views here.
@@ -123,7 +123,7 @@ class HomeWorkView(LoginRequiredMixin, JustStudentOfLesson, View):
         id = kwargs.get('id')
         pk = kwargs.get('pk')
         self.context = {}
-        self.context['home_work'] = SetHomeWork.objects.filter(id=pk).first()
+        self.context['home_work'] = get_object_or_404(SetHomeWork, id=pk)
         self.context['form'] = SendHomeWorkForm()
         self.context['lesson'] = Lesson.objects.filter(id=id, is_active=True).first()
         self.context['home_works'] = HomeWorks.objects.filter(home_work_id=self.context.get('home_work').id,
@@ -183,15 +183,21 @@ class HomeWorkView(LoginRequiredMixin, JustStudentOfLesson, View):
 class DeleteHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
     login_url = reverse_lazy('login_page')
 
-    def get(self, request, id, pk):
-        lesson = Lesson.objects.filter(id=id).first()
-        home_work = SetHomeWork.objects.filter(id=pk).first()
-        home_work.delete()
-        messages.add_message(request, messages.SUCCESS, 'تکلیف مورد نطر با موفقیت حذف شد')
-        return redirect(reverse('list_home_works', kwargs={'id': lesson.id}))
-
     def post(self, request, id, pk):
-        pass
+        lesson = Lesson.objects.filter(id=id).first()
+        home_works = SetHomeWork.objects.filter(lesson_id=id)
+        send_home_works = HomeWorks.objects.filter(home_work__lesson_id=lesson.id, user_id=request.user.id)
+        try:
+            home_work = SetHomeWork.objects.filter(id=pk).first()
+        except SetHomeWork.DoesNotExist:
+            return JsonResponse({'status': 'failed', 'message': 'تکلیف پیدا نشد'})
+        home_work.delete()
+        home_works_list = render_to_string('lessons/includes/home_works_list_component.html',
+                                           context={'request': request, 'lesson': lesson,
+                                                    'send_home_works': send_home_works, 'home_works': home_works})
+        time.sleep(3)
+        return JsonResponse(
+            {'body': home_works_list, 'status': 'success', 'message': 'تکلیف مورد نطر با موفقیت حذف شد'})
 
 
 class DeleteSentHomeWorkView(LoginRequiredMixin, View):
