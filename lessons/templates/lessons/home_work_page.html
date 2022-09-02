@@ -132,7 +132,7 @@
                     <strong id="error-field" class="text-danger"></strong>
                 {% elif request.user.is_teacher %}
                     <div class="alert alert-warning"><p>شما معلم هستید و نمیتوانید تکلیفی ارسال کنید </p></div>
-                    <a class="btn btn-danger btn-sm"
+                    <a  class="btn btn-danger btn-sm"
                        href="{% url 'delete_home_work' id=lesson.id pk=home_work.id %}">
                         <i class="fas fa-trash">
                         </i>
@@ -178,7 +178,7 @@
             <div id="message-success"></div>
         </div>
     </div>
-    <div class="modal">hello mf</div>
+    <div class="modal-1">hello mf</div>
     <script>
         {#let delete_sent_homework = $('#delete_sent_homework')#}
         {#let urlLink = delete_sent_homework.attr("href")#}
@@ -219,6 +219,30 @@
                     } else {
                         console.log('delete was not success')
                     }
+                }
+            })
+        }
+                function deleteHomeWork(id) {
+            let cookie = document.cookie
+            let csrfToken = cookie.substring(cookie.indexOf('=') + 1)
+            $body = $("body");
+            $(document).ajaxStart(function () {
+                console.log('ajax started')
+                $body.addClass("loading");
+            });
+            $(document).ajaxStop(function () {
+                console.log('ajax ended')
+                $body.removeClass("loading");
+            })
+            $.ajax({
+                url: `/lessons/{{ lesson.id }}/${id}/delete`,
+                method: "POST",
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                success: function (res) {
+                    $('#home-works-list').html(res.body)
+                    $('#message-success').empty().append(showMessageError(res.message, res.status, 'موفق'));
                 }
             })
         }

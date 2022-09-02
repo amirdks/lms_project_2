@@ -1,4 +1,4 @@
-.modal {
+.modal-1 {
     display:    none;
     position:   fixed;
     z-index:    1000;
@@ -14,12 +14,12 @@
 
 /* When the body has the loading class, we turn
    the scrollbar off with overflow:hidden */
-body.loading .modal {
+body.loading .modal-1 {
     overflow: hidden;
 }
 
 /* Anytime the body has the loading class, our
    modal element will be visible */
-body.loading .modal {
+body.loading .modal-1 {
     display: block;
 }

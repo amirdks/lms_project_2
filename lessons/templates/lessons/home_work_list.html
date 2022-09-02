@@ -79,7 +79,7 @@
     </div>
     <br>
     <div id="message-success"></div>
-    <div class="modal">hello mf</div>
+    <div class="modal-1">hello mf</div>
 {% endblock %}
 
 {% block custom_footer %}
@@ -113,7 +113,7 @@
                 },
                 success: function (res) {
                     $('#home-works-list').html(res.body)
-                    $('#message-success').empty().append(showMessageError(res.message, res.status, 'موفق'));
+                    $('#message-success').empty().append(showMessageError(res.message, res.status, res.persian_status));
                 }
             })
         }

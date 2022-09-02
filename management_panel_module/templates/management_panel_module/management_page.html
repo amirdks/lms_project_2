@@ -1,6 +1,7 @@
 {% load static %}
 {% load render_partial %}
 <!DOCTYPE html>
+{% load cache %}
 <html>
 <head>
     <meta charset="utf-8">
@@ -32,14 +33,12 @@
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="se-pre-con"></div>
 <div class="wrapper">
-    <!-- Navbar -->
-    {% render_partial 'management_panel_module.views.management_navbar' %}
-    <!-- /.navbar -->
-    <!-- Main Sidebar Container -->
-
-
+{% cache 500 sidebar request.user.is_teacher %}
     {% render_partial 'management_panel_module.views.management_sidebar' %}
-
+{% endcache %}
+{% cache 500 navbar request.user.is_superuser %}
+{% render_partial 'management_panel_module.views.management_navbar' %}
+{% endcache %}
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -70,7 +69,7 @@
 </div>
 <!-- ./wrapper -->
 
-{% render_partial 'management_panel_module.views.management_footer_references' %}
+    {% render_partial 'management_panel_module.views.management_footer_references' %}
 {% block custom_footer %}
 
 {% endblock %}

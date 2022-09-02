@@ -26,7 +26,13 @@ SECRET_KEY = 'django-insecure-u+b%ilorvzvqp!*g65-lvca9wzpq(!531uti26a&-#3=un4c(=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# for test
+
 ALLOWED_HOSTS = []
+
+# for dockerize
+
+# ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -118,6 +124,29 @@ DATABASES = {
     }
 }
 
+# for test
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": 'redis://127.0.0.1:6379',
+}
+}
+
+# for docker
+
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django.core.cache.backends.redis.RedisCache",
+#         "LOCATION": 'redis://redis',
+# }
+# }
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+SESSION_COOKIE_AGE = 1209605
+CACHE_TTL = 600
+
+
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
@@ -150,17 +179,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
+
+# for test
+
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "static"
-]
+STATICFILES_DIRS = [BASE_DIR / "static"]
 # STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_ROOT = BASE_DIR / 'media'
-
 MEDIA_URL = '/medias/'
+
+# for dockerize
+
 # STATIC_URL = 'static/'
 # MEDIA_URL = 'media/'
-#
 # STATIC_ROOT = BASE_DIR / "static"
 # MEDIA_ROOT = BASE_DIR / "media"
 

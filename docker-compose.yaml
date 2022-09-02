@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  redis:
+    container_name: redis
+    image: redis:alpine
+    volumes:
+      - redis:/data
+    restart: always
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    expose:
+      - 6379
+
   database:
     container_name: database
     image: postgres
@@ -21,8 +32,10 @@ services:
     volumes:
       - static:/usr/src/app/static
       - media:/usr/src/app/media
+      - .:/usr/src/app
     depends_on:
       - database
+      - redis
     environment:
       - DEBUG=False
       - ALLOWED_HOSTS=*
@@ -37,7 +50,7 @@ services:
     image: nginx
     container_name: nginx
     ports:
-      - "80:80"
+      - "92:80"
     volumes:
       - ./nginx:/etc/nginx/conf.d
       - static:/var/www/static
@@ -49,3 +62,4 @@ volumes:
   postgres:
   static:
   media:
+  redis:

@@ -184,20 +184,29 @@ class DeleteHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
     login_url = reverse_lazy('login_page')
 
     def post(self, request, id, pk):
-        lesson = Lesson.objects.filter(id=id).first()
+        time.sleep(3)
+        try:
+            lesson = Lesson.objects.get(id=id)
+            home_work = SetHomeWork.objects.get(id=pk)
+        except (SetHomeWork.DoesNotExist, Lesson.DoesNotExist) as e:
+            return JsonResponse({'status': 'danger','persian_status': 'شکست', 'message': 'تکلیف پیدا نشد'})
+        home_work.delete()
         home_works = SetHomeWork.objects.filter(lesson_id=id)
         send_home_works = HomeWorks.objects.filter(home_work__lesson_id=lesson.id, user_id=request.user.id)
-        try:
-            home_work = SetHomeWork.objects.filter(id=pk).first()
-        except SetHomeWork.DoesNotExist:
-            return JsonResponse({'status': 'failed', 'message': 'تکلیف پیدا نشد'})
-        home_work.delete()
         home_works_list = render_to_string('lessons/includes/home_works_list_component.html',
                                            context={'request': request, 'lesson': lesson,
                                                     'send_home_works': send_home_works, 'home_works': home_works})
-        time.sleep(3)
         return JsonResponse(
-            {'body': home_works_list, 'status': 'success', 'message': 'تکلیف مورد نطر با موفقیت حذف شد'})
+            {'body': home_works_list, 'status': 'success','persian_status': 'موفق', 'message': 'تکلیف مورد نطر با موفقیت حذف شد'})
+
+    def get(self, request, id, pk):
+        try:
+            lesson = Lesson.objects.get(id=id)
+            home_work = SetHomeWork.objects.get(id=pk)
+        except (SetHomeWork.DoesNotExist, Lesson.DoesNotExist) as e:
+            raise Http404('تکلیف مورد نطر پیدا نشد')
+        home_work.delete()
+        return redirect(reverse('list_home_works', kwargs={'id': lesson.id}))
 
 
 class DeleteSentHomeWorkView(LoginRequiredMixin, View):
