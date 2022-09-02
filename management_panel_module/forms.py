@@ -74,12 +74,11 @@ class EditHomeWorkForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': '3', 'placeholder': 'توضیحات ...'}),
         }
 
-        def clean_end_at(self):
-            end_time = self.cleaned_data.get('end_at')
-            now_time_str = datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
-            now_time = datetime.datetime.strptime(now_time_str, "%m/%d/%Y %H:%M:%S")
-            end_time_str = end_time.strftime("%m/%d/%Y %H:%M:%S")
-            end_time = end_time.strptime(end_time_str, "%m/%d/%Y %H:%M:%S")
-            if now_time >= end_time:
-                raise forms.ValidationError('لطفا به زمان پایان دقت فرمایید')
-            return end_time
+    def clean_end_at(self):
+        end_time = self.cleaned_data.get('end_at')
+        is_finished = end_time_calculator(end_time)
+        if is_finished:
+            raise forms.ValidationError('لطفا به زمان پایان دقت فرمایید')
+        elif self.instance.is_finished:
+            self.instance.is_finished = False
+        return end_time

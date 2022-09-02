@@ -120,16 +120,7 @@
     {% endif %}
     <div class="modal-1">hello mf</div>
     <script>
-        function showMessageError(messageText, tag, status) {
-            let message = `<hr> <div class="alert alert-${tag} alert-dismissible">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                            <h5><i class="icon fas fa-check"></i> ${status}</h5>
-                           ${messageText}
-                        </div>`
-            return message
-        }
-
-        $('#score-form').submit(function (e) {
+    $('#score-form').submit(function (e) {
             e.preventDefault()
             let cookie = document.cookie
             let csrfToken = cookie.substring(cookie.indexOf('=') + 1)

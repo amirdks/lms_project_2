@@ -189,7 +189,7 @@ class DeleteHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
             lesson = Lesson.objects.get(id=id)
             home_work = SetHomeWork.objects.get(id=pk)
         except (SetHomeWork.DoesNotExist, Lesson.DoesNotExist) as e:
-            return JsonResponse({'status': 'danger','persian_status': 'شکست', 'message': 'تکلیف پیدا نشد'})
+            return JsonResponse({'status': 'danger', 'persian_status': 'شکست', 'message': 'تکلیف پیدا نشد'})
         home_work.delete()
         home_works = SetHomeWork.objects.filter(lesson_id=id)
         send_home_works = HomeWorks.objects.filter(home_work__lesson_id=lesson.id, user_id=request.user.id)
@@ -197,7 +197,8 @@ class DeleteHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
                                            context={'request': request, 'lesson': lesson,
                                                     'send_home_works': send_home_works, 'home_works': home_works})
         return JsonResponse(
-            {'body': home_works_list, 'status': 'success','persian_status': 'موفق', 'message': 'تکلیف مورد نطر با موفقیت حذف شد'})
+            {'body': home_works_list, 'status': 'success', 'persian_status': 'موفق',
+             'message': 'تکلیف مورد نطر با موفقیت حذف شد'})
 
     def get(self, request, id, pk):
         try:
@@ -254,31 +255,27 @@ class SetHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
             max_size = form.cleaned_data.get('max_size')
             poodeman_or_nobat = form.cleaned_data.get('poodeman_or_nobat')
             score_weight = form.cleaned_data.get('score_weight')
-            is_finished = end_time_calculator(ends_at)
-            if is_finished:
-                messages.error(request, 'لطفا به زمان پایان دقت کنید')
-            else:
-                description = form.cleaned_data.get('description')
-                new_home_work = SetHomeWork.objects.create(title=title, end_at=ends_at, lesson_id=lesson.id,
-                                                           description=description,
-                                                           teacher_id=teacher_id, max_size=max_size,
-                                                           poodeman_or_nobat_id=poodeman_or_nobat.id,
-                                                           score_weight=score_weight)
-                new_home_work.allowed_formats.set(allowed_formats)
-                new_home_work.save()
-                notification_users = User.objects.filter(field_of_study_id=lesson.field_of_study.id,
-                                                         base_id=lesson.base.id,
-                                                         is_teacher=False)
-                notification_text = f'یک تکلیف جدید مربوط به درس {lesson.title} به نام {new_home_work.title} قرار گرفت'
-                new_notification = Notification.objects.create(from_user_id=request.user.id,
-                                                               home_work_id=new_home_work.id,
-                                                               text=notification_text)
-                new_notification.user.set(notification_users)
-                new_notification.save()
-                time.sleep(3)
-                return JsonResponse(
-                    {'redirect': reverse('list_home_works', kwargs={'id': lesson.id}), 'status': 'success',
-                     'message': 'تکلیف جدید با موفقیت قرار گرفت درحال تغییر مسیر ...'})
+            description = form.cleaned_data.get('description')
+            new_home_work = SetHomeWork.objects.create(title=title, end_at=ends_at, lesson_id=lesson.id,
+                                                       description=description,
+                                                       teacher_id=teacher_id, max_size=max_size,
+                                                       poodeman_or_nobat_id=poodeman_or_nobat.id,
+                                                       score_weight=score_weight)
+            new_home_work.allowed_formats.set(allowed_formats)
+            new_home_work.save()
+            notification_users = User.objects.filter(field_of_study_id=lesson.field_of_study.id,
+                                                     base_id=lesson.base.id,
+                                                     is_teacher=False)
+            notification_text = f'یک تکلیف جدید مربوط به درس {lesson.title} به نام {new_home_work.title} قرار گرفت'
+            new_notification = Notification.objects.create(from_user_id=request.user.id,
+                                                           home_work_id=new_home_work.id,
+                                                           text=notification_text)
+            new_notification.user.set(notification_users)
+            new_notification.save()
+            time.sleep(3)
+            return JsonResponse(
+                {'redirect': reverse('list_home_works', kwargs={'id': lesson.id}), 'status': 'success',
+                 'message': 'تکلیف جدید با موفقیت قرار گرفت درحال تغییر مسیر ...'})
         if form.errors:
             for field in form:
                 for error in field.errors:

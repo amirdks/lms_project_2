@@ -158,41 +158,11 @@
                         دیدن لیست تکالیف ارسال شده دانش آموزان</a></p>
                 {% endif %}
             </div>
-            {#            {% if messages %}#}
-            {#                {% for message in messages %}#}
-            {#                    {% if message.tags == 'error' %}#}
-            {#                        <div class="alert alert-{{ message.tags }} alert-dismissible">#}
-            {#                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>#}
-            {#                            <h5><i class="icon fas fa-multiply"></i> ارور</h5>#}
-            {#                            {{ message }}#}
-            {#                        </div>#}
-            {#                    {% else %}#}
-            {#                        <div class="alert alert-{{ message.tags }} alert-dismissible">#}
-            {#                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>#}
-            {#                            <h5><i class="icon fas fa-check"></i> موفق</h5>#}
-            {#                            {{ message }}#}
-            {#                        </div>#}
-            {#                    {% endif %}#}
-            {#                {% endfor %}#}
-            {#            {% endif %}#}
             <div id="message-success"></div>
         </div>
     </div>
     <div class="modal-1">hello mf</div>
     <script>
-        {#let delete_sent_homework = $('#delete_sent_homework')#}
-        {#let urlLink = delete_sent_homework.attr("href")#}
-        {#delete_sent_homework.attr("href", "javascript: void(0)")#}
-
-        function showMessageError(messageText, tag, status) {
-            let message = `<div class="alert alert-${tag} alert-dismissible">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                            <h5><i class="icon fas fa-check"></i> ${status}</h5>
-                           ${messageText}
-                        </div>`
-            return message
-        }
-
         function deleteSentHomeWork(id, pk, file_id) {
             let cookie = document.cookie
             let csrfToken = cookie.substring(cookie.indexOf('=') + 1)

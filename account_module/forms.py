@@ -32,7 +32,13 @@ class EditProfileModelForm(forms.ModelForm):
         fields = ['username', 'first_name', 'last_name', 'email', 'avatar']
 
 
-
 class EditUserPassForm(forms.Form):
     current_password = forms.CharField(widget=forms.PasswordInput, label="رمز عبور فعلی")
     new_password = forms.CharField(widget=forms.PasswordInput, label="رمز عبور جدید")
+
+    def clean(self):
+        cleaned_data = super().clean()
+        current_password = cleaned_data.get("current_password")
+        new_password = cleaned_data.get("new_password")
+        if current_password == new_password:
+            raise forms.ValidationError('رمز عبور فعلی با رمز عبور جدید نمیتواند یکی باشد')

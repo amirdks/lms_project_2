@@ -1,78 +1,132 @@
 {% extends 'management_panel_module/management_page.html' %}
 {% load thumbnail %}
+{% load static %}
 {% load render_partial %}
 {% block title %}
     ویرایش اطلاعات
 {% endblock %}
 
-
+{% block custom_header %}
+    <link rel="stylesheet" href="{% static 'css/loading.css' %}">
+{% endblock %}
 {% block content %}
 
     <div class="container">
         <div class="main-body">
             <div class="row gutters-sm">
                 <div class="col-md-4 mb-3">
-                    {% render_partial 'account_module.views.user_profile_component' %}
-                 {% render_partial 'account_module.views.user_panel_dashboard_component' %}
+                    <div id="profile-component">
+                        {% render_partial 'account_module.views.user_profile_component' %}
+                    </div>
+                    {% render_partial 'account_module.views.user_panel_dashboard_component' %}
                 </div>
 
 
                 <div class="col-lg-8">
                     <div class="card">
                         <div class="card-body">
-                            <form enctype="multipart/form-data" method="post" action="{% url 'edit_user_info_page' %}">
+                            <form id="my_form" enctype="multipart/form-data" method="post"
+                                  action="{% url 'edit_user_info_page' %}">
                                 {% csrf_token %}
                                 <div class="row mb-3">
-                                <div class="col-sm-3">
-                                    <h6 class="mb-0">نام کاربری</h6>
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">نام کاربری</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        <input name="username" type="text" class="form-control"
+                                               value="{{ current_user.username }}">
+                                    </div>
                                 </div>
-                                <div class="col-sm-9 text-secondary">
-                                    <input name="username" type="text" class="form-control" value="{{ current_user.username }}">
+                                <div class="row mb-3">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">نام</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        <input name="first_name" type="text" class="form-control"
+                                               value="{{ current_user.first_name }}">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-sm-3">
-                                    <h6 class="mb-0">نام</h6>
+                                <div class="row mb-3">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">نام خانوادگی</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        <input name="last_name" type="text" class="form-control"
+                                               value="{{ current_user.last_name }}">
+                                    </div>
                                 </div>
-                                <div class="col-sm-9 text-secondary">
-                                    <input name="first_name" type="text" class="form-control" value="{{ current_user.first_name }}">
+                                <div class="row mb-3">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">ایمیل</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        <input name="email" type="text" class="form-control"
+                                               value="{{ current_user.email }}">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-sm-3">
-                                    <h6 class="mb-0">نام خانوادگی</h6>
+                                <div class="row mb-3">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">عکس پروفایل</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        <input name="avatar" type="file" class="form-control btn btn-info float-right"
+                                               accept="image/png, image/gif, image/jpeg">
+                                    </div>
                                 </div>
-                                <div class="col-sm-9 text-secondary">
-                                    <input name="last_name" type="text" class="form-control" value="{{ current_user.last_name }}">
+                                <div class="row">
+                                    <div class="col-sm-3"></div>
+                                    <div class="col-sm-9 text-secondary">
+                                        <button type="submit" class="btn btn-primary px-4"> save</button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-sm-3">
-                                    <h6 class="mb-0">ایمیل</h6>
-                                </div>
-                                <div class="col-sm-9 text-secondary">
-                                    <input name="email" type="text" class="form-control" value="{{ current_user.email }}">
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-sm-3">
-                                    <h6 class="mb-0">عکس پروفایل</h6>
-                                </div>
-                                <div class="col-sm-9 text-secondary">
-                                    <input name="avatar" type="file" class="form-control">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-3"></div>
-                                <div class="col-sm-9 text-secondary">
-                                    <button type="submit" class="btn btn-primary px-4"> save </button>
-                                </div>
-                            </div>
                             </form>
                         </div>
                     </div>
+                    <div id="message-success"></div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="modal-1">hello mf</div>
+{% endblock %}
+
+{% block custom_footer %}
+    <script>
+        var frm = $('#my_form');
+        frm.submit(function (e) {
+            e.preventDefault(e);
+            var formData = new FormData(this);
+            let cookie = document.cookie
+            let csrfToken = cookie.substring(cookie.indexOf('=') + 1)
+            $body = $("body");
+            $(document).ajaxStart(function () {
+                $body.addClass("loading");
+            });
+            $.ajax({
+                async: true,
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: formData,
+                cache: false,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                success: function (res) {
+                    if (res.status === 'success') {
+                        $('#profile-component').fadeOut(500, function () {
+                            $('#profile-component').html(res.body).fadeIn(500)
+                        })
+                        $('#sidebar-user-profile').html(res.sidebar_user_profile)
+                        $body.removeClass("loading");
+                        $('#message-success').empty().append(showMessageError('پروفایل شما با موفقیت تغییر کرد', 'success', 'موفق'));
+                    } else {
+                        $body.removeClass("loading");
+                        $('#message-success').empty().append(showMessageError(res.error, 'danger', 'شکست'));
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}

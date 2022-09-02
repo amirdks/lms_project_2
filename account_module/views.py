@@ -1,9 +1,12 @@
+import time
+
 from django.contrib import messages
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
-from django.http import HttpRequest
+from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
 # Create your views here.
 from django.urls import reverse, reverse_lazy
 from django.utils.crypto import get_random_string
@@ -14,6 +17,7 @@ from account_module.models import User
 from lesson_module.models import Lesson, SetHomeWork, HomeWorks
 from lessons.models import FieldOfStudy, Base
 from utils.email_service import send_email
+from utils.form_errors import form_error
 
 
 class UserPanelView(LoginRequiredMixin, View):
@@ -74,17 +78,22 @@ class EditUserInfo(LoginRequiredMixin, View):
         return render(request, 'account_module/edit_user_info.html', context)
 
     def post(self, request: HttpRequest):
+        time.sleep(3)
         current_user = User.objects.filter(id=request.user.id).first()
         edit_form = EditProfileModelForm(request.POST, request.FILES, instance=current_user)
         if edit_form.is_valid():
             edit_form.save(commit=True)
-            return redirect(reverse('user_panel_page'))
-
-        context = {
-            'form': edit_form,
-            'current_user': current_user
-        }
-        return render(request, 'account_module/edit_user_info.html', context)
+            body = render_to_string('account_module/components/user_profile_component.html',
+                                    context={'current_user': current_user}, request=request)
+            request.user = current_user
+            sidebar_user_profile = render_to_string('management_panel_module/includes/sidebar-user-profile.html',
+                                                    request=request)
+            return JsonResponse({'status': 'success', 'body': body, 'sidebar_user_profile': sidebar_user_profile})
+        error = form_error(edit_form)
+        return JsonResponse({
+            'status': 'failed',
+            'error': error
+        })
 
 
 class EditUserPass(LoginRequiredMixin, View):
@@ -100,24 +109,18 @@ class EditUserPass(LoginRequiredMixin, View):
         return render(request, 'account_module/edit_password.html', context)
 
     def post(self, request: HttpRequest):
-        form = EditUserPassForm(request.POST)
+        form = EditUserPassForm(data=request.POST)
         user: User = User.objects.filter(id=request.user.id).first()
+        time.sleep(3)
         if form.is_valid():
-            if user.check_password(form.cleaned_data.get('current_password')) and not form.cleaned_data.get(
-                    'current_password') == form.cleaned_data.get('new_password'):
+            if user.check_password(form.cleaned_data.get('current_password')):
                 user.set_password(form.cleaned_data.get('new_password'))
                 user.save()
-                logout(request)
-                return redirect(reverse('login_page'))
+                return JsonResponse({'status': 'success'})
             else:
                 form.add_error('current_password', 'کلمه عبور وارد شده اشتباه می باشد')
-                # messages.error(request, 'کلمه عبور وارد شده اشتباه می باشد')
-        form = EditUserPassForm()
-        context = {
-            'form': form,
-            'user': user
-        }
-        return render(request, 'account_module/edit_password.html', context)
+        error = form_error(form)
+        return JsonResponse({'status': 'failed', 'error': error})
 
 
 class LoginView(View):
@@ -144,7 +147,7 @@ class LoginView(View):
                 is_password_correct = user.check_password(user_password)
                 if is_password_correct:
                     login(request, user)
-                    return redirect(reverse('lessons_list_page'))
+                    return redirect(request.POST.get('next', '/lessons'))
                 else:
                     login_form.add_error(field='password', error='کلمه عبور اشتباه است')
                     # messages.error(request, 'کلمه عبور اشتباه است')
@@ -236,4 +239,5 @@ def user_panel_dashboard_component(request):
 
 
 def user_profile_component(request):
-    return render(request, 'account_module/components/user_profile_component.html')
+    current_user = User.objects.filter(id=request.user.id).first()
+    return render(request, 'account_module/components/user_profile_component.html', {'current_user': current_user})

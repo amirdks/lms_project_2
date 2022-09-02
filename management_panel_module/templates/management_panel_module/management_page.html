@@ -33,12 +33,10 @@
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="se-pre-con"></div>
 <div class="wrapper">
-{% cache 500 sidebar request.user.is_teacher %}
     {% render_partial 'management_panel_module.views.management_sidebar' %}
-{% endcache %}
-{% cache 500 navbar request.user.is_superuser %}
-{% render_partial 'management_panel_module.views.management_navbar' %}
-{% endcache %}
+    {% cache 500 navbar request.user.is_superuser %}
+        {% render_partial 'management_panel_module.views.management_navbar' %}
+    {% endcache %}
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -69,7 +67,7 @@
 </div>
 <!-- ./wrapper -->
 
-    {% render_partial 'management_panel_module.views.management_footer_references' %}
+{% render_partial 'management_panel_module.views.management_footer_references' %}
 {% block custom_footer %}
 
 {% endblock %}
