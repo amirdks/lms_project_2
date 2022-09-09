@@ -34,9 +34,7 @@
 <div class="se-pre-con"></div>
 <div class="wrapper">
     {% render_partial 'management_panel_module.views.management_sidebar' %}
-    {% cache 500 navbar request.user.is_superuser %}
-        {% render_partial 'management_panel_module.views.management_navbar' %}
-    {% endcache %}
+    {% render_partial 'management_panel_module.views.management_navbar' %}
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->

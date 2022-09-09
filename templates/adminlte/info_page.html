@@ -7,7 +7,7 @@
             <!-- small box -->
             <div class="small-box bg-warning">
                 <div class="inner">
-                    <h3>{{ student_count }}</h3>
+                    <h3>120</h3>
 
                     <p>تعداد دانش آموزان</p>
                 </div>
@@ -22,7 +22,7 @@
             <!-- small box -->
             <div class="small-box bg-info">
                 <div class="inner">
-                    <h3>{{ teacher_count }}</h3>
+                    <h3>12</h3>
 
                     <p>تعداد معلم ها</p>
                 </div>
@@ -39,7 +39,7 @@
             <!-- small box -->
             <div class="small-box bg-success">
                 <div class="inner">
-                    <h3>{{ set_home_work_count }}</h3>
+                    <h3>89</h3>
 
                     <p>تعداد تکالیف قرار داده شده</p>
                 </div>
@@ -55,7 +55,7 @@
             <!-- small box -->
             <div class="small-box bg-danger">
                 <div class="inner">
-                    <h3>{{ lesson_count }}</h3>
+                    <h3>50</h3>
 
                     <p>تعداد درس ها</p>
                 </div>
@@ -87,17 +87,17 @@
             <!-- /.card-header -->
             <div class="card-body p-0">
                 <ul class="users-list clearfix">
-                    {% for user in online_users %}
+{#                    {% for user in online_users %}#}
                         <li>
-                            {% thumbnail user.user.avatar "128x128" crop="center" quality=95 as im %}
+                            {% thumbnail request.user.avatar "128x128" crop="center" quality=95 as im %}
                             <img src="{{ im.url }}" alt="User Image">
                             {% empty %}
                             <img src="{% static 'images/IAFOR-Blank-Avatar-Image.jpg' %}" alt="User Image">
                             {% endthumbnail %}
-                            <p class="users-list-name">{{ user.user.get_full_name }}</p>
-                            <span class="users-list-date">آخرین بازدید : {{ user.last_activity | time }}</span>
+                            <p class="users-list-name">{{ request.user.get_full_name }}</p>
+                            <span class="users-list-date">آخرین بازدید : {{ request.user.last_activity | time }}</span>
                         </li>
-                    {% endfor %}
+{#                    {% endfor %}#}
 
                 </ul>
                 <!-- /.users-list -->

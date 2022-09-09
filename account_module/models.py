@@ -5,7 +5,9 @@ from lessons.models import Base, FieldOfStudy
 
 
 class User(AbstractUser):
-    avatar = models.ImageField(null=True, blank=True, upload_to='images/profile', verbose_name='تصویر آواتار')
+    email = models.EmailField(verbose_name="email address", unique=True)
+    avatar = models.ImageField(null=True, blank=True, upload_to='images/profile',
+                               default='default-avatar/11-Azmayeshgah2.jpg', verbose_name='تصویر آواتار')
     email_active_code = models.CharField(blank=True, null=True, editable=False, max_length=100,
                                          verbose_name='فعالسازی ایمیل')
     base = models.ForeignKey(Base, blank=True, null=True, on_delete=models.CASCADE, verbose_name='پایه دانش آموز')
@@ -34,4 +36,3 @@ class User(AbstractUser):
             return self.username
 
     photo_tag.short_description = 'پروفایل کاربر'
-

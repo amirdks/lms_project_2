@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 
 # for dockerize
 
-# ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['django-app']
 
 # Application definition
 
@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'notification_module',
     'online_users',
     'widget_tweaks',
+    'poll_module'
 ]
 
 MIDDLEWARE = [
@@ -69,6 +70,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'online_users.middleware.OnlineNowMiddleware',
+    'management_panel_module.middlewares.CustomAuthentication',
 ]
 
 ROOT_URLCONF = 'lms_project_2.urls'
@@ -230,5 +232,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'testbemolaaa@gmail.com'
-EMAIL_HOST_PASSWORD = 'boalfteokmwrozaq'
+EMAIL_HOST_USER = 'haminjoorifortest@gmail.com'
+EMAIL_HOST_PASSWORD = 'jqxjfyphqfvlynho'

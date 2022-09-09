@@ -19,7 +19,7 @@ from account_module.models import User
 from lesson_module.models import Lesson, SetHomeWork
 from management_panel_module.forms import SetHomeWorkForm
 from management_panel_module.mixins import JustTeacherMixin
-from notification_module.models import Notification
+from notification_module.models import Notification, CustomNotification
 from utils.time import end_time_calculator
 
 
@@ -112,11 +112,17 @@ def management_sidebar(request):
     return render(request, 'management_panel_module/components/sidebar.html')
 
 
-def management_navbar(request):
+def management_navbar(request: HttpRequest):
+    notifications = None
     if request.user.is_authenticated:
         user: User = request.user
-        notifications = Notification.objects.filter(user__in=[user])
-        context = {'notifications': notifications}
+        if user.is_teacher:
+            custom_notifications = CustomNotification.objects.filter(from_teacher_id=user.id)
+        elif not user.is_teacher or not user.is_superuser:
+            notifications = Notification.objects.filter(user__in=[user])
+            custom_notifications = CustomNotification.objects.filter(field_of_study_id=user.field_of_study.id,
+                                                                     base_id=user.base.id)
+        context = {'notifications': notifications, 'custom_notifications': custom_notifications}
     else:
         context = {}
     return render(request, 'management_panel_module/components/navbar.html', context)
@@ -142,7 +148,6 @@ class InfoAdminView(View):
 
 
 class MyAdminSite(AdminSite):
-    @never_cache
     def index(self, request, extra_context=None):
         student_count = User.objects.filter(is_teacher=False, is_superuser=False, is_staff=False).count()
         teacher_count = User.objects.filter(is_teacher=True).count()

@@ -32,36 +32,72 @@
                      style="left: inherit; right: 0px;">
 
                     <!-- Message Start -->
-                    {% if notifications %}
-                        {% for notification in notifications %}
-                            <a href="{% url 'home_work_page' id=notification.home_work.lesson.id pk=notification.home_work.id %}"
-                               class="dropdown-item">
-                                <div class="media">
-                                    {% thumbnail notification.from_user.avatar "128x128" crop="center" quality=90 as im %}
-                                        <img src="{{ im.url }}"
-                                             alt="User Avatar" class="img-size-50 mr-3 img-circle">
-                                    {% empty %}
-                                        <img src="{% static 'management_panel_module/dist/img/user1-128x128.jpg'%}"
-                                             alt="User Avatar" class="img-size-50 mr-3 img-circle">
-                                    {% endthumbnail %}
-                                    <div class="media-body">
-                                        <h3 class="dropdown-item-title">{{ notification.from_user }}</h3>
-                                        <hr>
-                                        <p class="text-sm">{{ notification.text }}</p>
-                                        <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i>
-                                            ساعت {{ notification.time }} در تاریخ {{ notification.date | date:"m/d" }}
-                                        </p>
+                    {% if notifications or custom_notifications %}
+                        {% if notifications %}
+                            {% for notification in notifications %}
+                                <a href="{% url 'home_work_page' id=notification.home_work.lesson.id pk=notification.home_work.id %}"
+                                   class="dropdown-item">
+                                    <div class="media">
+                                        {% thumbnail notification.from_user.avatar "128x128" crop="center" quality=90 as im %}
+                                            <img src="{{ im.url }}"
+                                                 alt="User Avatar" class="img-size-50 mr-3 img-circle">
+                                        {% empty %}
+                                            <img src="{% static 'management_panel_module/dist/img/user1-128x128.jpg' %}"
+                                                 alt="User Avatar" class="img-size-50 mr-3 img-circle">
+                                        {% endthumbnail %}
+                                        <div class="media-body">
+                                            <h3 class="dropdown-item-title">{{ notification.from_user }}</h3>
+                                            <hr>
+                                            <p class="text-sm">{{ notification.text }}</p>
+                                            <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i>
+                                                ساعت {{ notification.time }} در
+                                                تاریخ {{ notification.date | date:"m/d" }}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                                <!-- Message End -->
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                            </a>
-                        {% endfor %}
+                                    <!-- Message End -->
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item">
+                                </a>
+                            {% endfor %}
+                        {% endif %}
+                        {% if custom_notifications %}
+                            {% for notification in custom_notifications %}
+                                <a href="{% url 'notification_list' %}"
+                                   class="dropdown-item">
+                                    <div class="media">
+                                        {% thumbnail notification.from_teacher.avatar "128x128" crop="center" quality=90 as im %}
+                                            <img src="{{ im.url }}"
+                                                 alt="User Avatar" class="img-size-50 mr-3 img-circle">
+                                        {% empty %}
+                                            <img src="{% static 'management_panel_module/dist/img/user1-128x128.jpg' %}"
+                                                 alt="User Avatar" class="img-size-50 mr-3 img-circle">
+                                        {% endthumbnail %}
+                                        <div class="media-body">
+                                            <h3 class="dropdown-item-title">{{ notification.from_teacher }}</h3>
+                                            <hr>
+                                            <p class="text-sm">{{ notification.title }}</p>
+                                            <hr>
+                                            <p class="text-sm text-muted">{{ notification.text|truncatechars:20 }}</p>
+                                            <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i>
+                                                در تاریخ {{ notification.jalali_publish }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <!-- Message End -->
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item">
+                                </a>
+                            {% endfor %}
+                        {% endif %}
                     {% else %}
                         <p class="text-sm-center text-danger">شما هیچ اعلانی برای نمایش ندارید</p>
                     {% endif %}
+                {% if request.user.is_teacher %}
+                    <a href="{% url 'create_notification' %}"><p class="text-sm-center text-success">ساخت اعلان جدید</p></a>
+                {% endif %}
                 </div>
             </li>
             <li class="nav-item">

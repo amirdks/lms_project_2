@@ -1,0 +1,51 @@
+{% extends 'management_panel_module/management_page.html' %}
+{% load static %}
+
+{% block title %}
+    اعلان جدید
+{% endblock %}
+
+{% block custom_header %}
+    <link rel="stylesheet" type="text/css" href="{% static 'management_panel_module/script/ha-datetimepicker.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/loading.css' %}">
+{% endblock %}
+{% block content %}
+    <h1 class="text-center">تنظیم اعلان جدید</h1>
+    <hr>
+    <form id="my_form" method="post"
+          action="{% if request.resolver_match.url_name == 'create_notification' %}
+                  {% url 'create_notification' %}
+                  {% elif request.resolver_match.url_name == 'update_notification' %}
+                  {% url 'update_notification' pk=notification.id %}
+                  {% endif %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.title.label }}
+            {{ form.title }}
+        </div>
+        {{ form.base.label }}
+        {{ form.base }}
+        {{ form.field_of_study.label }}
+        {{ form.field_of_study }}
+        <div class="mb-3">
+            {{ form.text.label }}
+            {{ form.text }}
+        </div>
+        <button type="submit" class="btn btn-primary">تایید</button>
+    </form>
+    <hr>
+    {% if form.errors %}
+        {% for field in form %}
+            {% for error in field.errors %}
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <h5><i class="icon fas fa-check"></i> شکست</h5>
+                    {{ error }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+    <div id="message-success"></div>
+    <input value="{{ date }}" id="now" type="hidden">
+    <div class="modal-1">hello mf</div>
+{% endblock %}

@@ -17,5 +17,5 @@ CMD while ! python3 manage.py sqlflush > /dev/null 2>&1 ; do sleep 1; done && \
     python3 manage.py makemigrations --noinput && \
     python3 manage.py migrate --noinput && \
     python3 manage.py collectstatic --noinput --clear && \
-    python3 manage.py createsuperuser --user admin --email admin@localhost --noinput; \
+    python3 manage.py customcreatesuperuser --user admin --email admin@localhost --noinput; \
     gunicorn -b 0.0.0.0:8000 lms_project_2.wsgi

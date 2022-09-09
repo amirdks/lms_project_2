@@ -152,24 +152,23 @@ class HomeWorkView(LoginRequiredMixin, JustStudentOfLesson, View):
                 new_file = HomeWorkFiles.objects.create(home_work_id=home_works.id, file=f)
             else:
                 message = form.cleaned_data.get('message')
-                home_works = HomeWorks(user_id=user.id, home_work_id=home_work.id,
-                                       is_delivered=True, message=message)
+                home_works = HomeWorks(
+                    user_id=user.id, home_work_id=home_work.id,
+                    is_delivered=True, message=message
+                )
                 home_works.save()
                 new_file = HomeWorkFiles.objects.create(home_work_id=home_works.id, file=f)
                 is_first_time = True
             new_file.save()
-            home_works = HomeWorks.objects.filter(home_work_id=self.context.get('home_work').id,
-                                                  user_id=request.user.id).first()
-            # messages.success(request, 'تکلیف شما با موفقیت ارسال شد')
-            # home_works = home_works if home_works else new_home_work
+            home_works = HomeWorks.objects.filter(
+                home_work_id=self.context.get('home_work').id,
+                user_id=request.user.id
+            ).first()
             sent_homeworks_component = render_to_string('lessons/includes/sent_homeworks_list_component.html',
                                                         context={'home_works': home_works, 'lesson': lesson})
             return JsonResponse(
                 {'status': 'success', 'body': sent_homeworks_component, 'is_first_time': is_first_time,
                  'message': 'آپلود فایل موفقیت آمیز بود'})
-        # context = {'home_works': home_works, 'form': form, 'home_work': home_work, 'lesson': lesson,
-        #            'allowed_formats': allowed_formats}
-        # return render(request, 'lessons/home_work_page.html', context)
         if form.errors:
             for field in form:
                 for error in field.errors:
@@ -281,15 +280,6 @@ class SetHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
                 for error in field.errors:
                     error = error
                     field_name = field.label
-
-        # if lesson.poodeman_or_nobat == 'poodeman':
-        #     form.fields['poodeman_or_nobat'].queryset = PoodemanAndNobat.objects.filter(type__iexact='poodeman')
-        # else:
-        #     form.fields['poodeman_or_nobat'].queryset = PoodemanAndNobat.objects.filter(type__iexact='nobat')
-        # contex = {
-        #     'form': form,
-        #     'lesson': lesson,
-        # }
         return JsonResponse({'status': 'failed', 'field_name': field_name, 'message': error})
 
 

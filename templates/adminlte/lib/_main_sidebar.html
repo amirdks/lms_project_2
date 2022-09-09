@@ -69,6 +69,27 @@
                                     <p>اعلان ها</p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{% url 'admin:notification_module_customnotification_changelist' %}"
+                                   class="nav-link {% if 'notification_module_customnotification' in request.resolver_match.url_name %}active{% endif %}">
+                                    <i class="nav-icon fas fa-bell-concierge"></i>
+                                    <p>اعلان های مخصوص</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'admin:poll_module_poll_changelist' %}"
+                                   class="nav-link {% if 'poll_module_poll' in request.resolver_match.url_name %}active{% endif %}">
+                                    <i class="nav-icon fas fa-poll"></i>
+                                    <p>نظرسنجی ها</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'admin:poll_module_polloptions_changelist' %}"
+                                   class="nav-link {% if 'poll_module_polloptions' in request.resolver_match.url_name %}active{% endif %}">
+                                    <i class="nav-icon fas fa-poll-h"></i>
+                                    <p>گزینه های نظرسنجی</p>
+                                </a>
+                            </li>
                             <li class="nav-item has-tree-view menu-open">
                                 <a href=""
                                    class="nav-link {% if 'lesson_module_lesson' in request.resolver_match.url_name or 'lessons_base' in request.resolver_match.url_name or 'lessons_fieldofstudy' in request.resolver_match.url_name %}active{% endif %} ">
