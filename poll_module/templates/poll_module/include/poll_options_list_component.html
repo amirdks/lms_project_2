@@ -1,0 +1,40 @@
+{% if poll_options %}
+    <ul class="list-group">
+        {#            <li class="list-group-item">{{ forloop.counter }}.{{ poll_option }}</li>#}
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">شماره</th>
+                <th scope="col">نام</th>
+                <th scope="col">تنظیمات</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for poll_option in poll_options %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ poll_option }}</td>
+                    <td>
+                        <a onclick="deleteOption({{ poll_option.poll.id }},{{ poll_option.id }})"
+                           class="btn btn-sm btn-danger text-white"> حذف <i class="fas fa-trash">
+                        </i></a>
+                        <a onclick="onHideInput({{ poll_option.id }})" style="margin-right: 10px" class="btn btn-sm btn-warning text-white">
+                            ویرایش <i class="fas fa-edit"></i>
+                        </a>
+                        <div>
+                            <form onclick="submitOptionForm({{ poll_option.id }})" id="option-form-{{ poll_option.id }}" method="post" action="{% url 'update_poll_option' pk=poll.id id=poll_option.id %}">
+                                {% csrf_token %}
+                            <input id="input-{{ poll_option.id }}" name="option" style="width: 500px; float: left" class="form-control" value="{{ poll_option.option }}" type="text" hidden>
+                        </form>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </ul>
+{% else %}
+    <div style="border-radius: 15px" class="alert-error">
+        <h1 align="center"> هیچ گزینه ای برای این نظر سنجی قرار نگرفته است </h1>
+    </div>
+{% endif %}

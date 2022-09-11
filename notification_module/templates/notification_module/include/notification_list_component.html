@@ -1,0 +1,58 @@
+{% load static %}
+{% load thumbnail %}
+<div class="row">
+    {% for notification in custom_notifications %}
+        <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
+            <div class="card bg-light d-flex flex-fill">
+                <div class="card-header text-muted border-bottom-0">
+                    اعلان جدید
+                </div>
+                <div class="card-body pt-0">
+                    <div class="row">
+                        <div class="col-7">
+                            <h1 style="margin-top: 8px;" class="lead"><b>{{ notification.title }}</b>
+                            </h1>
+                            <hr>
+                            <p class="text-sm">
+                                {{ notification.text }}
+                            </p>
+                            <hr>
+                            <p class="text-muted text-sm">
+                                <b>از طرف :</b> {{ notification.from_teacher }}
+                                <br><b>برای پایه :</b> {{ notification.base }}
+                                <br><b>رشته :</b> {{ notification.field_of_study }}
+                            </p>
+                        </div>
+                        <div class="col-5 text-center">
+                            {% thumbnail notification.from_teacher.avatar "1320x1344" crop="center" quality=95 as im %}
+                                <img class="img-circle img-fluid"
+                                     src="{{ im.url }}" alt="user image">
+                            {% empty %}
+                                <img class="img-circle img-fluid"
+                                     src="{% static 'management_panel_module/dist/img/user1-128x128.jpg' %}"
+                                     alt="user image">
+                            {% endthumbnail %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="text-right">
+                        <div style="position: absolute;right: 10px">
+                            <a onclick="deleteNotification({{ notification.id }})" href="#"
+                               class="btn btn-sm bg-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                            <a href="{% url 'update_notification' pk=notification.id %}" class="btn btn-sm bg-warning">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </div>
+                        <button class="btn btn-sm btn-default">
+                            <i class="fas fa-calendar"></i> {{ notification.jalali_publish }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+</div>
