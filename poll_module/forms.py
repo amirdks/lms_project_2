@@ -1,6 +1,6 @@
 from django import forms
 
-from poll_module.models import Poll
+from poll_module.models import Poll, PollOptions
 
 
 class CreatePollForm(forms.ModelForm):
@@ -28,6 +28,23 @@ class CreatePollForm(forms.ModelForm):
     def save(self, commit=True):
         m = super(CreatePollForm, self).save(commit=False)
         m.from_teacher = self.user
+        if commit:
+            m.save()
+        return m
+
+
+class PollOptionForm(forms.ModelForm):
+    class Meta:
+        model = PollOptions
+        fields = ['option']
+
+    def __init__(self, *args, **kwargs):
+        self.poll_model = kwargs.pop('poll')
+        super(PollOptionForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        m = super(PollOptionForm, self).save(commit=False)
+        m.poll = self.poll_model
         if commit:
             m.save()
         return m

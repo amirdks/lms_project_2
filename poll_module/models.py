@@ -1,4 +1,7 @@
+import jalali_date
 from django.db import models
+
+from utils.convertors import persian_number_converter, change_month
 
 
 # Create your models here.
@@ -55,6 +58,9 @@ class Poll(models.Model):
     def all_count(self):
         polls = Poll.objects.all().count()
         return polls
+
+    def jalali_publish(self):
+        return persian_number_converter(change_month(jalali_date.datetime2jalali(self.create).strftime('%Y/%m/%d')))
 
 
 class PollOptions(models.Model):

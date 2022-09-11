@@ -52,6 +52,20 @@
                                         <p>لیست دانش آموزان</p>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="{% url 'notification_list' %}"
+                                       class="nav-link {% if request.resolver_match.url_name == 'notification_list' %}active{% endif %} ">
+                                        <i class="nav-icon fa-solid fa-bell-concierge"></i>
+                                        <p>اعلان های مخصوص</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{% url 'poll_list' %}"
+                                       class="nav-link {% if request.resolver_match.url_name == 'poll_list' %}active{% endif %} ">
+                                        <i class="nav-icon fa-solid fa-poll"></i>
+                                        <p>نظر سنجی</p>
+                                    </a>
+                                </li>
                             {% endif %}
                         </ul>
                     </li>

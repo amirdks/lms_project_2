@@ -1,0 +1,55 @@
+{% extends 'management_panel_module/management_page.html' %}
+
+{% block title %}
+    لیست نظر سنجی ها
+{% endblock %}
+{% block custom_header %}
+
+{% endblock %}
+{% block content %}
+    {% for poll in polls %}
+        <div class="card">
+            <div class="card-header">
+                <p><span style="float: none; font-size: 1.3rem"><b>{{ poll.question }}</b></span><span style="float: left"> قرار گرقته در تاریخ {{ poll.jalali_publish }}</span>
+                </p>
+                <p><span>از طرف <b>{{ poll.from_teacher }}</b></span><span
+                        style="float: left"> برای پایه <b>{{ poll.base }}</b> رشته <b>{{ poll.field_of_study }}</b></span>
+                </p>
+            </div>
+
+            <div class="card-body p-0">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th style="width: 200px">شماره گرینه</th>
+                        <th>گزینه ها</th>
+                        <th>تعداد رای</th>
+                        <th>مقدار رای</th>
+                        <th style="width: 40px">درصد رای</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for poll_option in poll.poll_option.all %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ poll_option.option }}</td>
+                            <td>{{ poll_option.option_count }}</td>
+                            <td>
+                                <div class="progress progress-xs">
+                                    <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
+                                </div>
+                            </td>
+                            <td><span class="badge bg-danger">55%</span></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <hr>
+    {% endfor %}
+{% endblock %}
+{% block custom_footer %}
+
+{% endblock %}

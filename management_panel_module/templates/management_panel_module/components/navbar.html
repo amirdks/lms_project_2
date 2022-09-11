@@ -12,6 +12,11 @@
         <li class="nav-item d-none d-sm-inline-block">
             <a href="{% url 'user_panel_page' %}" class="nav-link"> <i class="fa-solid fa-user"></i> پنل کاربری</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" id="just-for-test" data-widget="fullscreen" href="#" role="button">
+                <i class="fas fa-expand-arrows-alt"></i>
+            </a>
+        </li>
         {% if request.user.is_superuser %}
             <li class="nav-item d-none d-sm-inline-block">
                 <a href="{% url 'admin:index' %}" class="nav-link"> <i class="fa-solid fa-chalkboard-user"></i> پنل
@@ -95,9 +100,10 @@
                     {% else %}
                         <p class="text-sm-center text-danger">شما هیچ اعلانی برای نمایش ندارید</p>
                     {% endif %}
-                {% if request.user.is_teacher %}
-                    <a href="{% url 'create_notification' %}"><p class="text-sm-center text-success">ساخت اعلان جدید</p></a>
-                {% endif %}
+                    {% if request.user.is_teacher %}
+                        <a href="{% url 'create_notification' %}"><p class="text-sm-center text-success">ساخت اعلان
+                            جدید</p></a>
+                    {% endif %}
                 </div>
             </li>
             <li class="nav-item">

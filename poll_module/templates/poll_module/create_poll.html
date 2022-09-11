@@ -20,9 +20,55 @@
                   {% endif %}">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">تایید</button>
+        <button type="submit" class="btn btn-success">تایید</button>
     </form>
-    <hr>
+    {% if request.resolver_match.url_name == 'update_poll' %}
+        <hr>
+        <h1 class="text-center">گزینه های اعلان</h1>
+        <br>
+        <div id="poll_options_list">
+            {% include 'poll_module/include/poll_options_list_component.html' with poll_options=poll_options poll=poll %}
+        </div>
+        <a style="margin-top: 15px" class="btn btn-primary text-white" data-toggle="modal" data-target="#myModal">
+            <i class="fas fa-plus">
+            </i>
+            اضاقه کردن گزینه به نظرسنجی
+        </a>
+        <div class="container">
+
+            <!-- The Modal -->
+            <div class="modal fade" id="myModal">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h4 class="modal-title">نام گزینه مورد نظر خود را وارد کنید</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+
+                        <!-- Modal body -->
+                        <div class="modal-body">
+                            <form method="post" id="option_form" action="{% url 'add_poll_option' pk=poll.id %}">
+                                <label for="option_input">نام گزینه جدید</label>
+                                <input name="option" placeholder="نام گزینه ..." id="option_input" class="form-control"
+                                       type="text">
+                                <button style="margin-top: 20px" type="submit" class="btn btn-primary">اضافه کردن
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Modal footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">خروج</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    {% endif %}
     {% if form.errors %}
         {% for field in form %}
             {% for error in field.errors %}
@@ -34,7 +80,11 @@
             {% endfor %}
         {% endfor %}
     {% endif %}
+    <br>
     <div id="message-success"></div>
-    <input value="{{ date }}" id="now" type="hidden">
     <div class="modal-1">hello mf</div>
+{% endblock %}
+
+{% block custom_footer %}
+    <script src="{% static 'script/poll_scripts.js' %}"></script>
 {% endblock %}

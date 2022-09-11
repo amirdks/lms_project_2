@@ -12,15 +12,16 @@
 {% block content %}
     <section class="content">
         <div class="card card-solid">
+            {% if request.user.is_teacher %}
+                <a href="{% url 'create_notification' %}" class="btn btn-primary text-white"><i class="fas fa-bell"></i>
+                    قرار دادن اعلان جدید</a>
+            {% endif %}
             <div class="card-body pb-0">
                 <div id="notification-list">
                     {% include 'notification_module/include/notification_list_component.html' with custom_notifications=custom_notifications %}
                 </div>
             </div>
         </div>
-        {% if request.user.is_teacher %}
-        <a href="{% url 'create_notification' %}" class="btn btn-primary text-white"><i class="fas fa-bell"></i> قرار دادن اعلان جدید</a>
-        {% endif %}
     </section>
     <div id="message-success"></div>
     <div class="modal-1">hello mf</div>

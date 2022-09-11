@@ -132,7 +132,7 @@ CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
         "LOCATION": 'redis://127.0.0.1:6379',
-}
+    }
 }
 
 # for docker
@@ -147,7 +147,6 @@ CACHES = {
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 SESSION_COOKIE_AGE = 1209605
 CACHE_TTL = 600
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -204,6 +203,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'account_module.User'
 
+LOGIN_URL = '/login'
 JALALI_DATE_DEFAULTS = {
     'Strftime': {
         'date': '%y/%m/%d',
