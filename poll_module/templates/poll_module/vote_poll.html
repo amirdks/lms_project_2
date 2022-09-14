@@ -1,0 +1,107 @@
+{% extends 'management_panel_module/management_page.html' %}
+{% load static %}
+{% block title %}
+    رای دادن به نظرسنجی
+{% endblock %}
+
+{% block custom_header %}
+    <link rel="stylesheet" href="{% static 'css/loading.css' %}">
+
+{% endblock %}
+
+{% block content %}
+    <!-- Breadcubs Area Start Here -->
+    <div class="breadcrumbs-area">
+        <h3>نظرسنجی <b>"{{ poll }}"</b></h3>
+    </div>
+    <!-- Breadcubs Area End Here -->
+    <!-- Add New Teacher Area Start Here -->
+    <div class="card height-auto">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3 class="text-center">{{ poll.question }}</h3>
+                </div>
+                {% csrf_token %}
+                <input type="hidden" id="poll_pk" value="{{ poll.pk }}">
+{#                {% if not request.user in poll.users.all %}#}
+                    {% for option in poll.poll_option.all %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="poll" value="{{ option.pk }}"
+                                   id="flexRadioChecked" checked>
+                            <label class="form-check-label" for="flexRadioChecked">
+                                {{ option }}
+                            </label>
+                        </div>
+                    {% endfor %}
+{#                {% else %}#}
+{#                    {% for option in poll.poll_option.all %}#}
+{#                        <div style="margin-right: 20px" class="form-check">#}
+{#                            <input class="form-check-input" type="radio" name="poll" value="{{ option.pk }}"#}
+{#                                   id="flexRadioCheckedDisabled" {% if request.user in option.users.all %} checked {% endif %} disabled >#}
+{#                            <label class="form-check-label" for="flexRadioCheckedDisabled">#}
+{#                                {{ option }}#}
+{#                            </label>#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                {% endif %}#}
+                <div class="col-md-12">
+                    <hr>
+                </div>
+                <div class="col-12">
+                    <button type="button" class="btn btn-success" id="vote-btn">
+                        ثبت
+                    </button>
+                    <a href="{% url 'poll_list' %}" class="btn btn-secondary">برگشت</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="message-success"></div>
+    <div class="modal-1">hello mf</div>
+{% endblock %}
+
+{% block custom_footer %}
+    <script>
+        $('#vote-btn').click(function () {
+            $body = $("body");
+            $(document).ajaxStart(function () {
+                $body.addClass("loading");
+            });
+            $(document).ajaxStop(function () {
+                $body.removeClass("loading");
+            })
+            let cookie = document.cookie
+            let csrfToken = cookie.substring(cookie.indexOf('=') + 1)
+            const option = document.getElementsByName('poll');
+            for (let i = 0; i < option.length; i++) {
+                if (option[i].checked) {
+                    $.ajax({
+                        type: "post",
+                        url: window.location.href,
+                        data: {
+                            option: option[i].value,
+                        },
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        },
+                        success: function (res) {
+                            if (res.status === 'success') {
+                                $('#message-success').empty().append(showMessageError(res.message, 'success', 'موفق'));
+                                setTimeout(function () {
+                                    window.location.replace(res.redirect);
+                                }, 5000);
+                            } else {
+                                $('#message-success').empty().append(showMessageError(res.message, 'danger', 'شکست'));
+                            }
+                        },
+                        error: function () {
+                            alert("مشکلی پیش آمده است")
+                        }
+                    })
+                    break;
+                }
+            }
+        })
+    </script>
+{% endblock %}

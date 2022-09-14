@@ -73,9 +73,8 @@ frm.submit(function (e) {
 });
 
 function onHideInput(id) {
-    $(`#input-${id}`).attr('hidden', false)
+    $(`#input-${id}`).fadeToggle()
 }
-
 
 function submitOptionForm(id) {
     var form = $(`#option-form-${id}`);

@@ -1,4 +1,8 @@
+import json
+
 from django import template
+from django.core import serializers
+from django.http import JsonResponse, HttpResponse
 from jalali_date import date2jalali, datetime2jalali
 
 register = template.Library()
@@ -44,3 +48,9 @@ def dont_show_none(value):
 @register.filter(name='file_name')
 def file_name(value):
     return str(value).split('/')[-1]
+
+
+@register.filter(name='to_json')
+def to_json(value):
+    data = list(value.values('id', 'username', 'first_name', 'last_name'))
+    return json.dumps(data)

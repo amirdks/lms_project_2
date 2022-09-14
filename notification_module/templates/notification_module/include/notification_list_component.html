@@ -37,15 +37,18 @@
                 </div>
                 <div class="card-footer">
                     <div class="text-right">
-                        <div style="position: absolute;right: 10px">
-                            <a onclick="deleteNotification({{ notification.id }})" href="#"
-                               class="btn btn-sm bg-danger">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                            <a href="{% url 'update_notification' pk=notification.id %}" class="btn btn-sm bg-warning">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                        </div>
+                        {% if request.user.is_teacher %}
+                            <div style="position: absolute;right: 10px">
+                                <a onclick="deleteNotification({{ notification.id }})" href="#"
+                                   class="btn btn-sm bg-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                                <a href="{% url 'update_notification' pk=notification.id %}"
+                                   class="btn btn-sm bg-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        {% endif %}
                         <button class="btn btn-sm btn-default">
                             <i class="fas fa-calendar"></i> {{ notification.jalali_publish }}
                         </button>

@@ -1,16 +1,18 @@
 {% extends 'management_panel_module/management_page.html' %}
-
+{% load static %}
+{% load poll_extras %}
 {% block title %}
     لیست نظر سنجی ها
 {% endblock %}
 {% block custom_header %}
-
+    <link rel="stylesheet" href="{% static 'css/loading.css' %}">
 {% endblock %}
 {% block content %}
     {% for poll in polls %}
         <div class="card">
             <div class="card-header">
-                <p><span style="float: none; font-size: 1.3rem"><b>{{ poll.question }}</b></span><span style="float: left"> قرار گرقته در تاریخ {{ poll.jalali_publish }}</span>
+                <p><span style="float: none; font-size: 1.3rem"><b>{{ poll.question }}</b></span><span
+                        style="float: left"> قرار گرقته در تاریخ {{ poll.jalali_publish }}</span>
                 </p>
                 <p><span>از طرف <b>{{ poll.from_teacher }}</b></span><span
                         style="float: left"> برای پایه <b>{{ poll.base }}</b> رشته <b>{{ poll.field_of_study }}</b></span>
@@ -24,8 +26,11 @@
                         <th style="width: 200px">شماره گرینه</th>
                         <th>گزینه ها</th>
                         <th>تعداد رای</th>
+                        {% if not request.user.is_teacher or not request.user.is_superuser %}
+                            <th>رای شما</th>
+                        {% endif %}
                         <th>مقدار رای</th>
-                        <th style="width: 40px">درصد رای</th>
+                        <th style="width: 100px">درصد آرا</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -34,22 +39,103 @@
                             <td>{{ forloop.counter }}</td>
                             <td>{{ poll_option.option }}</td>
                             <td>{{ poll_option.option_count }}</td>
+                            {% if not request.user.is_teacher or not request.user.is_superuser %}
+                                <td>{% if request.user in poll_option.users.all %}✅{% endif %}</td>
+                            {% endif %}
                             <td>
                                 <div class="progress progress-xs">
-                                    <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
+                                    <div class="progress-bar progress-bar-danger"
+                                         style="width: {{ poll_option.poll_percent }}%"></div>
                                 </div>
                             </td>
-                            <td><span class="badge bg-danger">55%</span></td>
+                            <td><span class="badge bg-danger">{{ poll_option.poll_percent }}%</span></td>
                         </tr>
+                    {% empty %}
+                        <p style="width: 400px; font-size: 15px; border-radius: 5px; margin: auto"
+                           class="alert alert-danger text-center"> هیچ گزینه ای برای این نظر سنجی قرار نگرفته است </p>
                     {% endfor %}
                     </tbody>
                 </table>
             </div>
-
+            <div style="margin: 10px">
+                {% if request.user.is_teacher %}
+                    <form style="display: inline-block" action="{% url 'delete_poll' pk=poll.id %}" method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-danger" type="submit"> حذف <i
+                                class="fas fa-trash"></i></button>
+                    </form>
+                    <a class="btn btn-sm btn-primary" href="{% url 'update_poll' pk=poll.id %}">ویرایش <i
+                            class="fas fa-edit"></i></a>
+                    <a onclick="showUsers({{ poll.users | to_json }})" class="btn btn-sm btn-warning"
+                       data-toggle="modal"
+                       data-target="#myModal">لیست افراد رای دهنده
+                        <i class="fas fa-edit"></i></a>
+                {% else %}
+                    <a class="btn btn-sm btn-primary" href="{% url 'vote_poll' pk=poll.id %}">رای دادن <i
+                            class="fas fa-plus"></i></a>
+                {% endif %}
+            </div>
         </div>
         <hr>
+    {% empty %}
+        <div style="border-radius: 15px; margin: 20px" class="alert-error">
+            <h1 align="center"> هیچ نظرسنجی ای یافت نشد </h1>
+        </div>
     {% endfor %}
+    {% if request.user.is_teacher %}
+        <a class="btn btn-success" href="{% url 'create_poll' %}">نظرسنجی جدید <i class="fas fa-poll-h"></i></a>
+    {% endif %}
+    <br>
+    <div class="container">
+
+        <!-- The Modal -->
+        <div class="modal fade" id="myModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">لیست افراد رای دهنده</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div>
+                            <ul id="modal-content" class="list-group">
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">خروج</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h5><i class="icon fas fa-check"></i> موفق</h5>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <div id="message-success"></div>
+    <div class="modal-1">hello mf</div>
 {% endblock %}
 {% block custom_footer %}
-
+    <script>
+        function showUsers(users) {
+            let modalContent = $('#modal-content')
+            modalContent.empty()
+            for (let i = 0; i < users.length; i++) {
+                modalContent.append(`<li class="list-group-item"><a href="/user/${users[i].id}">${users[i].first_name} ${users[i].last_name}</a></li>`)
+            }
+        }
+    </script>
 {% endblock %}

@@ -70,6 +70,12 @@ class PollOptions(models.Model):
         related_name='poll_option',
         verbose_name='برای نظرسنجی',
     )
+    users = models.ManyToManyField(
+        'account_module.User',
+        related_name='poll_option_user',
+        blank=True,
+        verbose_name='کاربران',
+    )
     option = models.CharField(
         max_length=30,
         verbose_name='گزینه',
@@ -87,3 +93,10 @@ class PollOptions(models.Model):
     # Methods
     def __str__(self):
         return self.option
+
+    def poll_percent(self):
+        try:
+            percent = round(self.option_count * 100 / self.poll.users.count())
+        except ZeroDivisionError:
+            percent = 0
+        return percent

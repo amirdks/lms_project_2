@@ -24,7 +24,7 @@
                         <div>
                             <form onclick="submitOptionForm({{ poll_option.id }})" id="option-form-{{ poll_option.id }}" method="post" action="{% url 'update_poll_option' pk=poll.id id=poll_option.id %}">
                                 {% csrf_token %}
-                            <input id="input-{{ poll_option.id }}" name="option" style="width: 500px; float: left" class="form-control" value="{{ poll_option.option }}" type="text" hidden>
+                            <input id="input-{{ poll_option.id }}" name="option" style="width: 500px; float: left" class="form-control" value="{{ poll_option.option }}" type="text">
                         </form>
                         </div>
                     </td>
@@ -38,3 +38,4 @@
         <h1 align="center"> هیچ گزینه ای برای این نظر سنجی قرار نگرفته است </h1>
     </div>
 {% endif %}
+
