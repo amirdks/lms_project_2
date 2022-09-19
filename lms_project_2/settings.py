@@ -11,9 +11,14 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
 from pathlib import Path
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 import account_module
+import environ
+
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,14 +26,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-u+b%ilorvzvqp!*g65-lvca9wzpq(!531uti26a&-#3=un4c(='
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', True)
 
 # for test
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS', '*')]
 
 # for dockerize
 
@@ -46,19 +51,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'account_module',
-    'django_render_partial',
     'home_module',
     'site_module',
     'lessons',
     'lesson_module',
-    'jalali_date',
     'polls',
-    'sorl.thumbnail',
     'management_panel_module',
     'notification_module',
+    'poll_module',
+    'django_render_partial',
+    'jalali_date',
+    'sorl.thumbnail',
     'online_users',
     'widget_tweaks',
-    'poll_module'
+    'django_celery_beat'
 ]
 
 MIDDLEWARE = [
@@ -118,11 +124,11 @@ WSGI_APPLICATION = 'lms_project_2.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('DATABASE-NAME', 'lms_project'),
-        'USER': os.environ.get('DATABASE-USER', 'amir'),
-        'PASSWORD': os.environ.get('DATABASE-PASSWORD', '6168'),
-        'HOST': os.environ.get('DATABASE-HOST', '127.0.0.1'),
-        'PORT': os.environ.get('DATABASE-PORT', 5432),
+        'NAME': os.environ.get('DATABASE_NAME', 'postgres'),
+        'USER': os.environ.get('DATABASE_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('DATABASE_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('DATABASE_PORT', 5432),
     }
 }
 

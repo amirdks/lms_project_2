@@ -9,10 +9,10 @@
 {% endblock %}
 {% block content %}
     {% for poll in polls %}
-        <div class="card">
+        <div style="margin-top: 25px; margin-bottom: 25px" class="card">
             <div class="card-header">
                 <p><span style="float: none; font-size: 1.3rem"><b>{{ poll.question }}</b></span><span
-                        style="float: left"> قرار گرقته در تاریخ {{ poll.jalali_publish }}</span>
+                        style="float: left"> قرار گرفته در تاریخ {{ poll.jalali_publish }}</span>
                 </p>
                 <p><span>از طرف <b>{{ poll.from_teacher }}</b></span><span
                         style="float: left"> برای پایه <b>{{ poll.base }}</b> رشته <b>{{ poll.field_of_study }}</b></span>

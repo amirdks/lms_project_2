@@ -3,8 +3,6 @@ import time
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.http import HttpRequest, JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
@@ -13,7 +11,6 @@ from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 
 from account_module.models import User
 from management_panel_module.mixins import PermissionMixin
-from notification_module.models import CustomNotification
 from poll_module.forms import CreatePollForm, PollOptionForm
 from poll_module.models import Poll, PollOptions
 from utils.casual_functions import poll_render_to_string
@@ -35,7 +32,7 @@ class PollList(LoginRequiredMixin, ListView):
             query = query.all()
         else:
             query = query.filter(base_id=user.base.id, field_of_study_id=user.field_of_study.id)
-        return query
+        return query.prefetch_related('poll_option')
 
 
 class CreatePoll(LoginRequiredMixin, PermissionMixin, CreateView):
@@ -167,14 +164,3 @@ class VotePoll(PermissionMixin, View):
         option.save()
         return JsonResponse({'status': 'success', 'redirect': reverse('poll_list'),
                              'message': 'رای شما با موفقیت ثبت شد درحال تغییر مسیر...'})
-
-
-@receiver(post_save, sender=Poll)
-def create_custom_notification(sender, instance, created, **kwargs):
-    if created:
-        custom_notification = CustomNotification.objects.create(from_teacher_id=instance.from_teacher.id,
-                                                                base=instance.base,
-                                                                field_of_study=instance.field_of_study,
-                                                                title='یک نظر سنجی جدید',
-                                                                text=f'یک نظر سنجی جدید با نام {instance.question} قرار گرفت')
-        custom_notification.save()

@@ -10,6 +10,7 @@ RUN apt-get install -y build-essential libpq-dev libmagic-dev
 RUN rm -rf /var/lib/apt/lists/*
 
 COPY . .
+RUN rm /usr/src/app/lms_project_2/.env
 
 RUN pip install --upgrade pip && pip install -r requirements.txt
 

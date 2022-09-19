@@ -37,13 +37,14 @@ services:
       - database
       - redis
     environment:
+      - SECRET_KEY=(_npq@(rvzmt_(p0w7!nk$v3^*$2mj97$c#1t$0_t-qb-trj10
       - DEBUG=False
-      - ALLOWED_HOSTS=*
-      - DATABASE-NAME=postgres
-      - DATABASE-USER=postgres
-      - DATABASE-PASSWORD=postgres
-      - DATABASE-HOST=database
-      - DATABASE-PORT=5432
+      - ALLOWED_HOSTS=app
+      - DATABASE_NAME=postgres
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_HOST=database
+      - DATABASE_PORT=5432
   
   
   nginx:
