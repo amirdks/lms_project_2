@@ -1,6 +1,8 @@
 {% extends 'management_panel_module/management_page.html' %}
 {% load thumbnail %}
 {% load render_partial %}
+{% load poll_extras %}
+{% load jalali_tags %}
 {% block title %}
     پنل کاربری
 {% endblock %}
@@ -49,6 +51,33 @@
                                 </div>
                                 <div class="col-sm-9 text-secondary">
                                     {{ user.email }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">کد ملی</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user.national_code|persian_number_converter }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">تاریخ تولد</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user.jalali_date_of_birth }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">آدرس</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user.address }}
                                 </div>
                             </div>
                             <hr>

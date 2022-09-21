@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ subject }}</title>
+</head>
+<body>
+<div dir="rtl">
+    <h1>ایمیل دریافت شده از طرف مدرسه سلطانی</h1>
+    <p>{{ content }}</p>
+    <p>از طرف <b>{{ from_teacher }}</b></p>
+    <h3>فایل های لینک شده:</h3>
+    <ol>
+        {% for file in files %}
+            <li style="padding: 10px"><a download="http://127.0.0.1:8000{{ file }}"
+                   href="http://127.0.0.1:8000{{ file }}">دانلود فایل</a></li>
+        {% endfor %}
+    </ol>
+
+    <p class="text-muted">برای پایه {{ base }} رشته {{ field_of_study }}</p>
+</div>
+</body>
+</html>

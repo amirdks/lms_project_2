@@ -27,6 +27,7 @@ urlpatterns = [
                   path('notifications/', include('notification_module.urls')),
                   path('', include('management_panel_module.urls')),
                   path('poll/', include('poll_module.urls')),
+                  path('send-email/', include('send_email_module.urls')),
                   path('admin/', admin.site.urls, name='admin_info_page'),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -1,0 +1,42 @@
+{% extends 'management_panel_module/management_page.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}
+    ارسال ایمیل
+{% endblock %}
+
+{% block custom_header %}
+    <link rel="stylesheet" type="text/css" href="{% static 'management_panel_module/script/ha-datetimepicker.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/loading.css' %}">
+{% endblock %}
+
+{% block content %}
+    <form id="form" action="{% url 'send_email' %}" , method="post">
+        {{ form|crispy }}
+        <label for="id_content" class="control-label requiredField">
+            فایل های پیوند<span class="asteriskField">*</span> </label>
+        <br>
+        <div id="file-div">
+            <input style="margin-top: 10px" class="btn btn-primary" name="file-1" type="file"
+                   value="انتخاب فایل"
+                   id="formFileMultiple">
+        </div>
+        <button style="margin-top: 10px; display: block" class="btn btn-sm btn-info" id="add-file-button" type="button">
+            اضافه کردن فایل <i
+                class="fas fa-plus">
+        </i></button>
+        <button style="margin-top: 20px" class="btn btn-success">ارسال</button>
+    </form>
+    <br>
+    <div id="message-success"></div>
+    <div class="modal-1">hello mf</div>
+{% endblock %}
+
+{% block custom_footer %}
+    <script src="{% static 'script/send_email_module.js' %}"></script>
+    <script type="text/javascript" src="{% static 'management_panel_module/script/ha-solardate.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'management_panel_module/script/ha-lunardate.min.js' %}"></script> //
+    <script type="text/javascript"
+            src="{% static 'management_panel_module/script/ha-datetimepicker.min.js' %}"></script>
+{% endblock %}
+

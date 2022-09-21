@@ -1,6 +1,7 @@
 {% extends 'management_panel_module/management_page.html' %}
 {% load thumbnail %}
 {% load poll_extras %}
+{% load crispy_forms_field %}
 {% block title %}
     لیست درس ها
 {% endblock %}
@@ -16,12 +17,14 @@
                     <input id="lessons-search-input" type="text" name="table_search"
                            class="form-control float-right"
                            placeholder="جست و جو">
-
                     <div class="input-group-append">
                         <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
-
+            </form>
+            <form method="get">
+                {{ filter.form.base }}
+                {{ filter.form.field_of_study }}
             </form>
             {#            {% if request.GET.table_search %}#}
             {#                <p><a href="{% url 'lessons_list_page' %}"> نمایش همه </a></p>#}
@@ -55,7 +58,6 @@
             //$.get('/students-list-search?table_search='+this.value).then(res => {
             //     $('#students-list').html(res.body);
             //});
-            console.log('started')
             let cookie = document.cookie
             let csrfToken = cookie.substring(cookie.indexOf('=') + 1)
             $.ajax({

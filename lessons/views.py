@@ -17,10 +17,12 @@ from django.views.generic import ListView
 
 from account_module.models import User
 from lesson_module.models import Lesson, SetHomeWork, HomeWorks, HomeWorkFiles, PoodemanAndNobat
+from management_panel_module.filters import StudentListResultFilter
 from management_panel_module.forms import SetHomeWorkForm, EditHomeWorkForm
 from management_panel_module.mixins import JustTeacherMixin
 from notification_module.models import Notification
 from utils.time import end_time_calculator
+from .filters import LessonListResultFilter
 from .forms import SendHomeWorkForm
 from .mixins import JustStudentOfLesson
 
@@ -37,12 +39,6 @@ class LessonsList(LoginRequiredMixin, ListView):
         lessons = self.get_queryset()
         if self.request.POST.get('table_search'):
             search = self.request.POST.get('table_search')
-            # user: User = User.objects.filter(id=request.user.id).first()
-            # lessons = Lesson.objects.all()
-            # if user.is_teacher is False:
-            #     query = lessons.filter(is_active=True, base_id=user.base.id, field_of_study_id=user.field_of_study.id)
-            # elif user.is_teacher is True:
-            #     query = lessons.filter(is_active=True, teacher_id=user.id)
             lessons = lessons.filter(
                 Q(title__contains=search) | Q(field_of_study__title__contains=search) | Q(
                     base__title__contains=search))
@@ -57,6 +53,8 @@ class LessonsList(LoginRequiredMixin, ListView):
             query = query.filter(is_active=True, base_id=user.base.id, field_of_study_id=user.field_of_study.id)
         elif user.is_teacher is True:
             query = query.filter(is_active=True, teacher_id=user.id)
+        # if self.request.GET.get('base') or self.request.GET.get('field_of_study'):
+            query = LessonListResultFilter(self.request.GET, queryset=query).qs
         return query
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -78,6 +76,7 @@ class LessonsList(LoginRequiredMixin, ListView):
                         percent[lesson.title] = int(darsad)
             percent = percent
             context['percent_of_sent_homework'] = percent
+        context['filter'] = StudentListResultFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
 

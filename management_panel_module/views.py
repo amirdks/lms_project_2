@@ -17,6 +17,7 @@ from online_users.models import OnlineUserActivity
 
 from account_module.models import User
 from lesson_module.models import Lesson, SetHomeWork
+from management_panel_module.filters import StudentListResultFilter
 from management_panel_module.forms import SetHomeWorkForm
 from management_panel_module.mixins import JustTeacherMixin
 from notification_module.models import Notification, CustomNotification
@@ -30,8 +31,12 @@ class StudentsListView(LoginRequiredMixin, JustTeacherMixin, View):
         teacher = request.user
         students = User.objects.filter(is_teacher=False, base__lesson__teacher_id=teacher.id,
                                        field_of_study__lesson__teacher_id=teacher.id).distinct()
+        filters = StudentListResultFilter(request.GET, queryset=students)
+        # if request.GET.get('base') or request.GET.get('field_of_study'):
+        students = filters.qs
         context = {
-            'students': students
+            'students': students,
+            'filter': filters
         }
 
         return render(request, 'management_panel_module/students_list.html', context)
@@ -52,52 +57,6 @@ def search_student_list(request: HttpRequest):
     return JsonResponse({
         'body': render_to_string('management_panel_module/students_list_content.html', context)
     })
-
-
-class SetHomeWorkView(LoginRequiredMixin, JustTeacherMixin, View):
-
-    def get(self, request: HttpRequest):
-        form = SetHomeWorkForm()
-        context = {
-            'form': form,
-            'lessons': Lesson.objects.filter(teacher_id=request.user.id)
-        }
-        return render(request, 'management_panel_module/set_homework_page.html', context)
-
-    def post(self, request: HttpRequest):
-        form = SetHomeWorkForm(request.POST)
-        if form.is_valid():
-            teacher_id = request.user.id
-            title = form.cleaned_data.get('title')
-            ends_at = form.cleaned_data.get('end_at')
-            allowed_formats = form.cleaned_data.get('format')
-            max_size = form.cleaned_data.get('max_size')
-            is_finished = end_time_calculator(ends_at)
-            if is_finished:
-                messages.error(request, 'لطفا به زمان پایان دقت کنید')
-            else:
-                lesson = form.cleaned_data.get('lesson')
-                description = form.cleaned_data.get('description')
-                new_home_work = SetHomeWork.objects.create(title=title, end_at=ends_at, lesson_id=lesson.id,
-                                                           description=description,
-                                                           teacher_id=teacher_id, max_size=max_size)
-                new_home_work.allowed_formats.set(allowed_formats)
-                new_home_work.save()
-                notification_users = User.objects.filter(field_of_study_id=lesson.field_of_study.id,
-                                                         base_id=lesson.base.id,
-                                                         is_teacher=False)
-                notification_text = f'یک تکلیف جدید مربوط به درس {lesson.title} به نام {new_home_work.title} قرار گرفت'
-                new_notification = Notification.objects.create(from_user_id=request.user.id,
-                                                               home_work_id=new_home_work.id, text=notification_text)
-                new_notification.user.set(notification_users)
-                new_notification.save()
-                return redirect(reverse('management_panel_page'))
-
-        form = SetHomeWorkForm()
-        contex = {
-            'form': form
-        }
-        return render(request, 'management_panel_module/set_homework_page.html', contex)
 
 
 def management_header_references(request):

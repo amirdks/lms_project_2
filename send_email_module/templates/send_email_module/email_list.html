@@ -1,0 +1,102 @@
+{% extends 'management_panel_module/management_page.html' %}
+{% load jalali_tags %}
+{% block title %}
+    لیست ایمیل های ارسال شده
+{% endblock %}
+
+{% block custom_header %}
+
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-12">
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h3 class="card-title">لیست ایمیل های ارسال شده</h3>
+                <div class="card-tools">
+                    <div class="input-group input-group-sm">
+                        <input id="search-email" type="text" class="form-control" placeholder="جست و جوی ایمیل">
+                        <div class="input-group-append">
+                            <div class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+
+                    </div>
+                    <form style="margin: 10px 10px " method="get">
+                        {{ filter.form.base }}
+                    </form>
+                </div>
+
+            </div>
+            {#            {% for obj in filter.qs %}#}
+            {#                {{ obj.subject }}<br/>#}
+            {#            {% endfor %}#}
+
+            <div class="card-body p-0">
+                <div class="mailbox-controls">
+                    <a class="btn btn-success btn-sm" href="{% url 'send_email' %}"> <i class="fas fa-plus"></i>
+                        ارسال ایمیل جدید</a>
+                </div>
+                <div class="table-responsive mailbox-messages">
+                    <table class="table table-hover table-striped">
+                        <tbody id="email-list-content">
+                        {% include 'send_email_module/includes/email_list_content.html' with emails=emails %}
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+
+            <div class="card-footer p-0">
+                <div class="mailbox-controls">
+
+                    <button type="button" class="btn btn-default btn-sm checkbox-toggle">
+                    </button>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-sm">
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm">
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm">
+                        </button>
+                    </div>
+
+                    <button type="button" class="btn btn-default btn-sm">
+                    </button>
+                    <div class="float-right">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm">
+                            </button>
+                            <button type="button" class="btn btn-default btn-sm">
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block custom_footer %}
+    <script>
+        $('#search-email').keyup(function (e) {
+            let cookie = document.cookie
+            let csrfToken = cookie.substring(cookie.indexOf('=') + 1)
+            $.ajax({
+                url: "{% url 'email_list' %}",
+                method: 'post',
+                data: {table_search: this.value},
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+            }).done(function (res) {
+                $('#email-list-content').html(res.body);
+            })
+        })
+    </script>
+{% endblock %}

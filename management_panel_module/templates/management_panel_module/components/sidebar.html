@@ -39,10 +39,10 @@
                             </li>
                             {% if request.user.is_teacher %}
                                 <li class="nav-item">
-                                    <a href="{% url 'set_homework_page' %}"
-                                       class="nav-link {% if request.resolver_match.url_name == 'set_homework_page' %}active{% endif %} ">
-                                        <i class="nav-icon fa-solid fa-calendar-check"></i>
-                                        <p>قرار دادن تکلیف جدید</p>
+                                    <a href="{% url 'email_list' %}"
+                                       class="nav-link {% if request.resolver_match.url_name == 'email_list' %}active{% endif %} ">
+                                        <i class="nav-icon fa-solid fa-send"></i>
+                                        <p>ایمیل های ارسال شده</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">

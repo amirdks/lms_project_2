@@ -1,6 +1,7 @@
 {% extends 'management_panel_module/management_page.html' %}
 {% load static %}
 {% load thumbnail %}
+{% load crispy_forms_field %}
 {% block title %}
     لیست دانش آموزان
 {% endblock %}
@@ -23,6 +24,13 @@
                                 <div class="input-group-append">
                                     <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
                                 </div>
+                                <div style="margin-top: 20px">
+                                    <form method="get">
+                                        {{ filter.form.base }}
+                                        <br>
+                                        {{ filter.form.field_of_study }}
+                                    </form>
+                                </div>
                             </div>
 
                         </form>
@@ -43,18 +51,18 @@
     <script>
         $('#students-search-input').keyup(function () {
             //$.get('/students-list-search?table_search='+this.value).then(res => {
-               //     $('#students-list').html(res.body);
+            //     $('#students-list').html(res.body);
             //});
             $.ajax({
                 url: '/students-list-search',
                 method: 'get',
                 data: {table_search: this.value}
-            }).done(function (res){
+            }).done(function (res) {
                 $('#students-list').html(res.body);
             })
         })
-        $(document).ready(function (){
-            $(document).ajax(function (){
+        $(document).ready(function () {
+            $(document).ajax(function () {
             })
         })
     </script>

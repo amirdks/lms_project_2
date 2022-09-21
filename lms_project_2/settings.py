@@ -59,12 +59,15 @@ INSTALLED_APPS = [
     'management_panel_module',
     'notification_module',
     'poll_module',
+    'send_email_module',
     'django_render_partial',
     'jalali_date',
     'sorl.thumbnail',
     'online_users',
     'widget_tweaks',
-    'django_celery_beat'
+    'django_celery_beat',
+    'crispy_forms',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -220,11 +223,11 @@ JALALI_DATE_DEFAULTS = {
             # loading datepicker
             'admin/js/django_jalali.min.js',
             # OR
-            # 'admin/jquery.ui.datepicker.jalali/scripts/jquery.ui.core.js',
-            # 'admin/jquery.ui.datepicker.jalali/scripts/calendar.js',
-            # 'admin/jquery.ui.datepicker.jalali/scripts/jquery.ui.datepicker-cc.js',
-            # 'admin/jquery.ui.datepicker.jalali/scripts/jquery.ui.datepicker-cc-fa.js',
-            # 'admin/js/main.js',
+            'admin/jquery.ui.datepicker.jalali/scripts/jquery.ui.core.js',
+            'admin/jquery.ui.datepicker.jalali/scripts/calendar.js',
+            'admin/jquery.ui.datepicker.jalali/scripts/jquery.ui.datepicker-cc.js',
+            'admin/jquery.ui.datepicker.jalali/scripts/jquery.ui.datepicker-cc-fa.js',
+            'admin/js/main.js',
         ],
         'css': {
             'all': [
@@ -234,9 +237,9 @@ JALALI_DATE_DEFAULTS = {
     },
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'haminjoorifortest@gmail.com'
-EMAIL_HOST_PASSWORD = 'jqxjfyphqfvlynho'
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')

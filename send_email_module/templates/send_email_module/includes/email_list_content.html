@@ -1,0 +1,20 @@
+{% load jalali_tags %}
+{% for email in emails %}
+    <tr>
+        <td>
+            <div class="icheck-primary">
+                <input type="checkbox" value="" id="check1">
+                <label for="check1"></label>
+            </div>
+        </td>
+        <td class="mailbox-star"><a href="#"><i class="fas fa-star text-warning"></i></a></td>
+        <td class="mailbox-name"><a href="#">{{ email.subject }}</a></td>
+        <td class="mailbox-subject">{{ email.content|truncatewords:50 }}
+        </td>
+        <td class="mailbox-attachment"></td>
+        <td class="mailbox-date">{{ email.send_at|to_jalali:"%Y/%m/%d" }}
+            <p class="text-sm">برای <b>{{ email.base }}</b><br> رشته
+                <b>{{ email.field_of_study }}</b></p>
+        </td>
+    </tr>
+{% endfor %}

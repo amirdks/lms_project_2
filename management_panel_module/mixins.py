@@ -38,7 +38,6 @@ class PermissionMixin(UserPassesTestMixin):
             users.append("is_staff")
         elif user.is_teacher:
             users.append("is_teacher")
-        print(users)
         if users[0] not in self.permission_list:
             return False
         return True
