@@ -68,7 +68,9 @@
                     'X-CSRFToken': csrfToken
                 },
             }).done(function (res) {
-                $('#lessons-list').html(res.body);
+                $('#lessons-list').fadeOut(300, function () {
+                    $('#lessons-list').html(res.body).fadeIn(300)
+                })
             })
         })
 

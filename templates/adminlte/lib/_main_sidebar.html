@@ -134,6 +134,29 @@
                             </li>
                             <li class="nav-item has-tree-view menu">
                                 <a href=""
+                                   class="nav-link {% if 'lesson_module_sethomework' in request.resolver_match.url_name or 'lesson_module_homeworks' in request.resolver_match.url_name %}active{% endif %} ">
+                                    <i class="fas fa-list"></i>
+                                    <p>مدیریت ایمیل ها</p>
+                                    <p><i class="nav-icon right fas fa-angle-left"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview menu-open">
+                                    <li class="nav-item">
+                                        <a href="{% url 'admin:send_email_module_email_changelist' %}"
+                                           class="nav-link {% if 'send_email_module_email' in request.resolver_match.url_name %}active{% endif %}">
+                                            <i class="nav-icon fa-solid fa-send"></i> ایمیل های ارسال شده
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{% url 'admin:send_email_module_linkemailfile_changelist' %}"
+                                           class="nav-link {% if 'email_module_linkemailfile' in request.resolver_match.url_name %}active{% endif %}">
+                                            <i class="nav-icon fa-solid fa-send-o"></i>فایل های پیوند ایمیل
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item has-tree-view menu">
+                                <a href=""
                                    class="nav-link {% if 'poll_module' in request.resolver_match.url_name or 'notification_module' in request.resolver_match.url_name %}active{% endif %} ">
                                     <i class="fas fa-list"></i>
                                     <p>مدیریت اعلان و نظر سنجی</p>

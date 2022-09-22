@@ -34,9 +34,23 @@ class Email(models.Model):
         auto_now_add=True
     )
 
+    class Meta:
+        verbose_name = 'ایمیل'
+        verbose_name_plural = 'ایمیل ها'
+
+    def __str__(self):
+        return f'{self.subject} از {self.from_teacher}'
+
 
 class LinkEmailFile(models.Model):
     email = models.ForeignKey('Email', on_delete=models.CASCADE, verbose_name='برای ایمیل')
     file = models.FileField(
         upload_to='files/email'
     )
+
+    class Meta:
+        verbose_name = 'فایل ایمیل'
+        verbose_name_plural = 'فایل های ایمیل'
+
+    def __str__(self):
+        return self.email.subject
