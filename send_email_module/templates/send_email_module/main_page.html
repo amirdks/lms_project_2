@@ -28,6 +28,10 @@
         <button style="margin-top: 20px" class="btn btn-success">ارسال</button>
     </form>
     <br>
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+
     <div id="message-success"></div>
     <div class="modal-1">hello mf</div>
 {% endblock %}

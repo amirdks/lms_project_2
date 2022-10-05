@@ -138,7 +138,9 @@ class LoginView(View):
         if request.user.is_authenticated:
             return redirect(reverse('home_page'))
         login_form = LoginForm(request.POST)
-        if login_form.is_valid():
+        if request.session.get('login_failed', 0) >= 3 :
+            login_form.add_error(field='name', error='به دلیل تلاش های متدد لطفا چند لحظه بعد دوباره تلاش کنید')
+        elif login_form.is_valid():
             user_name_or_email = login_form.cleaned_data.get('name')
             user_password = login_form.cleaned_data.get('password')
             user = User.objects.filter(
@@ -154,6 +156,11 @@ class LoginView(View):
             else:
                 login_form.add_error(field='name', error='کاربری با مشخصات وارد شده یافت نشد')
                 # messages.error(request, 'کاربری با مشخصات وارد شده یافت نشد')
+        if not request.session.get('login_failed'):
+            request.session['login_failed'] = 0
+        request.session['login_failed'] += 1
+        request.session.set_expiry(40)
+
         contex = {
             'login_form': login_form
         }

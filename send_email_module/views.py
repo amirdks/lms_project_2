@@ -4,6 +4,7 @@ from django.http import JsonResponse, HttpRequest
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.views import View
+# from django.views import View
 from django.views.generic import ListView
 
 from account_module.models import User
@@ -14,8 +15,6 @@ from send_email_module.forms import EmailForm
 from send_email_module.models import LinkEmailFile, Email
 from send_email_module.tasks import send_email_task
 from utils.form_errors import form_error
-
-
 # Create your views here.
 class SendEmail(LoginRequiredMixin, PermissionMixin, View):
     permission_list = ['is_teacher', 'is_staff', 'is_superuser']
