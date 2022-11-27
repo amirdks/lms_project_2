@@ -71,3 +71,4 @@ class UpdateNotification(LoginRequiredMixin, PermissionMixin, UpdateView):
         context = super(UpdateNotification, self).get_form_kwargs()
         context['user'] = self.request.user
         return context
+

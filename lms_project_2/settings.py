@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'notification_module',
     'poll_module',
     'send_email_module',
+    'chat_module',
     'django_render_partial',
     'jalali_date',
     'sorl.thumbnail',
@@ -68,6 +69,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'crispy_forms',
     'django_filters',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -101,7 +103,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'lms_project_2.wsgi.application'
+# WSGI_APPLICATION = 'lms_project_2.wsgi.application'
+ASGI_APPLICATION = 'lms_project_2.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
@@ -180,7 +183,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'fa'
 
-TIME_ZONE = 'Asia/Tehran'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -243,3 +246,12 @@ EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
