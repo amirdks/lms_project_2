@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import jalali_date
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core import serializers
 from django.db.models import Q, Avg, Count
 from django.http import HttpRequest, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -25,6 +26,7 @@ from utils.time import end_time_calculator
 from .filters import LessonListResultFilter
 from .forms import SendHomeWorkForm
 from .mixins import JustStudentOfLesson
+from .serializer import LessonSerializer
 
 
 class LessonsList(LoginRequiredMixin, ListView):
@@ -37,14 +39,18 @@ class LessonsList(LoginRequiredMixin, ListView):
 
     def post(self, request):
         lessons = self.get_queryset()
+        lessons_json=[]
         if self.request.POST.get('table_search'):
             search = self.request.POST.get('table_search')
             lessons = lessons.filter(
                 Q(title__contains=search) | Q(field_of_study__title__contains=search) | Q(
                     base__title__contains=search))
+            lessons_json = LessonSerializer(lessons, many=True).data
+            # print(lessons_json)
         return JsonResponse({'body': render_to_string('lessons/includes/lessons_list_content.html',
                                                       context={'lessons': lessons,
-                                                               'percent_of_sent_homework': 0})})
+                                                               'percent_of_sent_homework': 0}),
+                             'lessons_json': lessons_json})
 
     def get_queryset(self):
         query: Lesson.objects = super(LessonsList, self).get_queryset()
@@ -53,7 +59,7 @@ class LessonsList(LoginRequiredMixin, ListView):
             query = query.filter(is_active=True, base_id=user.base.id, field_of_study_id=user.field_of_study.id)
         elif user.is_teacher is True:
             query = query.filter(is_active=True, teacher_id=user.id)
-        # if self.request.GET.get('base') or self.request.GET.get('field_of_study'):
+            # if self.request.GET.get('base') or self.request.GET.get('field_of_study'):
             query = LessonListResultFilter(self.request.GET, queryset=query).qs
         return query
 

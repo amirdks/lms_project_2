@@ -14,9 +14,12 @@
             <form onsubmit="return mySubmitFunction()" action="{% url 'lessons_list_page' %}" method="post">
                 {% csrf_token %}
                 <div class="input-group input-group-sm" style="width: 150px;">
-                    <input id="lessons-search-input" type="text" name="table_search"
+                    <input id="lessons-search-input" list="browsers" type="text" name="table_search"
                            class="form-control float-right"
-                           placeholder="جست و جو">
+                           placeholder="جست و جو" autocomplete="off">
+                    {#                    <input class="form-control" list="browsers" name="browser" id="browser">#}
+                    <datalist id="browsers">
+                    </datalist>
                     <div class="input-group-append">
                         <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
                     </div>
@@ -70,6 +73,19 @@
             }).done(function (res) {
                 $('#lessons-list').fadeOut(300, function () {
                     $('#lessons-list').html(res.body).fadeIn(300)
+                    let lessonsJson = res.lessons_json
+                    if (typeof lessonsJson[0] !== 'undefined') {
+                        for (let i = 0; i < lessonsJson.length; i++) {
+                            console.log(i);
+                            if (i === 0) {
+                                $('#browsers').empty().html(`<option value="${lessonsJson[i].title}">`)
+                            } else {
+                                $('#browsers').append(`<option value="${lessonsJson[i].title}">`)
+                            }
+                        }
+                    } else {
+                        console.log('nabid')
+                    }
                 })
             })
         })

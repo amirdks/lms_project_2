@@ -1,7 +1,7 @@
 {% load poll_extras %}
 {% load thumbnail %}
 {% for lesson in lessons %}
-        <div class="col-sm-4">
+        <div class="col-sm-6 col-xl-3">
 
         <div class="card">
             {% thumbnail lesson.image "120x30" crop="center" quality=95 as im %}

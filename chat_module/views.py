@@ -1,6 +1,9 @@
+import json
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest
 from django.shortcuts import render
+from django.utils.safestring import mark_safe
 from django.views import View
 
 # Create your views here.
@@ -17,6 +20,5 @@ class ChatList(LoginRequiredMixin, View):
 
 class ChatPv(View):
     def get(self, request, username):
-        print(username)
-        context = {}
+        context = {'username': mark_safe(json.dumps(username))}
         return render(request, 'chat_module/chat_box.html', context)
