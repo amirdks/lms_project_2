@@ -1,76 +1,108 @@
 {% extends 'management_panel_module/management_page.html' %}
 {% load static %}
-
+{% load thumbnail %}
 {% block title %}
     test
 {% endblock %}
 
 {% block custom_header %}
-    <link rel="stylesheet" href="{% static 'css/chat_box.css' %}">
+    <link rel="stylesheet" href="{% static 'css/chat.css' %}">
 {% endblock %}
 
 {% block content %}
-    <div id="container">
-        <aside>
-            <header>
-                <input type="text" placeholder="search">
-            </header>
-            <ul>
-                <li>
-                    <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg" alt="">
-                    <div>
-                        <h2>Prénom Nom</h2>
-                        <h3>
-                            <span class="status orange"></span>
-                            offline
-                        </h3>
+    <div class="container-fluid pt-3">
+        <div class="row removable">
+            <div class="col-lg-12 px-sm-0">
+                <div class="card shadow-none px-0 bg-transparent mt-0 mb-4">
+                    <div class="card-body px-0 pb-0">
+                        <div class="px-0 pb-4">
+                            <div class="row flex-row">
+                                <div class="col-lg-4 mb-4">
+                                    <div class="card max-height-vh-90 h-100 overflow-auto overflow-x-hidden mb-5 mb-lg-0"
+                                         style="max-height: 70vh;">
+                                        <form class="card-header">
+                                            <div class="input-group mb-0">
+                                                <input type="text" placeholder="Search" class="form-control"
+                                                       aria-label="Amount (to the nearest dollar)">
+                                                <div class="input-group-append">
+                                                        <span class="input-group-text">
+                                                            <i class="fa fa-search"></i>
+                                                        </span>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <div class="card-body p-2">
+                                            {% for chat in chats %}
+                                                <a href="javascript:;"
+                                                   class="d-block p-2 rounded-lg bg-gradient-primary contact">
+                                                    <div class="d-flex p-2">
+                                                        <img alt="Image"
+                                                             src="{% static 'images/images.png' %}"
+                                                             class="avatar">
+                                                        <div class="ml-2">
+                                                            <div class="justify-content-between align-items-center">
+                                                                <h4 class="mb-0 mt-2 text-white">
+                                                                    {% for member in chat.member_set.all %}
+                                                                        {% if member.user.id != request.user.id %}
+                                                                            {{ member.user.username }}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                    <span class="badge badge-success"></span>
+                                                                </h4>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            {% endfor %}
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-8" style="direction: rtl!important;">
+                                    <div class="card max-height-vh-90" style="max-height: 70vh;">
+                                        <div class="card-body overflow-auto overflow-x-hidden">
+                                            {% for message in chats.first.message_set.all %}
+                                                <div class="row {% if message.author.id == request.user.id %}justify-content-end text-right {% else %}justify-content-start {% endif %}  mb-4">
+                                                    <div class="col-auto">
+                                                        <div class="card {% if message.author.id == request.user.id %}bg-gradient-primary text-white {% endif %}">
+                                                            <div class="card-body p-2">
+                                                                <p class="mb-1" dir="ltr">
+                                                                   {{ message.text }}<br>
+                                                                </p>
+                                                                <div class="d-flex align-items-center justify-content-end text-sm opacity-6">
+                                                                    <i class="fa fa-check-double mr-1 text-xs"
+                                                                       aria-hidden="true"></i>
+                                                                    <small>{{ message.date_created | time }}</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="card-footer d-block">
+                                            <form class="align-items-center">
+                                                <div class="input-group mb-3">
+                                                    <input type="text" placeholder="Search" class="form-control"
+                                                           aria-label="Amount (to the nearest dollar)">
+                                                    <div class="input-group-append">
+                                                            <span class="input-group-text">
+                                                                <i class="fa fa-paper-plane"></i>
+                                                            </span>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </li>
-            </ul>
-        </aside>
-        <main>
-            <header>
-                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg" alt="">
-                <div>
-                    <h2>Chat with Vincent Porter</h2>
-{#                    <h3>already 1902 messages</h3>#}
                 </div>
-{#                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_star.png" alt="">#}
-            </header>
-            <ul id="chat">
-                <li class="you">
-                    <div class="entete">
-                        <span class="status green"></span>
-                        <h2>Vincent</h2>
-                        <h3>10:12AM, Today</h3>
-                    </div>
-                    <div class="triangle"></div>
-                    <div class="message">
-                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
-                    </div>
-                </li>
-                <li class="me">
-                    <div class="entete">
-                        <h3>10:12AM, Today</h3>
-                        <h2>Vincent</h2>
-                        <span class="status blue"></span>
-                    </div>
-                    <div class="triangle"></div>
-                    <div class="message">
-                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
-                    </div>
-                </li>
-            </ul>
-            <footer>
-                <textarea style="border: 1px solid black; border-radius: 6px" placeholder="Type your message"></textarea>
-                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_picture.png" alt="">
-                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_file.png" alt="">
-                <button class="btn btn-sm btn-primary">send</button>
-            </footer>
-        </main>
+            </div>
+        </div>
     </div>
 {% endblock %}
-
 {% block custom_footer %}
-    <script src="{% static 'script/chat_script.js' %}"></script>
+
 {% endblock %}

@@ -229,6 +229,35 @@
                                     </li>
                                 </ul>
                             </li>
+                            <li class="nav-item has-tree-view menu">
+                                <a href=""
+                                   class="nav-link {% if 'chat_module' in request.resolver_match.url_name %}active{% endif %} ">
+                                    <i class="fas fa-list"></i>
+                                    <p>چت ها</p>
+                                    <p><i class="nav-icon right fas fa-angle-left"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview menu-open">
+                                    <li class="nav-item">
+                                        <a href="{% url 'admin:chat_module_chat_changelist' %}"
+                                           class="nav-link {% if 'chat_module_chat' in request.resolver_match.url_name %}active{% endif %}">
+                                            <i class="nav-icon fas fa-calendar-check"></i> چت ها
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{% url 'admin:chat_module_member_changelist' %}"
+                                           class="nav-link {% if 'chat_module_member' in request.resolver_match.url_name %}active{% endif %}">
+                                            <i class="nav-icon fas fa-calendar-check"></i> اعضای چت
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{% url 'admin:chat_module_message_changelist' %}"
+                                           class="nav-link {% if 'chat_module_message' in request.resolver_match.url_name %}active{% endif %}">
+                                            <i class="nav-icon fas fa-check"></i>پیام ها
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
                         {% endblock nav_linkss %}
                     {% endblock nav_links_outer %}
                 </ul>

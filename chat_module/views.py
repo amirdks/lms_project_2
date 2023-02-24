@@ -1,24 +1,28 @@
 import json
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpRequest
-from django.shortcuts import render
+from django.http import HttpRequest, Http404
+from django.shortcuts import render, get_object_or_404
 from django.utils.safestring import mark_safe
 from django.views import View
 
 # Create your views here.
 from account_module.models import User
+from chat_module.models import Chat
 
 
-class ChatList(LoginRequiredMixin, View):
-    def get(self, request: HttpRequest):
-        user: User = request.user
-        users = User.objects.filter(base_id=user.base, field_of_study_id=user.field_of_study_id).exclude(id=user.id)
-        context = {'users': users}
+class ChatView(LoginRequiredMixin, View):
+    def get(self, request: HttpRequest, chat_id=None):
+        user = request.user
+        chats = Chat.objects.prefetch_related('message_set', 'member_set').filter(member__user_id=user.id)
+        chat = None
+        if chat_id:
+            try:
+                chat = chats.get(unique_code__exact=chat_id, member__user_id=user.id)
+                context = {'chats': chats, 'current_chat': chat,
+                           'current_chat_id': mark_safe(json.dumps(chat.unique_code))}
+            except Chat.DoesNotExist as e:
+                raise Http404('چت مورد نظر شما یافت نشد')
+        else:
+            context = {'chats': chats}
         return render(request, 'chat_module/chat_list.html', context)
-
-
-class ChatPv(View):
-    def get(self, request, username):
-        context = {'username': mark_safe(json.dumps(username))}
-        return render(request, 'chat_module/chat_box.html', context)

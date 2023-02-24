@@ -6,74 +6,205 @@
 {% endblock %}
 
 {% block custom_header %}
-    <link rel="stylesheet" href="{% static 'css/chat_box.css' %}">
+    <link rel="stylesheet" href="{% static 'css/chat.css' %}">
 {% endblock %}
 
 {% block content %}
-    <div id="container">
-        <aside>
-            <header>
-                <input type="text" placeholder="search">
-            </header>
-            <ul>
-                {% for user in users %}
-                    <li>
-                        <a href="{% url 'chat_pv_view' username=user.username %}">
-                            {% thumbnail user.avatar "50x50" crop="center" quality=95 as im %}
-                            <img src="{{ im.url }}" alt="">
-                        {% endthumbnail %}
-                            <div>
-                                <h2>{{ user.username }}</h2>
-                                <h3>
-                                    <span class="status orange"></span>
-                                    offline
-                                </h3>
-                            </div>
-                        </a>
-                    </li>
-                {% endfor %}
+    <div class="container-fluid pt-3">
+        <div class="row removable">
+            <div class="col-lg-12 px-sm-0">
+                <div class="card shadow-none px-0 bg-transparent mt-0 mb-4">
+                    <div class="card-body px-0 pb-0">
+                        <div class="px-0 pb-4">
+                            <div class="row flex-row">
+                                <div class="col-lg-4 mb-4">
+                                    <div class="card max-height-vh-90 h-100 overflow-auto overflow-x-hidden mb-5 mb-lg-0"
+                                         style="max-height: 70vh;">
+                                        <form class="card-header">
+                                            <div class="input-group mb-0">
+                                                <input type="text" placeholder="Search" class="form-control"
+                                                       aria-label="Amount (to the nearest dollar)">
+                                                <div class="input-group-append">
+                                                        <span class="input-group-text">
+                                                            <i class="fa fa-search"></i>
+                                                        </span>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <div class="card-body p-2">
+                                            {% for chat in chats %}
+                                                <a href="{% url 'chat_contact_view' chat_id=chat.unique_code %}"
+                                                   class="d-block p-2 rounded-lg {% if chat.id == current_chat.id %}bg-gradient-primary{% endif %} contact">
+                                                    <div class="d-flex p-2">
+                                                        <img alt="Image"
+                                                             src="{% static 'images/images.png' %}"
+                                                             class="avatar">
+                                                        <div class="ml-2">
+                                                            <div class="justify-content-between align-items-center">
+                                                                <h4 class="mb-0 mt-2 text-black">
+                                                                    {% for member in chat.member_set.all %}
+                                                                        {% if member.user.id != request.user.id %}
+                                                                            {{ member.user.username }}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                    <span class="badge badge-success"></span>
+                                                                </h4>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            {% endfor %}
 
-            </ul>
-        </aside>
-        {#        <main>#}
-        {#            <header>#}
-        {#                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg" alt="">#}
-        {#                <div>#}
-        {#                    <h2>Chat with Vincent Porter</h2>#}
-        {#                    <h3>already 1902 messages</h3>#}
-        {#                </div>#}
-        {#                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_star.png" alt="">#}
-        {#            </header>#}
-        {#            <ul id="chat">#}
-        {#                <li class="you">#}
-        {#                    <div class="entete">#}
-        {#                        <span class="status green"></span>#}
-        {#                        <h2>Vincent</h2>#}
-        {#                        <h3>10:12AM, Today</h3>#}
-        {#                    </div>#}
-        {#                    <div class="triangle"></div>#}
-        {#                    <div class="message">#}
-        {#                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.#}
-        {#                    </div>#}
-        {#                </li>#}
-        {#                <li class="me">#}
-        {#                    <div class="entete">#}
-        {#                        <h3>10:12AM, Today</h3>#}
-        {#                        <h2>Vincent</h2>#}
-        {#                        <span class="status blue"></span>#}
-        {#                    </div>#}
-        {#                    <div class="triangle"></div>#}
-        {#                    <div class="message">#}
-        {#                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.#}
-        {#                    </div>#}
-        {#                </li>#}
-        {#            </ul>#}
-        {#            <footer>#}
-        {#                <textarea style="border: 1px solid black; border-radius: 6px" placeholder="Type your message"></textarea>#}
-        {#                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_picture.png" alt="">#}
-        {#                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_file.png" alt="">#}
-        {#                <button class="btn btn-sm btn-primary">send</button>#}
-        {#            </footer>#}
-        {#        </main>#}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-8" style="direction: rtl!important;">
+                                    <div class="card max-height-vh-90" style="max-height: 70vh;">
+                                        {% if current_chat %}
+                                            <div id="messages-list" class="card-body overflow-auto overflow-x-hidden">
+                                                {% if current_chat.message_set.all %}
+                                                    {% for message in current_chat.message_set.all %}
+                                                        <div class="row {% if message.author.id == request.user.id %}justify-content-end text-right {% else %}justify-content-start {% endif %}  mb-4">
+                                                            <div class="col-auto">
+                                                                <div class="card {% if message.author.id == request.user.id %}bg-gradient-primary text-white {% endif %}">
+                                                                    <div class="card-body p-2">
+                                                                        <p class="mb-1" dir="ltr">
+                                                                            {{ message.text }}<br>
+                                                                        </p>
+                                                                        <div class="d-flex align-items-center justify-content-end text-sm opacity-6">
+                                                                            <i class="fa fa-check-double mr-1 text-xs"
+                                                                               aria-hidden="true"></i>
+                                                                            <small>{{ message.date_created | time }}</small>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <div id="no-message" class="text-muted text-danger text-center">هیچ
+                                                        پیامی برای نمایش وجود ندارد
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% else %}
+                                            <div style="height: 70vh;display: flex;align-items: center;justify-content: center ;background-color: rgba(163,163,163,0.5)"
+                                                 class="card-body overflow-auto overflow-x-hidden">
+                                                <div>
+                                                    لطفا برای شروع یک چت را انتخاب کنید
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        <div class="card-footer d-block">
+                                            <div class="input-group mb-3">
+                                                <input id="msg-input" type="text" placeholder="Search"
+                                                       class="form-control"
+                                                       aria-label="Amount (to the nearest dollar)">
+                                                <div style="cursor: pointer" id="msg-submit" class="input-group-append">
+                                                            <span class="input-group-text">
+                                                                <i class="fa fa-paper-plane"></i>
+                                                            </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+{% endblock %}
+{% block custom_footer %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.js"></script>
+    <script>
+        {% if current_chat %}
+            function isEmptyOrSpaces(str) {
+                return str === null || str.match(/^ *$/) !== null;
+            }
+            let chat_id = {{ current_chat_id }};
+            let msgdiv = $('#messages-list');
+
+            window.onload = function (e) {
+                msgdiv.scrollTop(msgdiv.prop("scrollHeight"));
+            }
+
+            let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+            let socket = new ReconnectingWebSocket(
+                ws_scheme + '://' + window.location.host +
+                '/ws/chat/' + chat_id + '/');
+            socket.onmessage = function (e) {
+                let message = JSON.parse(e.data);
+                switch (message['type']) {
+                    case "msg":
+                        msgdiv.append(`<div class="row justify-content-start mb-4">
+                                                        <div class="col-auto">
+                                                            <div class="card ">
+                                                                <div class="card-body p-2">
+                                                                    <p class="mb-1" dir="ltr">
+                                                                        ${message['text']}<br>
+                                                                    </p>
+                                                                    <div class="d-flex align-items-center justify-content-end text-sm opacity-6">
+                                                                        <i class="fa fa-check-double mr-1 text-xs"
+                                                                           aria-hidden="true"></i>
+                                                                        <small>{% now "SHORT_DATETIME_FORMAT" %}</small>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>`)
+                        break;
+                    default:
+                        break;
+                }
+                msgdiv.scrollTop(msgdiv.prop("scrollHeight"));
+            };
+
+            socket.onclose = function (e) {
+                console.error('Socket closed unexpectedly');
+            };
+
+            document.querySelector('#msg-input').focus();
+            document.querySelector('#msg-input').onkeyup = function (e) {
+                if (e.keyCode === 13) {  // enter, return
+                    document.querySelector('#msg-submit').click();
+                }
+            };
+           /* setTimeout(function () {
+                socket.send(JSON.stringify({"message_type": "seen_messages"}));
+            }, 5000); */
+
+            document.querySelector('#msg-submit').onclick = function (e) {
+                let messageInputDom = document.querySelector('#msg-input');
+                let message = messageInputDom.value;
+                if (!isEmptyOrSpaces(message) && message !== '') {
+                    msgdiv.append(`    <div class="row justify-content-end text-right  mb-4">
+                                                        <div class="col-auto">
+                                                            <div class="card bg-gradient-primary text-white ">
+                                                                <div class="card-body p-2">
+                                                                    <p class="mb-1" dir="ltr">
+                                                                        ${message}<br>
+                                                                    </p>
+                                                                    <div class="d-flex align-items-center justify-content-end text-sm opacity-6">
+                                                                        <i class="fa fa-check-double mr-1 text-xs"
+                                                                           aria-hidden="true"></i>
+                                                                        <small>{% now "SHORT_DATETIME_FORMAT" %}</small>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>`)
+                }
+                $('#no-message').remove()
+
+                msgdiv.scrollTop(msgdiv.prop("scrollHeight"));
+
+                socket.send(JSON.stringify({"message_type": "message", "text": message}));
+
+                messageInputDom.value = '';
+            };
+        {% endif %}
+    </script>
 {% endblock %}

@@ -1,0 +1,6 @@
+.contact img{
+    width: 50px;
+}
+.contact:hover{
+    text-decoration: none;
+}
