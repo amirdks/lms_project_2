@@ -8,7 +8,7 @@ from django.views import View
 
 # Create your views here.
 from account_module.models import User
-from chat_module.models import Chat
+from chat_module.models import Chat, Message
 
 
 class ChatView(LoginRequiredMixin, View):
@@ -19,7 +19,8 @@ class ChatView(LoginRequiredMixin, View):
         if chat_id:
             try:
                 chat = chats.get(unique_code__exact=chat_id, member__user_id=user.id)
-                context = {'chats': chats, 'current_chat': chat,
+                messages = Message.objects.filter(chat_id=chat.id).order_by('date_created')
+                context = {'chats': chats, 'current_chat': chat, 'messages': messages,
                            'current_chat_id': mark_safe(json.dumps(chat.unique_code))}
             except Chat.DoesNotExist as e:
                 raise Http404('چت مورد نظر شما یافت نشد')

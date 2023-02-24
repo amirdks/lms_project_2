@@ -51,12 +51,30 @@ class ChatConsumer(AsyncConsumer):
                     self.chat_room_id,
                     {
                         'type': 'chat_message',
-                        'message': json.dumps({'type': "msg", 'sender': self.user.username, 'text': text}),
+                        'message': json.dumps({'type': "message", 'sender': self.user.username, 'text': text}),
                         'sender_channel_name': self.channel_name
                     }
                 )
-            # elif message_type == 'seen_messages':
-            #     print('seened')
+        elif message_type == 'seen_messages':
+            await self.seen_message()
+            await self.channel_layer.group_send(
+                self.chat_room_id,
+                {
+                    'type': 'chat_message',
+                    'message': json.dumps({'type': "seen_all"}),
+                    'sender_channel_name': self.channel_name
+                }
+            )
+        elif message_type == 'seen_message':
+            await self.seen_message(True)
+            await self.channel_layer.group_send(
+                self.chat_room_id,
+                {
+                    'type': 'chat_message',
+                    'message': json.dumps({'type': "seen_one"}),
+                    'sender_channel_name': self.channel_name
+                }
+            )
 
     async def chat_message(self, event):
         message = event['message']
@@ -86,3 +104,12 @@ class ChatConsumer(AsyncConsumer):
     @database_sync_to_async
     def create_message(self, text):
         Message.objects.create(chat_id=self.chat.id, author_id=self.user.id, text=text)
+
+    @database_sync_to_async
+    def seen_message(self, solo=False):
+        if not solo:
+            Message.objects.filter(chat_id=self.chat.id).exclude(author_id=self.user.id).update(is_seen=True)
+        elif solo:
+            message = Message.objects.filter(chat_id=self.chat.id).exclude(author_id=self.user.id).last()
+            message.is_seen = True
+            message.save()

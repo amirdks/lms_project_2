@@ -38,6 +38,7 @@ class Message(models.Model):
     author = models.ForeignKey('account_module.User', on_delete=models.CASCADE)
     text = models.TextField(default="")
     date_created = models.DateTimeField(auto_now_add=True)
+    is_seen = models.BooleanField(default=False, verbose_name='سین شده')
 
 
 class Member(models.Model):
