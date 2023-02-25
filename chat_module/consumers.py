@@ -1,3 +1,4 @@
+import base64
 import json
 
 from channels.consumer import AsyncConsumer
@@ -7,7 +8,9 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 # class ChatConsumer(AsyncWebsocketConsumer):
 #     pass
-from chat_module.models import Chat, Message
+from django.core.files.base import ContentFile
+
+from chat_module.models import Chat, Message, FileMessage
 
 
 class ChatConsumer(AsyncConsumer):
@@ -75,6 +78,19 @@ class ChatConsumer(AsyncConsumer):
                     'sender_channel_name': self.channel_name
                 }
             )
+        elif message_type == 'image':
+            format, imgstr = data.get('text').split(';base64,')
+            ext = format.split('/')[-1]
+            image_data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+            await self.create_image(image_data)
+            await self.channel_layer.group_send(
+                self.chat_room_id,
+                {
+                    'type': 'chat_message',
+                    'message': json.dumps({'type': "image", 'sender': self.user.username, 'text': data.get('text')}),
+                    'sender_channel_name': self.channel_name
+                }
+            )
 
     async def chat_message(self, event):
         message = event['message']
@@ -104,6 +120,11 @@ class ChatConsumer(AsyncConsumer):
     @database_sync_to_async
     def create_message(self, text):
         Message.objects.create(chat_id=self.chat.id, author_id=self.user.id, text=text)
+
+    @database_sync_to_async
+    def create_image(self, image):
+        message = Message.objects.create(chat_id=self.chat.id, author_id=self.user.id)
+        FileMessage.objects.create(message_id=message.id, image=image)
 
     @database_sync_to_async
     def seen_message(self, solo=False):

@@ -39,9 +39,9 @@
                                                            class="d-block p-2 rounded-lg {% if chat.id == current_chat.id %}bg-gradient-primary{% endif %} contact">
                                                             <div class="d-flex p-2">
                                                                 {% thumbnail member.user.avatar "400x400" crop="center" quality=95 as im %}
-                                                                <img alt="Image"
-                                                                     src="{{ im.url }}"
-                                                                     class="avatar rounded-circle">
+                                                                    <img alt="Image"
+                                                                         src="{{ im.url }}"
+                                                                         class="avatar rounded-circle">
                                                                 {% endthumbnail %}
                                                                 <div class="ml-2">
                                                                     <div class="justify-content-between align-items-center">
@@ -71,7 +71,10 @@
                                                                 <div class="card {% if message.author.id == request.user.id %}bg-gradient-primary text-white {% endif %}">
                                                                     <div class="card-body p-2">
                                                                         <p class="mb-1" dir="ltr">
-                                                                            {{ message.text }}<br>
+                                                                            {% if message.filemessage %}
+                                                                                <img alt="na" class="image-message"
+                                                                                     src="{{ message.filemessage.image.url }}"> {% else %}
+                                                                                {{ message.text }}{% endif %} <br>
                                                                         </p>
                                                                         <div class="d-flex align-items-center justify-content-end text-sm opacity-6">
                                                                             <i class="fa {% if message.author.id == request.user.id and not message.is_seen %}fa-check {% elif message.author.id == request.user.id and message.is_seen %} fa-check-double {% endif %} mr-1 text-xs"
@@ -99,13 +102,21 @@
                                         {% endif %}
                                         <div class="card-footer d-block">
                                             <div class="input-group mb-3">
-                                                <input id="msg-input" type="text" placeholder="Search"
+                                                <input style="height: 50px;" id="msg-input" type="text"
+                                                       placeholder="Search"
                                                        class="form-control"
                                                        aria-label="Amount (to the nearest dollar)">
                                                 <div style="cursor: pointer" id="msg-submit" class="input-group-append">
-                                                            <span class="input-group-text">
-                                                                <i class="fa fa-paper-plane"></i>
-                                                            </span>
+                                                    <span class="input-group-text">
+                                                        <i class="fa fa-paper-plane"></i>
+                                                    </span>
+                                                    <span class="input-group-text">
+                                                        <label style="cursor: pointer" for="image-message-input">
+                                                            <i class="fa-solid fa-image"></i>
+                        <input class="btn btn-primary float-right" name="file" type="file" value="ارسال"
+                               id="image-message-input"/>
+                                                        </label>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -171,6 +182,25 @@
                         lastOnCheckItem.classList.remove('fa-check')
                         lastOnCheckItem.classList.add('fa-check-double')
                         break;
+                    case "image":
+                        msgdiv.append(`<div class="row justify-content-start mb-4">
+                                                        <div class="col-auto">
+                                                            <div class="card ">
+                                                                <div class="card-body p-2">
+                                                                    <p class="mb-1" dir="ltr">
+                                                                        <img alt="na" class="image-message" src="${message['text']}" ><br>
+                                                                    </p>
+                                                                    <div class="d-flex align-items-center justify-content-end text-sm opacity-6">
+                                                                        <i class="fa mr-1 text-xs"
+                                                                           aria-hidden="true"></i>
+                                                                        <small>{% now "SHORT_DATETIME_FORMAT" %}</small>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>`)
+                        socket.send(JSON.stringify({"message_type": "seen_message"}));
+                        break;
                     default:
                         break;
                 }
@@ -190,7 +220,6 @@
             setTimeout(function () {
                 socket.send(JSON.stringify({"message_type": "seen_messages"}));
             }, 2000);
-
             document.querySelector('#msg-submit').onclick = function (e) {
                 let messageInputDom = document.querySelector('#msg-input');
                 let message = messageInputDom.value;
@@ -220,6 +249,36 @@
 
                 messageInputDom.value = '';
             };
+            let imageInput = document.getElementById('image-message-input')
+            imageInput.addEventListener('change', e => {
+                let target = e.target;
+                if (target.files && target.files[0]) {
+                    const FR = new FileReader()
+                    FR.addEventListener('load', e => {
+                        socket.send(JSON.stringify({"message_type": "image", "text": e.target.result}));
+                        msgdiv.append(`    <div class="row justify-content-end text-right  mb-4">
+                                                        <div class="col-auto">
+                                                            <div class="card bg-gradient-primary text-white ">
+                                                                <div class="card-body p-2">
+                                                                    <p class="mb-1" dir="ltr">
+                                                                        <img alt="na" class="image-message" src="${e.target.result}" > <br>
+                                                                    </p>
+                                                                    <div class="d-flex align-items-center justify-content-end text-sm opacity-6">
+                                                                        <i class="fa fa-check mr-1 text-xs"
+                                                                           aria-hidden="true"></i>
+                                                                        <small>{% now "SHORT_DATETIME_FORMAT" %}</small>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>`)
+                        $('#no-message').remove()
+
+                        msgdiv.scrollTop(msgdiv.prop("scrollHeight"));
+                    })
+                    FR.readAsDataURL(target.files[0])
+                }
+            })
         {% endif %}
     </script>
 {% endblock %}

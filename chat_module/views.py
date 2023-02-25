@@ -5,9 +5,7 @@ from django.http import HttpRequest, Http404
 from django.shortcuts import render, get_object_or_404
 from django.utils.safestring import mark_safe
 from django.views import View
-
 # Create your views here.
-from account_module.models import User
 from chat_module.models import Chat, Message
 
 

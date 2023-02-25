@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from chat_module.models import Chat, Member, Message
+from chat_module.models import Chat, Member, Message, FileMessage
 
 
 @admin.register(Chat)
@@ -16,4 +16,9 @@ class MemberAdmin(admin.ModelAdmin):
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(FileMessage)
+class FileMessageAdmin(admin.ModelAdmin):
     pass

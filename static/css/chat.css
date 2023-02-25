@@ -4,3 +4,13 @@
 .contact:hover{
     text-decoration: none;
 }
+
+#image-message-input{
+    display: None;
+    height: 0;
+    width: 0;
+}
+.image-message{
+    width: 400px;
+    height: 300px;
+}

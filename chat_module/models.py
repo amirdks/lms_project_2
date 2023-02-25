@@ -44,3 +44,9 @@ class Message(models.Model):
 class Member(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
     user = models.ForeignKey('account_module.User', on_delete=models.CASCADE)
+
+
+class FileMessage(models.Model):
+    message = models.OneToOneField('Message', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='images/chat', blank=True, null=True)
+    date_created = models.DateTimeField(auto_now_add=True)

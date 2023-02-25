@@ -256,6 +256,12 @@
                                             <i class="nav-icon fas fa-check"></i>پیام ها
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a href="{% url 'admin:chat_module_filemessage_changelist' %}"
+                                           class="nav-link {% if 'chat_module_filemessage' in request.resolver_match.url_name %}active{% endif %}">
+                                            <i class="nav-icon fas fa-check"></i>فایل ها
+                                        </a>
+                                    </li>
                                 </ul>
                             </li>
                         {% endblock nav_linkss %}
