@@ -5,7 +5,7 @@ from django.contrib.auth import login, logout, authenticate, update_session_auth
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import HttpRequest, JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 # Create your views here.
 from django.urls import reverse, reverse_lazy
@@ -14,6 +14,7 @@ from django.views import View
 from account_module.forms import LoginForm, ForgotPasswordForm, ResetPasswordForm, EditProfileModelForm, \
     EditUserPassForm
 from account_module.models import User
+from chat_module.models import Chat, Member
 from lesson_module.models import Lesson, SetHomeWork, HomeWorks
 from lessons.models import FieldOfStudy, Base
 from utils.email_service import send_email
@@ -138,7 +139,7 @@ class LoginView(View):
         if request.user.is_authenticated:
             return redirect(reverse('home_page'))
         login_form = LoginForm(request.POST)
-        if request.session.get('login_failed', 0) >= 3 :
+        if request.session.get('login_failed', 0) >= 3:
             login_form.add_error(field='name', error='به دلیل تلاش های متدد لطفا چند لحظه بعد دوباره تلاش کنید')
         elif login_form.is_valid():
             user_name_or_email = login_form.cleaned_data.get('name')
@@ -239,6 +240,19 @@ class ResetPasswordView(View):
         }
 
         return render(request, 'account_module/reset_password.html', context)
+
+
+class StartChatView(View):
+    def get(self, request, user_id=None):
+        user_1 = request.user
+        user_2 = get_object_or_404(User, id=user_id)
+        try:
+            chat = Chat.objects.filter(member__user_id=user_1.id).get(member__user_id=user_2.id)
+        except Chat.DoesNotExist:
+            chat = Chat.objects.create()
+            Member.objects.create(user_id=user_1.id, chat_id=chat.id)
+            Member.objects.create(user_id=user_2.id, chat_id=chat.id)
+        return redirect(reverse('chat_contact_view', kwargs={'chat_id': chat.unique_code}))
 
 
 def user_panel_dashboard_component(request):

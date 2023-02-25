@@ -26,7 +26,7 @@
                                     {% else %}
                                         <p class="text-secondary mb-1">معلم</p>
                                     {% endif %}
-                                    <button class="btn btn-primary">Message</button>
+                                    <a class="btn btn-primary text-white" href="{% url 'start_chat_with_user' user_id=user.id %}">Message</a>
                                 </div>
                             </div>
                         </div>

@@ -33,26 +33,28 @@
                                         </form>
                                         <div class="card-body p-2">
                                             {% for chat in chats %}
-                                                <a href="{% url 'chat_contact_view' chat_id=chat.unique_code %}"
-                                                   class="d-block p-2 rounded-lg {% if chat.id == current_chat.id %}bg-gradient-primary{% endif %} contact">
-                                                    <div class="d-flex p-2">
-                                                        <img alt="Image"
-                                                             src="{% static 'images/images.png' %}"
-                                                             class="avatar">
-                                                        <div class="ml-2">
-                                                            <div class="justify-content-between align-items-center">
-                                                                <h4 class="mb-0 mt-2 text-black">
-                                                                    {% for member in chat.member_set.all %}
-                                                                        {% if member.user.id != request.user.id %}
+                                                {% for member in chat.member_set.all %}
+                                                    {% if member.user.id != request.user.id %}
+                                                        <a href="{% url 'chat_contact_view' chat_id=chat.unique_code %}"
+                                                           class="d-block p-2 rounded-lg {% if chat.id == current_chat.id %}bg-gradient-primary{% endif %} contact">
+                                                            <div class="d-flex p-2">
+                                                                {% thumbnail member.user.avatar "400x400" crop="center" quality=95 as im %}
+                                                                <img alt="Image"
+                                                                     src="{{ im.url }}"
+                                                                     class="avatar rounded-circle">
+                                                                {% endthumbnail %}
+                                                                <div class="ml-2">
+                                                                    <div class="justify-content-between align-items-center">
+                                                                        <h4 class="mb-0 mt-2 text-black">
                                                                             {{ member.user.username }}
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                    <span class="badge badge-success"></span>
-                                                                </h4>
+                                                                            <span class="badge badge-success"></span>
+                                                                        </h4>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                </a>
+                                                        </a>
+                                                    {% endif %}
+                                                {% endfor %}
                                             {% endfor %}
 
                                         </div>
