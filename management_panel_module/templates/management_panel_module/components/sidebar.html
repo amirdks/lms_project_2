@@ -67,6 +67,13 @@
                                     <p>نظر سنجی</p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{% url 'chat_box_view' %}"
+                                   class="nav-link {% if request.resolver_match.url_name == 'chat_contact_view' %}active{% endif %} ">
+                                    <i class="fa-solid fa-comment"></i>
+                                    <p>گفت و گو</p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>

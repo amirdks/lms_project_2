@@ -92,6 +92,10 @@
                                                     </div>
                                                 {% endif %}
                                             </div>
+                                            <div style="padding: 20px" id="is-typing-div">
+                                                {#                                                        <span id="is-typing-text"#}
+                                                {#                                                                                  style="direction: ltr; opacity: .8"> ... is typing </span>#}
+                                            </div>
                                         {% else %}
                                             <div style="height: 70vh;display: flex;align-items: center;justify-content: center ;background-color: rgba(163,163,163,0.5)"
                                                  class="card-body overflow-auto overflow-x-hidden">
@@ -201,6 +205,20 @@
                                                     </div>`)
                         socket.send(JSON.stringify({"message_type": "seen_message"}));
                         break;
+                    case "start_typing":
+                        let isTypingElement = document.querySelector('#is-typing-text');
+                        let isTypingContainer = document.querySelector('#is-typing-div')
+                        if (isTypingElement === null) {
+                            isTypingContainer.innerHTML = `<span id="is-typing-text" style="direction: ltr; opacity: .8"> ... is typing </span>`
+                        }
+                        break;
+                    case "end_typing":
+                        let isTypingElement1 = document.querySelector('#is-typing-text');
+                        let isTypingContainer1 = document.querySelector('#is-typing-div')
+                        if (isTypingElement1 !== null) {
+                            isTypingContainer1.innerHTML = ''
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -246,7 +264,7 @@
                 msgdiv.scrollTop(msgdiv.prop("scrollHeight"));
 
                 socket.send(JSON.stringify({"message_type": "message", "text": message}));
-
+                socket.send(JSON.stringify({"message_type": "end_typing"}));
                 messageInputDom.value = '';
             };
             let imageInput = document.getElementById('image-message-input')
@@ -277,6 +295,14 @@
                         msgdiv.scrollTop(msgdiv.prop("scrollHeight"));
                     })
                     FR.readAsDataURL(target.files[0])
+                }
+            })
+            {#let inputMessage = document.querySelector('#msg-input')#}
+            $('#msg-input').on('input', e => {
+                if (e.target.value !== '' && e.target.value.length === 1) {
+                    socket.send(JSON.stringify({"message_type": "start_typing"}));
+                } else if (e.target.value === '') {
+                    socket.send(JSON.stringify({"message_type": "end_typing"}));
                 }
             })
         {% endif %}

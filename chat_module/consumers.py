@@ -91,6 +91,24 @@ class ChatConsumer(AsyncConsumer):
                     'sender_channel_name': self.channel_name
                 }
             )
+        elif message_type == 'start_typing':
+            await self.channel_layer.group_send(
+                self.chat_room_id,
+                {
+                    'type': 'chat_message',
+                    'message': json.dumps({'type': "start_typing", 'sender': self.user.username}),
+                    'sender_channel_name': self.channel_name
+                }
+            )
+        elif message_type == 'end_typing':
+            await self.channel_layer.group_send(
+                self.chat_room_id,
+                {
+                    'type': 'chat_message',
+                    'message': json.dumps({'type': "end_typing", 'sender': self.user.username}),
+                    'sender_channel_name': self.channel_name
+                }
+            )
 
     async def chat_message(self, event):
         message = event['message']
