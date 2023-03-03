@@ -376,7 +376,9 @@ fabric.properties
 # pytype static type analyzer
 
 # Cython debug symbols
-
+**/__pycache__/
+__pycache__/
+*.py[cod]
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore

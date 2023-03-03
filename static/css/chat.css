@@ -5,7 +5,7 @@
     text-decoration: none;
 }
 
-#image-message-input{
+#image-message-input, #file-message-input{
     display: None;
     height: 0;
     width: 0;

@@ -10,7 +10,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 #     pass
 from django.core.files.base import ContentFile
 
-from chat_module.models import Chat, Message, FileMessage
+from chat_module.models import Chat, Message, ImageMessage
 
 
 class ChatConsumer(AsyncConsumer):
@@ -113,7 +113,13 @@ class ChatConsumer(AsyncConsumer):
     async def chat_message(self, event):
         message = event['message']
 
-        if self.channel_name != event['sender_channel_name']:
+        if event.get('sender_channel_name'):
+            if self.channel_name != event['sender_channel_name']:
+                await self.send({
+                    'type': 'websocket.send',
+                    'text': message
+                })
+        else:
             await self.send({
                 'type': 'websocket.send',
                 'text': message
@@ -142,7 +148,7 @@ class ChatConsumer(AsyncConsumer):
     @database_sync_to_async
     def create_image(self, image):
         message = Message.objects.create(chat_id=self.chat.id, author_id=self.user.id)
-        FileMessage.objects.create(message_id=message.id, image=image)
+        ImageMessage.objects.create(message_id=message.id, image=image)
 
     @database_sync_to_async
     def seen_message(self, solo=False):

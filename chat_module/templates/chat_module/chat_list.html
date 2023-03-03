@@ -70,12 +70,22 @@
                                                             <div class="col-auto">
                                                                 <div class="card {% if message.author.id == request.user.id %}bg-gradient-primary text-white {% endif %}">
                                                                     <div class="card-body p-2">
-                                                                        <p class="mb-1" dir="ltr">
-                                                                            {% if message.filemessage %}
-                                                                                <img alt="na" class="image-message"
-                                                                                     src="{{ message.filemessage.image.url }}"> {% else %}
-                                                                                {{ message.text }}{% endif %} <br>
-                                                                        </p>
+                                                                        {% if not message.filemessage %}
+                                                                            <p class="mb-1" dir="ltr">
+                                                                                {% if message.imagemessage %}
+                                                                                    <img alt="na" class="image-message"
+                                                                                         src="{{ message.imagemessage.image.url }}"> {% else %}
+                                                                                    {{ message.text }}{% endif %} <br>
+                                                                            </p>
+                                                                        {% else %}
+                                                                            <p onclick="fileDownload(this)"
+                                                                               file_id="{{ message.filemessage.unique_code }}"
+                                                                               style="cursor: pointer" class="mb-1"
+                                                                               dir="ltr">
+                                                                                {{ message.filemessage.filename }}
+                                                                                <br>
+                                                                            </p>
+                                                                        {% endif %}
                                                                         <div class="d-flex align-items-center justify-content-end text-sm opacity-6">
                                                                             <i class="fa {% if message.author.id == request.user.id and not message.is_seen %}fa-check {% elif message.author.id == request.user.id and message.is_seen %} fa-check-double {% endif %} mr-1 text-xs"
                                                                                aria-hidden="true"></i>
@@ -118,7 +128,15 @@
                                                         <label style="cursor: pointer" for="image-message-input">
                                                             <i class="fa-solid fa-image"></i>
                         <input class="btn btn-primary float-right" name="file" type="file" value="ارسال"
-                               id="image-message-input"/>
+                               id="image-message-input" accept="image/jpeg"/>
+                                                        </label>
+                                                    </span>
+                                                    <span class="input-group-text">
+                                                        <label style="cursor: pointer" for="file-message-input">
+                                                            <i class="fa-solid fa-image"></i>
+                        <input class="btn btn-primary float-right" name="file-message" type="file" value="ارسال"
+                               id="file-message-input"/>
+                                                            {% csrf_token %}
                                                         </label>
                                                     </span>
                                                 </div>
@@ -205,6 +223,33 @@
                                                     </div>`)
                         socket.send(JSON.stringify({"message_type": "seen_message"}));
                         break;
+                    case "file":
+                        let file_id = String(message['text'])
+                        setTimeout(function () {
+                            let fileElement = document.querySelector(`p[file_id="${file_id}"]`);
+                            if (fileElement === null) {
+                                msgdiv.append(`
+                                 <div class="row justify-content-start text-right justify-content-start mb-4">
+                                                                                                            <div class="col-auto">
+                                                                                                                <div class="card">
+                                                                                                                    <div class="card-body p-2">
+                                                                                                                        <p onclick="fileDownload(this)" file_id=${file_id} style="cursor: pointer" class="mb-1" dir="ltr">
+                                                                                                                        ${message['file_name']}
+                                                                                                                        <br>
+                                                                                                                        </p>
+                                                                                                                        <div class="d-flex align-items-center justify-content-end text-sm opacity-6">
+
+                                                                                                                            <small>{% now "SHORT_DATETIME_FORMAT" %}</small>
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                `)
+                                socket.send(JSON.stringify({"message_type": "seen_message"}));
+                            }
+                        }, 1000)
+                        break;
                     case "start_typing":
                         let isTypingElement = document.querySelector('#is-typing-text');
                         let isTypingContainer = document.querySelector('#is-typing-div')
@@ -267,6 +312,65 @@
                 socket.send(JSON.stringify({"message_type": "end_typing"}));
                 messageInputDom.value = '';
             };
+            let fileInput = document.getElementById('file-message-input')
+            fileInput.addEventListener('change', e => {
+                let target = e.target;
+                if (target.files && target.files[0]) {
+                    let formData = new FormData();
+                    let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value
+                    formData.append("file_message", target.files[0]);
+                    $(document).ajaxStart(function () {
+                        console.log('started')
+                    })
+                    $.ajax({
+                        url: "{% url 'file_message_view' chat_id=current_chat.unique_code %}",
+                        method: "POST",
+                        data: formData,
+                        cache: false,
+                        processData: false,
+                        contentType: false,
+                        headers: {
+                            'X-CSRFToken': csrf
+                        },
+                        xhr: function () {
+                            var xhr = new window.XMLHttpRequest();
+                            xhr.upload.addEventListener("progress", function (evt) {
+                                if (evt.lengthComputable) {
+                                    var percentComplete = evt.loaded / evt.total;
+                                    let percent = (Math.round(percentComplete * 100))
+                                    console.log(percent)
+                                }
+                            }, false);
+                            return xhr;
+                        },
+                        success: function (res) {
+                            if (res.status === 'success') {
+                                msgdiv.append(`
+                                 <div class="row justify-content-end text-right justify-content-start mb-4">
+                                                                                                            <div class="col-auto">
+                                                                                                                <div class="card bg-gradient-primary text-white">
+                                                                                                                    <div class="card-body p-2">
+                                                                                                                        <p onclick="fileDownload(this)" file_id="${res.file_id}" style="cursor: pointer" class="mb-1" dir="ltr">
+                                                                                                                        ${res.file_name}
+                                                                                                                        <br>
+                                                                                                                        </p>
+                                                                                                                        <div class="d-flex align-items-center justify-content-end text-sm opacity-6">
+                                                                                                                            <i class="fa fa-check fa-check-double mr-1 text-xs"
+                                                                                                                               aria-hidden="true"></i>
+                                                                                                                            <small>{% now "SHORT_DATETIME_FORMAT" %}</small>
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                `)
+                            }else {
+                                alert(res.error)
+                            }
+                        }
+                    })
+                }
+            });
             let imageInput = document.getElementById('image-message-input')
             imageInput.addEventListener('change', e => {
                 let target = e.target;
@@ -297,7 +401,6 @@
                     FR.readAsDataURL(target.files[0])
                 }
             })
-            {#let inputMessage = document.querySelector('#msg-input')#}
             $('#msg-input').on('input', e => {
                 if (e.target.value !== '' && e.target.value.length === 1) {
                     socket.send(JSON.stringify({"message_type": "start_typing"}));
@@ -305,6 +408,42 @@
                     socket.send(JSON.stringify({"message_type": "end_typing"}));
                 }
             })
+            function fileDownload(target) {
+                let fileId = target.getAttribute('file_id')
+                let TOTAL_ESTIMATE = 1016 * 1024;
+
+                function onProgress(e) {
+                    var percentComplete = e.loaded / TOTAL_ESTIMATE;
+                    console.log(e.loaded)
+                    if (e.lengthComputable) {
+                        percentComplete = e.loaded / e.total;
+                    }
+                    p = Math.round(percentComplete * 100);
+                    console.log("progress", p + "%,", e.loaded, "bytes loaded")
+                }
+
+                function onReadyState(e) {
+                    let r = e.target;
+                    if (r.readyState != 4 || r.status != 200)
+                        return;
+                    let l = r.responseText.length;
+                    console.log("Success !", l, "bytes total (" + Math.round(l / 1024) + " KB )");
+                };
+                let file = `{% url 'file_download_message_view' chat_id=current_chat.unique_code %}`;
+                (function (d) {
+                    let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value
+                    let fileName = file + "?bustCache=" + new Date().getTime();
+                    console.log("inserting new script");
+                    var r = new XMLHttpRequest();
+                    r.addEventListener("progress", onProgress);
+                    r.open("post", fileName, true);
+                    r.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                    r.setRequestHeader("X-CSRFToken", csrf);
+                    r.onreadystatechange = onReadyState;
+                    let params = `file_id=${fileId}`;
+                    r.send(params);
+                }(document));
+            }
         {% endif %}
     </script>
 {% endblock %}

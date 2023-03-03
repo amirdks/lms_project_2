@@ -42,6 +42,7 @@ ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS', '*')]
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'adminlte3',
     'adminlte3_theme',
     'django.contrib.admin',
@@ -121,23 +122,23 @@ ASGI_APPLICATION = 'lms_project_2.asgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('DATABASE_NAME', 'postgres'),
-        'USER': os.environ.get('DATABASE_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'postgres'),
-        'HOST': os.environ.get('DATABASE_HOST', '127.0.0.1'),
-        'PORT': os.environ.get('DATABASE_PORT', 5432),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+#
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': os.environ.get('DATABASE_NAME', 'postgres'),
+#         'USER': os.environ.get('DATABASE_USER', 'postgres'),
+#         'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'postgres'),
+#         'HOST': os.environ.get('DATABASE_HOST', '127.0.0.1'),
+#         'PORT': os.environ.get('DATABASE_PORT', 5432),
+#     }
+# }
 
 # for test
 
