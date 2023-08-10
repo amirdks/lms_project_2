@@ -58,7 +58,8 @@
         </div>
     </div>
     <div id="message-success"></div>
-    <div class="modal-1">hello mf</div>
+    <div class="modal-1">hello</div>
+    {% csrf_token %}
 {% endblock %}
 
 {% block custom_footer %}
@@ -72,7 +73,8 @@
                 $body.removeClass("loading");
             })
             let cookie = document.cookie
-            let csrfToken = cookie.substring(cookie.indexOf('=') + 1)
+            {#let csrfToken = cookie.substring(cookie.indexOf('=') + 1)#}
+            let csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value
             const option = document.getElementsByName('poll');
             for (let i = 0; i < option.length; i++) {
                 if (option[i].checked) {
