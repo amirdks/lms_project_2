@@ -72,7 +72,8 @@
                 $body.removeClass("loading");
             })
             let cookie = document.cookie
-            let csrfToken = cookie.substring(cookie.indexOf('=') + 1)
+            {#let csrfToken = cookie.substring(cookie.indexOf('=') + 1)#}
+            let csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value
             const option = document.getElementsByName('poll');
             for (let i = 0; i < option.length; i++) {
                 if (option[i].checked) {
