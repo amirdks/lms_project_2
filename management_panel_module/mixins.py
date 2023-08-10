@@ -30,7 +30,7 @@ class PermissionMixin(UserPassesTestMixin):
     def test_func(self):
         user = self.request.user
         users = []
-        if not user.is_teacher or not user.is_superuser or not user.is_staff:
+        if not user.is_teacher and not user.is_superuser and not user.is_staff:
             users.append("student")
         elif user.is_superuser:
             users.append("is_superuser")
