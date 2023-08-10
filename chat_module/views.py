@@ -64,6 +64,12 @@ class FileUploadMessageView(LoginRequiredMixin, View):
 
 
 class FileDownloadMessageView(LoginRequiredMixin, View):
+    def get(self, request: HttpRequest, chat_id=None, file_id=None):
+        # file_id = request.POST.get('file_id')
+        chat = Chat.objects.get(unique_code__exact=chat_id, member__user_id=request.user.id)
+        file = FileMessage.objects.get(unique_code=file_id, message__chat_id=chat.id)
+        return FileResponse(file.file, as_attachment=True)
+
     def post(self, request: HttpRequest, chat_id=None):
         file_id = request.POST.get('file_id')
         chat = Chat.objects.get(unique_code__exact=chat_id, member__user_id=request.user.id)

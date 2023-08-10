@@ -78,13 +78,14 @@
                                                                                     {{ message.text }}{% endif %} <br>
                                                                             </p>
                                                                         {% else %}
-                                                                            <p onclick="fileDownload(this)"
+                                                                            <a href="{% url 'file_download_message_view' chat_id=current_chat.unique_code file_id=message.filemessage.unique_code %}"
                                                                                file_id="{{ message.filemessage.unique_code }}"
-                                                                               style="cursor: pointer" class="mb-1"
+                                                                               style="cursor: pointer; color: black"
+                                                                               class="mb-1"
                                                                                dir="ltr">
                                                                                 {{ message.filemessage.filename }}
                                                                                 <br>
-                                                                            </p>
+                                                                            </a>
                                                                         {% endif %}
                                                                         <div class="d-flex align-items-center justify-content-end text-sm opacity-6">
                                                                             <i class="fa {% if message.author.id == request.user.id and not message.is_seen %}fa-check {% elif message.author.id == request.user.id and message.is_seen %} fa-check-double {% endif %} mr-1 text-xs"
@@ -133,7 +134,7 @@
                                                     </span>
                                                     <span class="input-group-text">
                                                         <label style="cursor: pointer" for="file-message-input">
-                                                            <i class="fa-solid fa-image"></i>
+                                                            <i class="fa-solid fa-file"></i>
                         <input class="btn btn-primary float-right" name="file-message" type="file" value="ارسال"
                                id="file-message-input"/>
                                                             {% csrf_token %}
@@ -233,10 +234,10 @@
                                                                                                             <div class="col-auto">
                                                                                                                 <div class="card">
                                                                                                                     <div class="card-body p-2">
-                                                                                                                        <p onclick="fileDownload(this)" file_id=${file_id} style="cursor: pointer" class="mb-1" dir="ltr">
+                                                                                                                        <a href="{% url 'chat_contact_view' chat_id=current_chat.unique_code %}file-download/${file_id}" file_id=${file_id} style="cursor: pointer" class="mb-1" dir="ltr">
                                                                                                                         ${message['file_name']}
                                                                                                                         <br>
-                                                                                                                        </p>
+                                                                                                                        </a>
                                                                                                                         <div class="d-flex align-items-center justify-content-end text-sm opacity-6">
 
                                                                                                                             <small>{% now "SHORT_DATETIME_FORMAT" %}</small>
@@ -350,10 +351,10 @@
                                                                                                             <div class="col-auto">
                                                                                                                 <div class="card bg-gradient-primary text-white">
                                                                                                                     <div class="card-body p-2">
-                                                                                                                        <p onclick="fileDownload(this)" file_id="${res.file_id}" style="cursor: pointer" class="mb-1" dir="ltr">
+                                                                                                                        <a href="{% url 'chat_contact_view' chat_id=current_chat.unique_code %}file-download/${file_id}" style="cursor: pointer" class="mb-1" dir="ltr">
                                                                                                                         ${res.file_name}
                                                                                                                         <br>
-                                                                                                                        </p>
+                                                                                                                        </a>
                                                                                                                         <div class="d-flex align-items-center justify-content-end text-sm opacity-6">
                                                                                                                             <i class="fa fa-check fa-check-double mr-1 text-xs"
                                                                                                                                aria-hidden="true"></i>
@@ -364,7 +365,7 @@
                                                                                                             </div>
                                                                                                         </div>
                                 `)
-                            }else {
+                            } else {
                                 alert(res.error)
                             }
                         }
@@ -429,7 +430,8 @@
                     let l = r.responseText.length;
                     console.log("Success !", l, "bytes total (" + Math.round(l / 1024) + " KB )");
                 };
-                let file = `{% url 'file_download_message_view' chat_id=current_chat.unique_code %}`;
+                {#let file = `{% url 'file_download_message_view' chat_id=current_chat.unique_code file_id=${fileId} %}`;#}
+                let file = `/chat/` + `{{ current_chat.unique_code }}` + `/file-download/` + `${fileId}`;
                 (function (d) {
                     let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value
                     let fileName = file + "?bustCache=" + new Date().getTime();
