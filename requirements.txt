@@ -8,6 +8,8 @@ billiard==3.6.4.0
 celery==5.2.7
 certifi==2022.6.15
 cffi==1.15.1
+channels==3.0.5
+channels-redis==4.1.0
 click==8.1.3
 click-didyoumean==0.3.0
 click-plugins==1.1.1
@@ -30,6 +32,7 @@ django-redis==3.1.6
 django-render-partial==0.4
 django-timezone-field==5.0
 django-widget-tweaks==1.4.12
+djangorestframework==3.14.0
 gunicorn==20.1.0
 hiredis==2.0.0
 hyperlink==21.0.0
@@ -39,6 +42,7 @@ jdatetime==4.1.0
 kombu==5.2.4
 libmagic==1.0
 minio==6.0.2
+msgpack==1.0.5
 packaging==21.3
 Pillow==9.1.0
 prompt-toolkit==3.0.31
@@ -52,7 +56,7 @@ python-crontab==2.6.0
 python-dateutil==2.8.2
 python-magic==0.4.27
 pytz==2022.1
-redis==4.3.4
+redis==4.6.0
 service-identity==21.1.0
 six==1.16.0
 sorl-thumbnail==12.8.0
@@ -66,5 +70,3 @@ vine==5.0.0
 wcwidth==0.2.5
 wrapt==1.14.1
 zope.interface==5.4.0
-
-channels~=3.0.5
