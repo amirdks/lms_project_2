@@ -141,21 +141,21 @@ class LoginView(View):
         if request.session.get('login_failed', 0) >= 3 :
             login_form.add_error(field='name', error='به دلیل تلاش های متدد لطفا چند لحظه بعد دوباره تلاش کنید')
         elif login_form.is_valid():
-            user_name_or_email = login_form.cleaned_data.get('name')
-            user_password = login_form.cleaned_data.get('password')
-            user = User.objects.filter(
-                Q(username__exact=user_name_or_email) | Q(email__exact=user_name_or_email)).first()
-            if user:
-                is_password_correct = user.check_password(user_password)
-                if is_password_correct:
-                    login(request, user)
-                    return redirect(request.POST.get('next', '/lessons'))
+                user_name_or_email = login_form.cleaned_data.get('name')
+                user_password = login_form.cleaned_data.get('password')
+                user = User.objects.filter(
+                    Q(username__exact=user_name_or_email) | Q(email__exact=user_name_or_email)).first()
+                if user:
+                    is_password_correct = user.check_password(user_password)
+                    if is_password_correct:
+                        login(request, user)
+                        return redirect(request.POST.get('next', '/lessons'))
+                    else:
+                        login_form.add_error(field='password', error='کلمه عبور اشتباه است')
+                        # messages.error(request, 'کلمه عبور اشتباه است')
                 else:
-                    login_form.add_error(field='password', error='کلمه عبور اشتباه است')
-                    # messages.error(request, 'کلمه عبور اشتباه است')
-            else:
-                login_form.add_error(field='name', error='کاربری با مشخصات وارد شده یافت نشد')
-                # messages.error(request, 'کاربری با مشخصات وارد شده یافت نشد')
+                    login_form.add_error(field='name', error='کاربری با مشخصات وارد شده یافت نشد')
+                    # messages.error(request, 'کاربری با مشخصات وارد شده یافت نشد')
         if not request.session.get('login_failed'):
             request.session['login_failed'] = 0
         request.session['login_failed'] += 1

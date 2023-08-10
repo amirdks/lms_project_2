@@ -37,7 +37,7 @@ services:
       - database
       - redis
     environment:
-      - SECRET_KEY=(_npq@(rvzmt_(p0w7!nk$v3^*$2mj97$c#1t$0_t-qb-trj10
+      - SECRET_KEY=nv&l8x*mb@+n%d#ebzcf_oa#dku@h!$gxq8im#sqcq^q#p3m86
       - DEBUG=False
       - ALLOWED_HOSTS=app
       - DATABASE_NAME=postgres
